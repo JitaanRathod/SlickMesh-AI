@@ -1,0 +1,35 @@
+{
+  "spill_id": "SPILL-001",
+  "detected_at": "2026-08-25T06:00:00Z",
+  "spill_detected": true,
+  "confidence": 0.87,
+  "area_km2": 3.2,
+  "centroid": {
+    "lat": 20.48,
+    "lon": 67.52
+  },
+  "polygon": [
+    [
+      67.15,
+      20.45
+    ],
+    [
+      67.45,
+      20.75
+    ],
+    [
+      67.9,
+      20.62
+    ],
+    [
+      67.7,
+      20.3
+    ],
+    [
+      67.35,
+      20.25
+    ]
+  ],
+  "quality_flag": "favorable",
+  "notes": "candidate detection — not chemically confirmed"
+}

@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs and temporary files
+*.log
+run_train.log
+
+# ZIP Archives
+*.zip
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# IDE / OS settings
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# Phase 1 Satellite SAR Detection Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.22.0
+pillow>=9.0.0
+pydantic>=2.0.0
+opencv-python>=4.5.0
+shapely>=2.0.0
+matplotlib>=3.5.0
+pytest>=7.0.0

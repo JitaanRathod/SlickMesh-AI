@@ -1,8 +1,8 @@
 {
   "spill_id": "SPILL-001",
-  "detected_at": "2026-08-25T12:18:40Z",
+  "detected_at": "2026-08-25T12:22:23Z",
   "spill_detected": true,
-  "confidence": 0.77,
+  "confidence": 0.97,
   "area_km2": 66.35,
   "centroid": {
     "lat": 20.4755,

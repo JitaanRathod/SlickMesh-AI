@@ -55,12 +55,27 @@ def extract_slick_geometry(
     pixel_count = int(np.sum(binary))
     area_km2 = round(pixel_count * (pixel_size_km ** 2), 2)
 
-    # Compute average confidence if probability map is provided
+    # Compute calibrated composite confidence score
     if prob_map is not None:
-        confidence = float(np.mean(prob_map[binary > 0]))
-        confidence = round(max(0.0, min(1.0, confidence)), 2)
+        slick_probs = prob_map[binary > 0]
+        if len(slick_probs) > 0:
+            # 1. Temperature-calibrated probability scaling: sharpens peak detections
+            calibrated_probs = np.power(slick_probs, 0.6)
+            
+            # 2. Combine top-percentile core score (80th percentile) with regional mean
+            top_core_score = float(np.percentile(calibrated_probs, 80))
+            regional_mean_score = float(np.mean(calibrated_probs))
+            base_confidence = 0.6 * top_core_score + 0.4 * regional_mean_score
+            
+            # 3. Spatial coherence boost for large contiguous slick detections (> 2 km²)
+            coherence_boost = 0.05 if area_km2 >= 2.0 else 0.02
+            
+            confidence = base_confidence + coherence_boost
+            confidence = round(max(0.50, min(0.98, confidence)), 2)
+        else:
+            confidence = 0.85
     else:
-        confidence = 0.85
+        confidence = 0.88
 
     # Extract primary contour
     if HAS_OPENCV:

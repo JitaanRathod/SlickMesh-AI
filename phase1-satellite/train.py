@@ -85,16 +85,16 @@ def train_model(
             val_iou /= len(val_ds)
             val_dice /= len(val_ds)
 
-            print(f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val IoU: {val_iou:.4f} | Val Dice: {val_dice:.4f}")
+            print(f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val IoU: {val_iou:.4f} | Val Dice: {val_dice:.4f}", flush=True)
 
             if val_iou >= best_val_iou:
                 best_val_iou = val_iou
                 torch.save(model.state_dict(), output_model)
 
-        print(f"[Phase 1 Train] Training complete! Best Val IoU: {best_val_iou:.4f}. Weights saved to: {output_model}")
+        print(f"[Phase 1 Train] Training complete! Best Val IoU: {best_val_iou:.4f}. Weights saved to: {output_model}", flush=True)
     except Exception as err:
         import traceback
-        print(f"[Phase 1 Train] Error during training: {err}")
+        print(f"[Phase 1 Train] Error during training: {err}", flush=True)
         traceback.print_exc()
         sys.exit(1)
 

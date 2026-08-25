@@ -1,0 +1,51 @@
+{
+  "spill_id": "SPILL-001",
+  "detected_at": "2026-08-25T12:18:40Z",
+  "spill_detected": true,
+  "confidence": 0.77,
+  "area_km2": 66.35,
+  "centroid": {
+    "lat": 20.4755,
+    "lon": 67.5403
+  },
+  "polygon": [
+    [
+      67.5796,
+      20.5372
+    ],
+    [
+      67.5166,
+      20.5228
+    ],
+    [
+      67.495,
+      20.4273
+    ],
+    [
+      67.5234,
+      20.4255
+    ],
+    [
+      67.5311,
+      20.4786
+    ],
+    [
+      67.5412,
+      20.4246
+    ],
+    [
+      67.5801,
+      20.4237
+    ],
+    [
+      67.5541,
+      20.4926
+    ],
+    [
+      67.5796,
+      20.5372
+    ]
+  ],
+  "quality_flag": "favorable",
+  "notes": "candidate detection — not chemically confirmed"
+}

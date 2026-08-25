@@ -1,0 +1,61 @@
+[
+  {
+    "mmsi": "419001234",
+    "imo": "9123456",
+    "name": "MV Ocean Star",
+    "vessel_type": "Tanker",
+    "track": [
+      {"lat": 19.50, "lon": 72.10, "timestamp": "2026-08-25T01:00:00Z", "heading": 45, "sog": 12.5},
+      {"lat": 19.58, "lon": 72.22, "timestamp": "2026-08-25T03:00:00Z", "heading": 45, "sog": 13.0},
+      {"lat": 19.62, "lon": 72.30, "timestamp": "2026-08-25T04:30:00Z", "heading": 40, "sog": 1.5},
+      {"lat": 19.66, "lon": 72.38, "timestamp": "2026-08-25T06:00:00Z", "heading": 35, "sog": 1.2},
+      {"lat": 19.75, "lon": 72.50, "timestamp": "2026-08-25T08:00:00Z", "heading": 45, "sog": 14.0}
+    ]
+  },
+  {
+    "mmsi": "419008888",
+    "imo": "9888888",
+    "name": "Sagar Samrat Cargo",
+    "vessel_type": "Cargo",
+    "track": [
+      {"lat": 19.30, "lon": 72.20, "timestamp": "2026-08-25T02:00:00Z", "heading": 10, "sog": 16.2},
+      {"lat": 19.45, "lon": 72.25, "timestamp": "2026-08-25T04:00:00Z", "heading": 12, "sog": 16.5},
+      {"lat": 19.60, "lon": 72.30, "timestamp": "2026-08-25T06:00:00Z", "heading": 15, "sog": 15.8}
+    ]
+  },
+  {
+    "mmsi": "419005555",
+    "imo": "9555555",
+    "name": "Kaveri Express",
+    "vessel_type": "Tanker",
+    "track": [
+      {"lat": 16.00, "lon": 82.10, "timestamp": "2026-08-25T01:00:00Z", "heading": 30, "sog": 11.0},
+      {"lat": 16.12, "lon": 82.20, "timestamp": "2026-08-25T03:30:00Z", "heading": 30, "sog": 2.1},
+      {"lat": 16.18, "lon": 82.30, "timestamp": "2026-08-25T05:00:00Z", "heading": 25, "sog": 12.0},
+      {"lat": 16.30, "lon": 82.45, "timestamp": "2026-08-25T07:00:00Z", "heading": 35, "sog": 11.5}
+    ]
+  },
+  {
+    "mmsi": "419099999",
+    "imo": "9999999",
+    "name": "MV Chennai Trader",
+    "vessel_type": "Cargo",
+    "track": [
+      {"lat": 16.35, "lon": 82.20, "timestamp": "2026-08-25T02:00:00Z", "heading": 180, "sog": 14.5},
+      {"lat": 16.20, "lon": 82.22, "timestamp": "2026-08-25T04:30:00Z", "heading": 180, "sog": 14.2},
+      {"lat": 16.05, "lon": 82.25, "timestamp": "2026-08-25T06:00:00Z", "heading": 180, "sog": 14.8}
+    ]
+  },
+  {
+    "mmsi": "419000111",
+    "imo": "9000111",
+    "name": "Deepwater Pioneer",
+    "vessel_type": "Tanker",
+    "track": [
+      {"lat": 20.25, "lon": 67.20, "timestamp": "2026-08-25T01:00:00Z", "heading": 90, "sog": 10.2},
+      {"lat": 20.30, "lon": 67.35, "timestamp": "2026-08-25T03:00:00Z", "heading": 95, "sog": 1.5},
+      {"lat": 20.35, "lon": 67.50, "timestamp": "2026-08-25T05:00:00Z", "heading": 100, "sog": 10.8},
+      {"lat": 20.40, "lon": 67.65, "timestamp": "2026-08-25T07:00:00Z", "heading": 90, "sog": 11.2}
+    ]
+  }
+]

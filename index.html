@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIH26143 — Satellite Oil-Spill Attribution & Drift Dashboard</title>
+  <!-- Google Fonts: Inter & Orbitron -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <i class="fa-solid fa-satellite-dish pulse-icon"></i>
+        <div>
+          <h1>SIH26143 Oil-Spill Analyzer</h1>
+          <span class="subtitle">Sentinel-1 SAR Detection + AIS Attributor (India-Tuned)</span>
+        </div>
+      </div>
+      <div class="system-status">
+        <span class="badge online"><i class="fa-solid fa-circle"></i> PIPELINE ENGINE ONLINE</span>
+        <span class="badge target-region"><i class="fa-solid fa-location-crosshairs"></i> ARABIAN SEA / BOB</span>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="app-main">
+      <!-- Left Sidebar: Controls -->
+      <section class="sidebar controls-sidebar">
+        <div class="section-title">
+          <i class="fa-solid fa-sliders"></i> Simulation Parameters
+        </div>
+        
+        <div class="control-group">
+          <label for="sample-location"><i class="fa-solid fa-anchor"></i> Target Region</label>
+          <select id="sample-location">
+            <option value="mumbai">Arabian Sea (Mumbai Offshore)</option>
+            <option value="bob">Bay of Bengal (KG Basin)</option>
+            <option value="default" selected>Default (Alang Offshore)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label><i class="fa-solid fa-image"></i> Sentinel-1 Image Input</label>
+          <div class="upload-container" id="upload-box">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p>Drag & drop SAR image or click to select</p>
+            <span class="file-name" id="selected-file-label">s1_active.png</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-val">
+            <label for="wind-speed"><i class="fa-solid fa-wind"></i> Wind Speed</label>
+            <span id="wind-speed-val">5.4 m/s</span>
+          </div>
+          <input type="range" id="wind-speed" min="1.0" max="15.0" step="0.1" value="5.4">
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-val">
+            <label for="wind-dir"><i class="fa-solid fa-compass"></i> Wind From (Direction)</label>
+            <span id="wind-dir-val">72°</span>
+          </div>
+          <input type="range" id="wind-dir" min="0" max="360" step="1" value="72">
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-val">
+            <label for="current-u"><i class="fa-solid fa-arrows-left-right"></i> Current U (Eastward)</label>
+            <span id="current-u-val">0.18 m/s</span>
+          </div>
+          <input type="range" id="current-u" min="-1.5" max="1.5" step="0.01" value="0.18">
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-val">
+            <label for="current-v"><i class="fa-solid fa-arrows-up-down"></i> Current V (Northward)</label>
+            <span id="current-v-val">0.07 m/s</span>
+          </div>
+          <input type="range" id="current-v" min="-1.5" max="1.5" step="0.01" value="0.07">
+        </div>
+
+        <div class="control-group">
+          <div class="label-with-val">
+            <label for="backtrack-hours"><i class="fa-solid fa-clock-rotate-left"></i> Drift Backtrack Time</label>
+            <span id="backtrack-hours-val">24 hrs</span>
+          </div>
+          <input type="range" id="backtrack-hours" min="6" max="72" step="1" value="24">
+        </div>
+
+        <button id="run-pipeline-btn" class="btn primary-btn">
+          <i class="fa-solid fa-play"></i> Run Spill Pipeline
+        </button>
+      </section>
+
+      <!-- Center Panel: Map -->
+      <section class="map-container">
+        <div id="map"></div>
+        <div class="map-overlay-legend">
+          <div class="legend-item"><span class="legend-color spill-poly"></span> Suspected Spill</div>
+          <div class="legend-item"><span class="legend-color backtrack-circle"></span> Source Corridor</div>
+          <div class="legend-item"><span class="legend-color vessel-track-high"></span> Tanker Track (Attributed)</div>
+        </div>
+      </section>
+
+      <!-- Right Sidebar: Results -->
+      <section class="sidebar results-sidebar">
+        <div class="section-title">
+          <i class="fa-solid fa-receipt"></i> Incident Summary
+        </div>
+        <div class="card summary-card" id="incident-card">
+          <div class="empty-state">Run pipeline to show summary</div>
+        </div>
+
+        <div class="section-title">
+          <i class="fa-solid fa-cloud-sun"></i> Oceanography Feed
+        </div>
+        <div class="card summary-card" id="env-card">
+          <div class="empty-state">No environmental feed</div>
+        </div>
+
+        <div class="section-title">
+          <i class="fa-solid fa-ranking-star"></i> Candidate Vessel Rankings
+        </div>
+        <div class="candidates-list" id="candidates">
+          <div class="empty-state">Attribution leaderboard is empty</div>
+        </div>
+
+        <div class="disclaimer">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Attribution is probabilistic. AIS proximity is evidence, not legal/forensic proof.</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for Detailed Score Breakdown -->
+    <div class="modal" id="details-modal">
+      <div class="modal-content glassmorphism">
+        <div class="modal-header">
+          <h3 id="modal-vessel-name">MV Ocean Star</h3>
+          <button class="close-btn" id="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-grid">
+            <div><strong>MMSI:</strong> <span id="modal-mmsi">-</span></div>
+            <div><strong>Type:</strong> <span id="modal-type">-</span></div>
+            <div><strong>Attribution:</strong> <span id="modal-conf">-</span>%</div>
+          </div>
+          
+          <h4 style="margin: 15px 0 10px 0;"><i class="fa-solid fa-chart-bar"></i> Weighted Evidence Scores</h4>
+          <div class="score-bars" id="score-bars-container">
+            <!-- Dynamic bars will render here -->
+          </div>
+          
+          <div class="explainable-reason">
+            <strong>Explanatory Reason:</strong>
+            <p id="modal-reason-str"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet Javascript -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

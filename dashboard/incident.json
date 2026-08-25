@@ -1,0 +1,136 @@
+{
+  "incident": {
+    "id": "SPILL-001",
+    "detected_at": "2026-08-25T18:05:02Z",
+    "area_km2": 66.35,
+    "confidence": 0.97,
+    "polygon": [
+      [
+        80.3273,
+        13.1372
+      ],
+      [
+        80.2668,
+        13.1228
+      ],
+      [
+        80.246,
+        13.0273
+      ],
+      [
+        80.2732,
+        13.0255
+      ],
+      [
+        80.2806,
+        13.0786
+      ],
+      [
+        80.2903,
+        13.0246
+      ],
+      [
+        80.3278,
+        13.0237
+      ],
+      [
+        80.3028,
+        13.0926
+      ],
+      [
+        80.3273,
+        13.1372
+      ]
+    ]
+  },
+  "environment": {
+    "current_u_ms": 0.18,
+    "current_v_ms": 0.07,
+    "wind_speed_ms": 5.4,
+    "wind_direction_deg": 72,
+    "source_model": "Copernicus / Open-Meteo Fallback"
+  },
+  "source_region": {
+    "latitude": 13.0755,
+    "longitude": 80.2895,
+    "radius_km": 22.0,
+    "backtrack_hours": 24
+  },
+  "vessels": [
+    {
+      "name": "MV Ocean Star",
+      "mmsi": "419001234",
+      "type": "Tanker",
+      "confidence": 84,
+      "reason": "Passed within 3.2 nm of the backtracked source region 5 hours before detection.",
+      "position": [
+        79.85,
+        12.75
+      ],
+      "track": [
+        [
+          79.85,
+          12.75
+        ],
+        [
+          79.65,
+          12.6
+        ],
+        [
+          79.45,
+          12.45
+        ],
+        [
+          79.15,
+          12.3
+        ]
+      ]
+    },
+    {
+      "name": "MT Arabian Trader",
+      "mmsi": "419005678",
+      "type": "Cargo",
+      "confidence": 46,
+      "reason": "Traversed outer boundary of source corridor 11 hours prior to detection.",
+      "position": [
+        80.62,
+        13.33
+      ],
+      "track": [
+        [
+          80.62,
+          13.33
+        ],
+        [
+          80.82,
+          13.53
+        ],
+        [
+          81.02,
+          13.73
+        ]
+      ]
+    },
+    {
+      "name": "Deepsea Sentinel",
+      "mmsi": "419009876",
+      "type": "Container Ship",
+      "confidence": 22,
+      "reason": "Distant transit 18 nm outside backtracked source circle.",
+      "position": [
+        79.42,
+        13.73
+      ],
+      "track": [
+        [
+          79.42,
+          13.73
+        ],
+        [
+          79.32,
+          13.93
+        ]
+      ]
+    }
+  ]
+}

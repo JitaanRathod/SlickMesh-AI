@@ -1,0 +1,9 @@
+# Raw AIS data — excluded from git (large files)
+raw_ais_stream.ndjson
+ais_cleaned.parquet
+
+# Danish AIS CSV (large download — not committed)
+*.csv
+
+# Keep the directory structure
+!.gitkeep

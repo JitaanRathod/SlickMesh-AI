@@ -1,0 +1,3 @@
+# output directory — generated files; contract_c.json committed after first clean run
+# exclude large intermediate files if any
+*.tmp

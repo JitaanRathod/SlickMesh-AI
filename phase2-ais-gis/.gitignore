@@ -1,0 +1,26 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Data directory (raw streams, cleaned Parquet, CSV downloads)
+data/raw_ais_stream.ndjson
+data/*.parquet
+data/*.csv
+data/*.zip
+
+# Output directory (generated Contract C JSON & plots)
+output/*.json
+output/*.png
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

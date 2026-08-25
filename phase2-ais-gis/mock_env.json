@@ -1,0 +1,9 @@
+{
+  "location": { "lat": 20.48, "lon": 67.52 },
+  "timestamp": "2026-08-25T06:00:00Z",
+  "current_u_ms": 0.18,
+  "current_v_ms": 0.07,
+  "wind_speed_ms": 5.4,
+  "wind_direction_deg": 72,
+  "source_model": "Open-Meteo"
+}

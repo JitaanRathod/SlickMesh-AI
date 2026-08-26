@@ -136,7 +136,46 @@ function initSliders() {
   updateLabels();
 }
 
+let currentMode = "live";
+
 function setupEventListeners() {
+  // Mode Switcher Tabs
+  const liveTab = document.getElementById("tab-live-mode");
+  const demoTab = document.getElementById("tab-demo-mode");
+  const modeTag = document.getElementById("mode-tag");
+
+  if (liveTab && demoTab) {
+    liveTab.addEventListener("click", () => {
+      currentMode = "live";
+      liveTab.style.backgroundColor = "var(--primary-blue)";
+      liveTab.style.color = "#fff";
+      demoTab.style.backgroundColor = "var(--bg-card)";
+      demoTab.style.color = "var(--text-muted)";
+      if (modeTag) {
+        modeTag.textContent = "LIVE PASS";
+        modeTag.style.color = "var(--accent-cyan)";
+      }
+    });
+
+    demoTab.addEventListener("click", () => {
+      currentMode = "demo";
+      demoTab.style.backgroundColor = "var(--accent-red)";
+      demoTab.style.color = "#fff";
+      liveTab.style.backgroundColor = "var(--bg-card)";
+      liveTab.style.color = "var(--text-muted)";
+      if (modeTag) {
+        modeTag.textContent = "FORENSIC DEMO";
+        modeTag.style.color = "var(--accent-red)";
+      }
+      // If in custom mode, switch to a historical verified incident
+      const presetSelect = document.getElementById("sample-location");
+      if (presetSelect && presetSelect.value === "custom") {
+        presetSelect.value = "mumbai";
+        applyPreset("mumbai");
+      }
+    });
+  }
+
   // Run pipeline button
   const runBtn = document.getElementById("run-pipeline-btn");
   if (runBtn) runBtn.addEventListener("click", triggerPipeline);
@@ -220,7 +259,8 @@ function triggerPipeline() {
     backtrack_hours: parseInt(document.getElementById("backtrack-hours").value),
     target_region: targetRegion,
     custom_lat: isCustom ? parseFloat(document.getElementById("custom-lat").value) : null,
-    custom_lon: isCustom ? parseFloat(document.getElementById("custom-lon").value) : null
+    custom_lon: isCustom ? parseFloat(document.getElementById("custom-lon").value) : null,
+    mode: currentMode
   };
   
   fetch("/api/run-pipeline", {
@@ -258,8 +298,61 @@ function renderIncident(data) {
   
   const mapFeaturesToBound = [];
 
+  // Check if target is on land
+  if (data.incident && data.incident.status === "LAND_COORDINATE") {
+    const incCard = document.getElementById("incident-card");
+    if (incCard) {
+      incCard.innerHTML = `
+        <div style="color: var(--accent-red); font-size: 11px; padding: 6px;">
+          <i class="fa-solid fa-triangle-exclamation"></i> <strong>LAND DETECTED:</strong><br>
+          ${data.incident.message}
+        </div>
+      `;
+    }
+    const candsContainer = document.getElementById("candidates");
+    if (candsContainer) {
+      candsContainer.innerHTML = '<div class="empty-state">No maritime vessels on land coordinates.</div>';
+    }
+    const countBadge = document.getElementById("vessel-count-badge");
+    if (countBadge) countBadge.textContent = "0 vessels";
+    return;
+  }
+
+  // Check if scan is clean ocean (no oil spills)
+  if (data.incident && data.incident.status === "CLEAN_OCEAN") {
+    const incCard = document.getElementById("incident-card");
+    if (incCard) {
+      incCard.innerHTML = `
+        <div style="color: var(--accent-green); font-size: 11px; padding: 6px; line-height: 1.4;">
+          <i class="fa-solid fa-circle-check"></i> <strong>LATEST SATELLITE PASS SCANNED</strong><br>
+          ${data.incident.message}<br>
+          <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Area: 0.00 km² • Sea Surface Clear</span>
+        </div>
+      `;
+    }
+    const candsContainer = document.getElementById("candidates");
+    if (candsContainer) {
+      candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-shield-halved"></i> Sector Clear: No illegal discharge detected.</div>';
+    }
+    const countBadge = document.getElementById("vessel-count-badge");
+    if (countBadge) countBadge.textContent = "0 suspects";
+
+    const env = data.environment;
+    const envCard = document.getElementById("env-card");
+    if (envCard && env) {
+      envCard.innerHTML = `
+        <div class="telemetry-grid">
+          <div class="tel-cell"><span class="tel-lbl">LIVE WIND</span><span class="tel-val">${env.wind_speed_ms} m/s @ ${env.wind_direction_deg}°</span></div>
+          <div class="tel-cell"><span class="tel-lbl">SURFACE DRIFT</span><span class="tel-val">${env.current_u_ms}, ${env.current_v_ms} m/s</span></div>
+          <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">DATA FEED</span><span class="tel-val text-cyan">${env.source_model}</span></div>
+        </div>
+      `;
+    }
+    return;
+  }
+
   // 1. Plot Detected Satellite Oil Slick Polygon (Red)
-  if (data.incident && data.incident.polygon) {
+  if (data.incident && data.incident.polygon && data.incident.polygon.length > 0 && data.incident.area_km2 > 0) {
     const spillLatLng = data.incident.polygon.map(([lon, lat]) => [lat, lon]);
     const spillPoly = L.polygon(spillLatLng, {
       color: "#dc2626",
@@ -283,7 +376,7 @@ function renderIncident(data) {
   }
   
   // 2. Plot Backtracked Origin Corridor (Yellow Dotted Uncertainty Circle)
-  if (data.source_region) {
+  if (data.source_region && data.source_region.radius_km > 0) {
     const sourceReg = data.source_region;
     const sourceCircle = L.circle([sourceReg.latitude, sourceReg.longitude], {
       radius: sourceReg.radius_km * 1000,

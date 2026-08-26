@@ -50,11 +50,23 @@
       <!-- Left Column: Operations & Metocean Control Panel -->
       <section class="sidebar controls-sidebar">
         
+        <!-- Mode Switcher Tabs -->
+        <div class="panel-box" style="padding: 6px; background-color: #0b1329;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button id="tab-live-mode" class="btn" style="padding: 8px; font-size: 11px; background-color: var(--primary-blue); color: #fff;">
+              <i class="fa-solid fa-satellite"></i> Live Satellite Pass
+            </button>
+            <button id="tab-demo-mode" class="btn" style="padding: 8px; font-size: 11px; background-color: var(--bg-card); color: var(--text-muted);">
+              <i class="fa-solid fa-triangle-exclamation"></i> Forensic Demo
+            </button>
+          </div>
+        </div>
+
         <!-- Surveillance Sector Selector -->
         <div class="panel-box">
           <div class="panel-header flex-between">
             <span><i class="fa-solid fa-map-location-dot"></i> Surveillance Sector</span>
-            <span class="version-tag" id="mode-tag">PRESET</span>
+            <span class="version-tag" id="mode-tag">LIVE PASS</span>
           </div>
           <div class="control-group">
             <label for="sample-location">Target Maritime Zone</label>

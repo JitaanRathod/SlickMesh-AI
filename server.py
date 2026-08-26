@@ -46,45 +46,60 @@ class PipelineRequest(BaseModel):
 
 
 def get_regional_presets(region: str) -> Dict[str, Any]:
-    """Provides regional reference coordinates for Indian maritime zones."""
+    """Provides regional reference coordinates for Indian maritime zones (all offshore in open water)."""
     presets = {
         "mumbai": {
-            "lat": 19.65, "lon": 72.38,
+            "lat": 19.42, "lon": 71.35,  # Mumbai High Offshore Oilfield (~100km offshore)
             "candidates": [
                 {
                     "mmsi": "419001111", "imo": "9345678", "name": "Al-Bahar Crude", "vessel_type": "Crude Oil Tanker",
                     "min_dist_nm": 1.8, "hours": 3.5, "heading_delta": 8.0, "sog": 2.1, "intersects": True, "continuity": "continuous",
-                    "track": [[19.30, 71.90], [19.45, 72.10], [19.55, 72.25], [19.65, 72.38]]
+                    "track": [[19.00, 71.10], [19.20, 71.22], [19.35, 71.30], [19.50, 71.38]]
                 },
                 {
                     "mmsi": "419002222", "imo": "9223344", "name": "Konkan Star", "vessel_type": "Chemical Tanker",
                     "min_dist_nm": 4.2, "hours": 7.0, "heading_delta": 22.0, "sog": 8.5, "intersects": True, "continuity": "continuous",
-                    "track": [[19.10, 71.80], [19.35, 72.05], [19.50, 72.20], [19.70, 72.45]]
+                    "track": [[18.90, 70.90], [19.15, 71.05], [19.35, 71.18], [19.60, 71.30]]
                 },
                 {
                     "mmsi": "419003333", "imo": "9112233", "name": "Mumbai Pioneer", "vessel_type": "Cargo",
                     "min_dist_nm": 14.5, "hours": 14.0, "heading_delta": 55.0, "sog": 14.2, "intersects": False, "continuity": "continuous",
-                    "track": [[19.80, 72.70], [19.90, 72.85], [20.00, 73.00]]
+                    "track": [[18.80, 71.85], [19.15, 71.90], [19.50, 71.95], [19.85, 72.00]]
                 }
             ]
         },
         "bob": {
-            "lat": 16.15, "lon": 82.28,
+            "lat": 16.15, "lon": 82.55,  # Krishna-Godavari Deepwater Basin (~40km offshore)
             "candidates": [
                 {
                     "mmsi": "419004444", "imo": "9445566", "name": "Bay Explorer", "vessel_type": "Oil Tanker",
                     "min_dist_nm": 2.4, "hours": 4.0, "heading_delta": 10.0, "sog": 1.8, "intersects": True, "continuity": "continuous",
-                    "track": [[15.80, 81.90], [15.95, 82.10], [16.10, 82.25], [16.20, 82.35]]
+                    "track": [[15.70, 82.75], [15.90, 82.65], [16.10, 82.55], [16.30, 82.45]]
                 },
                 {
                     "mmsi": "419005555", "imo": "9556677", "name": "Godavari Pride", "vessel_type": "Bulk Carrier",
                     "min_dist_nm": 12.0, "hours": 9.5, "heading_delta": 45.0, "sog": 12.0, "intersects": False, "continuity": "gapped",
-                    "track": [[16.30, 82.60], [16.45, 82.80], [16.60, 83.00]]
+                    "track": [[15.60, 83.10], [15.85, 82.95], [16.10, 82.80], [16.35, 82.65]]
+                }
+            ]
+        },
+        "dark_ship": {
+            "lat": 16.50, "lon": 72.00,  # Ratnagiri Offshore Deep Channel
+            "candidates": [
+                {
+                    "mmsi": "419099999", "imo": "9998888", "name": "Shadow Trader", "vessel_type": "Chemical Tanker",
+                    "min_dist_nm": 2.1, "hours": 4.0, "heading_delta": 10.0, "sog": 1.2, "intersects": True, "continuity": "gapped",
+                    "track": [[16.10, 71.70], [16.30, 71.85], [16.50, 72.00], [16.70, 72.15]]
+                },
+                {
+                    "mmsi": "419088888", "imo": "9887766", "name": "Kolkata Express", "vessel_type": "Bulk Carrier",
+                    "min_dist_nm": 16.5, "hours": 12.0, "heading_delta": 55.0, "sog": 13.0, "intersects": False, "continuity": "continuous",
+                    "track": [[16.00, 72.40], [16.30, 72.45], [16.60, 72.50], [16.90, 72.55]]
                 }
             ]
         },
         "default": {
-            "lat": 20.48, "lon": 67.52,
+            "lat": 20.48, "lon": 67.52,  # Gulf of Khambhat / Saurashtra Offshore Lane
             "candidates": [
                 {
                     "mmsi": "419001234", "imo": "9123456", "name": "MV Ocean Star", "vessel_type": "Tanker",
@@ -94,12 +109,12 @@ def get_regional_presets(region: str) -> Dict[str, Any]:
                 {
                     "mmsi": "419005678", "imo": "9007654", "name": "MT Gujarat Pearl", "vessel_type": "Cargo",
                     "min_dist_nm": 14.6, "hours": 9.8, "heading_delta": 41.0, "sog": 9.2, "intersects": False, "continuity": "gapped",
-                    "track": [[21.40, 67.20], [21.30, 67.35], [21.20, 67.55], [21.10, 67.70]]
+                    "track": [[21.00, 67.20], [20.80, 67.40], [20.60, 67.60], [20.40, 67.80]]
                 },
                 {
                     "mmsi": "419009876", "imo": "9876543", "name": "Deepsea Sentinel", "vessel_type": "Container Ship",
                     "min_dist_nm": 22.0, "hours": 16.5, "heading_delta": 65.0, "sog": 16.0, "intersects": False, "continuity": "continuous",
-                    "track": [[20.90, 68.50], [21.05, 68.70]]
+                    "track": [[20.90, 68.10], [20.70, 68.30], [20.50, 68.50]]
                 }
             ]
         }

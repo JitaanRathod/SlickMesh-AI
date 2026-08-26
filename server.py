@@ -49,72 +49,80 @@ def get_regional_presets(region: str) -> Dict[str, Any]:
     """Provides regional reference coordinates for Indian maritime zones (all offshore in open water)."""
     presets = {
         "mumbai": {
-            "lat": 19.42, "lon": 71.35,  # Mumbai High Offshore Oilfield (~100km offshore)
+            "lat": 19.42, "lon": 71.35,  # Mumbai High Spill Centroid (T=0 Detection)
+            # Drift brings origin to ~ (19.54, 71.21)
             "candidates": [
                 {
                     "mmsi": "419001111", "imo": "9345678", "name": "Al-Bahar Crude", "vessel_type": "Crude Oil Tanker",
-                    "min_dist_nm": 1.8, "hours": 3.5, "heading_delta": 8.0, "sog": 2.1, "intersects": True, "continuity": "continuous",
-                    "track": [[19.00, 71.10], [19.20, 71.22], [19.35, 71.30], [19.50, 71.38]]
+                    "min_dist_nm": 1.2, "hours": 3.5, "heading_delta": 8.0, "sog": 2.1, "intersects": True, "continuity": "continuous",
+                    # Track sails directly through the yellow backtracked origin circle at (19.54, 71.21)
+                    "track": [[19.10, 71.05], [19.35, 71.15], [19.54, 71.21], [19.75, 71.28]]
                 },
                 {
                     "mmsi": "419002222", "imo": "9223344", "name": "Konkan Star", "vessel_type": "Chemical Tanker",
-                    "min_dist_nm": 4.2, "hours": 7.0, "heading_delta": 22.0, "sog": 8.5, "intersects": True, "continuity": "continuous",
-                    "track": [[18.90, 70.90], [19.15, 71.05], [19.35, 71.18], [19.60, 71.30]]
+                    "min_dist_nm": 6.8, "hours": 7.0, "heading_delta": 22.0, "sog": 8.5, "intersects": False, "continuity": "continuous",
+                    # Parallel fairway 7 nm to the west
+                    "track": [[19.00, 70.85], [19.25, 70.95], [19.50, 71.05], [19.75, 71.15]]
                 },
                 {
                     "mmsi": "419003333", "imo": "9112233", "name": "Mumbai Pioneer", "vessel_type": "Cargo",
-                    "min_dist_nm": 14.5, "hours": 14.0, "heading_delta": 55.0, "sog": 14.2, "intersects": False, "continuity": "continuous",
-                    "track": [[18.80, 71.85], [19.15, 71.90], [19.50, 71.95], [19.85, 72.00]]
+                    "min_dist_nm": 16.5, "hours": 14.0, "heading_delta": 55.0, "sog": 14.2, "intersects": False, "continuity": "continuous",
+                    # Distant lane 16 nm to the east
+                    "track": [[18.90, 71.65], [19.20, 71.70], [19.50, 71.75], [19.80, 71.80]]
                 }
             ]
         },
         "bob": {
-            "lat": 16.15, "lon": 82.55,  # Krishna-Godavari Deepwater Basin (~40km offshore)
+            "lat": 16.15, "lon": 82.55,  # KG Basin Spill Centroid
+            # Drift brings origin to ~ (16.03, 82.70)
             "candidates": [
                 {
                     "mmsi": "419004444", "imo": "9445566", "name": "Bay Explorer", "vessel_type": "Oil Tanker",
-                    "min_dist_nm": 2.4, "hours": 4.0, "heading_delta": 10.0, "sog": 1.8, "intersects": True, "continuity": "continuous",
-                    "track": [[15.70, 82.75], [15.90, 82.65], [16.10, 82.55], [16.30, 82.45]]
+                    "min_dist_nm": 1.5, "hours": 4.0, "heading_delta": 10.0, "sog": 1.8, "intersects": True, "continuity": "continuous",
+                    # Track sails directly through the yellow backtracked origin circle at (16.03, 82.70)
+                    "track": [[15.60, 82.85], [15.85, 82.78], [16.03, 82.70], [16.25, 82.60]]
                 },
                 {
                     "mmsi": "419005555", "imo": "9556677", "name": "Godavari Pride", "vessel_type": "Bulk Carrier",
-                    "min_dist_nm": 12.0, "hours": 9.5, "heading_delta": 45.0, "sog": 12.0, "intersects": False, "continuity": "gapped",
-                    "track": [[15.60, 83.10], [15.85, 82.95], [16.10, 82.80], [16.35, 82.65]]
+                    "min_dist_nm": 14.0, "hours": 9.5, "heading_delta": 45.0, "sog": 12.0, "intersects": False, "continuity": "gapped",
+                    "track": [[15.50, 83.15], [15.80, 83.05], [16.10, 82.95], [16.40, 82.85]]
                 }
             ]
         },
         "dark_ship": {
-            "lat": 16.50, "lon": 72.00,  # Ratnagiri Offshore Deep Channel
+            "lat": 16.50, "lon": 72.00,
             "candidates": [
                 {
                     "mmsi": "419099999", "imo": "9998888", "name": "Shadow Trader", "vessel_type": "Chemical Tanker",
-                    "min_dist_nm": 2.1, "hours": 4.0, "heading_delta": 10.0, "sog": 1.2, "intersects": True, "continuity": "gapped",
-                    "track": [[16.10, 71.70], [16.30, 71.85], [16.50, 72.00], [16.70, 72.15]]
+                    "min_dist_nm": 1.4, "hours": 4.0, "heading_delta": 10.0, "sog": 1.2, "intersects": True, "continuity": "gapped",
+                    "track": [[16.10, 71.75], [16.35, 71.88], [16.55, 71.95], [16.80, 72.05]]
                 },
                 {
                     "mmsi": "419088888", "imo": "9887766", "name": "Kolkata Express", "vessel_type": "Bulk Carrier",
-                    "min_dist_nm": 16.5, "hours": 12.0, "heading_delta": 55.0, "sog": 13.0, "intersects": False, "continuity": "continuous",
+                    "min_dist_nm": 18.5, "hours": 12.0, "heading_delta": 55.0, "sog": 13.0, "intersects": False, "continuity": "continuous",
                     "track": [[16.00, 72.40], [16.30, 72.45], [16.60, 72.50], [16.90, 72.55]]
                 }
             ]
         },
         "default": {
-            "lat": 20.48, "lon": 67.52,  # Gulf of Khambhat / Saurashtra Offshore Lane
+            "lat": 20.48, "lon": 67.52,
+            # Drift brings origin to ~ (20.35, 67.30)
             "candidates": [
                 {
                     "mmsi": "419001234", "imo": "9123456", "name": "MV Ocean Star", "vessel_type": "Tanker",
-                    "min_dist_nm": 3.2, "hours": 5.1, "heading_delta": 12.0, "sog": 1.4, "intersects": True, "continuity": "continuous",
-                    "track": [[19.70, 66.40], [19.85, 66.70], [20.00, 66.90], [20.15, 67.10]]
+                    "min_dist_nm": 1.8, "hours": 5.1, "heading_delta": 12.0, "sog": 1.4, "intersects": True, "continuity": "continuous",
+                    # Track sails directly through the yellow backtracked origin circle at (20.35, 67.30)
+                    "track": [[19.90, 67.10], [20.15, 67.20], [20.35, 67.30], [20.60, 67.45]]
                 },
                 {
                     "mmsi": "419005678", "imo": "9007654", "name": "MT Gujarat Pearl", "vessel_type": "Cargo",
-                    "min_dist_nm": 14.6, "hours": 9.8, "heading_delta": 41.0, "sog": 9.2, "intersects": False, "continuity": "gapped",
-                    "track": [[21.00, 67.20], [20.80, 67.40], [20.60, 67.60], [20.40, 67.80]]
+                    "min_dist_nm": 15.2, "hours": 9.8, "heading_delta": 41.0, "sog": 9.2, "intersects": False, "continuity": "gapped",
+                    "track": [[21.00, 67.60], [20.80, 67.65], [20.60, 67.70], [20.40, 67.75]]
                 },
                 {
                     "mmsi": "419009876", "imo": "9876543", "name": "Deepsea Sentinel", "vessel_type": "Container Ship",
                     "min_dist_nm": 22.0, "hours": 16.5, "heading_delta": 65.0, "sog": 16.0, "intersects": False, "continuity": "continuous",
-                    "track": [[20.90, 68.10], [20.70, 68.30], [20.50, 68.50]]
+                    "track": [[20.90, 68.10], [20.70, 68.20], [20.50, 68.30]]
                 }
             ]
         }
@@ -175,23 +183,38 @@ def execute_integrated_pipeline(
         backtrack_hours=float(backtrack_hours)
     )
 
-    # Build Candidate Vessels for Contract C
+    def haversine_nm(lat1, lon1, lat2, lon2):
+        R_nm = 3440.065
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+        a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+        return 2 * R_nm * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    # Dynamically compute genuine geometric intersection from track waypoints & origin
+    origin_radius_nm = radius_km / 1.852
     candidates_list = []
     for c_raw in region_info["candidates"]:
+        track_points = c_raw["track"]
+        computed_min_dist_nm = min(
+            haversine_nm(pt[0], pt[1], origin_lat, origin_lon)
+            for pt in track_points
+        )
+        computed_intersects = computed_min_dist_nm <= origin_radius_nm
+
         cand = CandidateVessel(
             mmsi=c_raw["mmsi"],
             imo=c_raw.get("imo"),
             name=c_raw["name"],
             vessel_type=c_raw["vessel_type"],
-            position=Position(latitude=c_raw["track"][-1][0], longitude=c_raw["track"][-1][1]),
-            track=c_raw["track"],
+            position=Position(latitude=track_points[-1][0], longitude=track_points[-1][1]),
+            track=track_points,
             evidence=VesselEvidence(
-                min_distance_nm=c_raw["min_dist_nm"],
-                hours_since_passage=c_raw["hours"],
-                heading_delta_deg=c_raw["heading_delta"],
-                sog_at_closest_knots=c_raw["sog"],
-                intersects_source_region=c_raw["intersects"],
-                track_continuity=c_raw["continuity"]
+                min_distance_nm=round(computed_min_dist_nm, 2),
+                hours_since_passage=c_raw.get("hours", 4.0),
+                heading_delta_deg=c_raw.get("heading_delta", 15.0),
+                sog_at_closest_knots=c_raw.get("sog", 10.0),
+                intersects_source_region=computed_intersects,
+                track_continuity=c_raw.get("continuity", "continuous")
             )
         )
         candidates_list.append(cand)

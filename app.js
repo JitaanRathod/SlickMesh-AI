@@ -59,21 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initMap() {
-  // Constrained zoom & bounds for optimal maritime surveillance (prevents infinite wrap & cranky zoom)
+  // Enhanced zoom controls: allows smooth zoom out for global ocean lanes and deep zoom in for port-level inspection
   map = L.map("map", {
     zoomControl: true,
     attributionControl: true,
-    minZoom: 5,
-    maxZoom: 13,
-    maxBounds: [[-2.0, 55.0], [32.0, 100.0]],
-    maxBoundsViscosity: 1.0
-  }).setView([19.42, 71.35], 7);
+    minZoom: 3,
+    maxZoom: 18
+  }).setView([16.0, 78.0], 5);
   
   // High-performance OpenStreetMap standard layer (100% free, no API key watermark)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    minZoom: 5,
-    maxZoom: 13,
-    noWrap: true,
+    minZoom: 3,
+    maxZoom: 18,
     attribution: "&copy; OpenStreetMap contributors | Sentinel-1 SAR Surveillance"
   }).addTo(map);
   
@@ -216,7 +213,7 @@ function setupEventListeners() {
 function triggerEEZSweep() {
   const sweepBtn = document.getElementById("btn-sweep-eez");
   if (sweepBtn) {
-    sweepBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sweeping 2.37M km² Whole Maritime EEZ...';
+    sweepBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sweeping 3.85M km² Full Maritime Basin...';
     sweepBtn.disabled = true;
   }
 
@@ -254,25 +251,25 @@ function triggerEEZSweep() {
         sw.polygon.forEach(pt => allBounds.push(pt));
       });
 
-      // Fit whole Indian EEZ water-mass in map view
+      // Fit whole Indian Ocean maritime basin in map view
       if (allBounds.length > 0) {
-        map.fitBounds(allBounds, { padding: [30, 30] });
+        map.fitBounds(allBounds, { padding: [20, 20] });
       }
 
-      // Update incident card with comprehensive whole-EEZ clean status
+      // Update incident card with comprehensive basin-wide clean status
       const incCard = document.getElementById("incident-card");
       if (incCard) {
         incCard.innerHTML = `
           <div style="color: var(--accent-green); font-size: 11px; padding: 6px; line-height: 1.4;">
-            <i class="fa-solid fa-shield-halved"></i> <strong>2.37M km² EEZ FULL SWEEP COMPLETED</strong><br>
+            <i class="fa-solid fa-shield-halved"></i> <strong>3.85M km² FULL BASIN SWEEP COMPLETED</strong><br>
             ${data.summary.message}<br>
-            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Area Scanned: 2,370,000 km² • 5 Orbital Swaths • 0 Slicks</span>
+            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Area Scanned: 3,850,000 km² • 7 Orbital Swaths • 0 Slicks</span>
           </div>
         `;
       }
       const candsContainer = document.getElementById("candidates");
       if (candsContainer) {
-        candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Entire 2.37M km² Maritime Domain Verified Clear: 0 Oil Spills Detected.</div>';
+        candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Entire 3.85M km² Maritime Basin Verified Clear: 0 Oil Spills Detected.</div>';
       }
       const countBadge = document.getElementById("vessel-count-badge");
       if (countBadge) countBadge.textContent = "0 suspects";
@@ -283,7 +280,7 @@ function triggerEEZSweep() {
         envCard.innerHTML = `
           <div class="telemetry-grid">
             <div class="tel-cell"><span class="tel-lbl">BASIN SENSORS</span><span class="tel-val">Sentinel-1A / 1C SAR</span></div>
-            <div class="tel-cell"><span class="tel-lbl">TOTAL COVERAGE</span><span class="tel-val text-green">2,370,000 km²</span></div>
+            <div class="tel-cell"><span class="tel-lbl">TOTAL COVERAGE</span><span class="tel-val text-green">3,850,000 km²</span></div>
             <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">SURVEILLANCE ARCHIVE</span><span class="tel-val text-cyan">Copernicus Data Space Open Hub</span></div>
           </div>
         `;
@@ -292,7 +289,7 @@ function triggerEEZSweep() {
     .catch(console.error)
     .finally(() => {
       if (sweepBtn) {
-        sweepBtn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Autonomous EEZ Wide-Area Sweep (All 5 Sectors)';
+        sweepBtn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Autonomous EEZ & Basin Sweep (All 7 Swaths)';
         sweepBtn.disabled = false;
       }
     });

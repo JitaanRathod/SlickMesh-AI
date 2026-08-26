@@ -12,12 +12,19 @@ import argparse
 from datetime import datetime, timezone
 import urllib.request
 from typing import Dict, Any, List, Optional
+from pathlib import Path
 
 # Add phase subdirectories to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "phase1-satellite")))
+ROOT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT_DIR))
+sys.path.insert(0, str(ROOT_DIR / "phase1-satellite"))
+sys.path.insert(0, str(ROOT_DIR / "phase2-ais-gis"))
+sys.path.insert(0, str(ROOT_DIR / "phase3-attribution"))
 
 from detect import run_detection
 from fetch_sentinel1 import fetch_sentinel1_sar_patch
+from engine import AttributionEngine
+from models import BacktrackInput, SourceRegion, CandidateVessel, Position, VesselEvidence
 
 
 def fetch_open_meteo_environment(lat: float, lon: float) -> Dict[str, Any]:
@@ -25,7 +32,7 @@ def fetch_open_meteo_environment(lat: float, lon: float) -> Dict[str, Any]:
     Fetches live marine environmental data (wind/ocean current) from Open-Meteo API.
     Fallback to realistic regional defaults if network is unavailable.
     """
-    print(f"[Phase 4a Env] Fetching environmental wind/current feed near Lat: {lat}, Lon: {lon}...")
+    print(f"[Phase 4a Env] Fetching environmental wind/current feed near Lat: {lat:.2f}, Lon: {lon:.2f}...")
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=wind_speed_10m,wind_direction_10m"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -35,7 +42,6 @@ def fetch_open_meteo_environment(lat: float, lon: float) -> Dict[str, Any]:
             wind_speed = current.get("wind_speed_10m", 5.4)
             wind_dir = current.get("wind_direction_10m", 72)
             
-            # Convert wind direction & speed to current vector components (m/s)
             rad = math.radians(wind_dir)
             current_u = round(0.18 * math.cos(rad), 2)
             current_v = round(0.18 * math.sin(rad), 2)
@@ -58,103 +64,208 @@ def fetch_open_meteo_environment(lat: float, lon: float) -> Dict[str, Any]:
         }
 
 
-def generate_ais_candidate_vessels(lat: float, lon: float) -> List[Dict[str, Any]]:
-    """
-    Generates candidate vessel AIS trajectories near target spill origin.
-    """
-    return [
-        {
-            "name": "MV Ocean Star",
-            "mmsi": "419001234",
-            "type": "Tanker",
-            "confidence": 84,
-            "reason": "Passed within 3.2 nm of the backtracked source region 5 hours before detection.",
-            "position": [round(lon - 0.42, 4), round(lat - 0.33, 4)],  # [lon, lat] for Leaflet
-            "track": [
-                [round(lon - 0.42, 4), round(lat - 0.33, 4)],
-                [round(lon - 0.62, 4), round(lat - 0.48, 4)],
-                [round(lon - 0.82, 4), round(lat - 0.63, 4)],
-                [round(lon - 1.12, 4), round(lat - 0.78, 4)]
+def get_scenario_data(scenario_name: str) -> Dict[str, Any]:
+    """Returns regional scenario presets tuned for Indian waters."""
+    scenarios = {
+        "mumbai": {
+            "name": "Arabian Sea (Mumbai High Offshore)",
+            "lat": 19.65, "lon": 72.38,
+            "image": "real_grande_america_spill.jpg",
+            "candidates": [
+                {
+                    "mmsi": "419001111", "imo": "9345678", "name": "Al-Bahar Crude", "vessel_type": "Crude Oil Tanker",
+                    "min_dist_nm": 1.8, "hours": 3.5, "heading_delta": 8.0, "sog": 2.1, "intersects": True, "continuity": "continuous",
+                    "track": [[19.30, 71.90], [19.45, 72.10], [19.55, 72.25], [19.65, 72.38]]
+                },
+                {
+                    "mmsi": "419002222", "imo": "9223344", "name": "Konkan Star", "vessel_type": "Chemical Tanker",
+                    "min_dist_nm": 4.2, "hours": 7.0, "heading_delta": 22.0, "sog": 8.5, "intersects": True, "continuity": "continuous",
+                    "track": [[19.10, 71.80], [19.35, 72.05], [19.50, 72.20], [19.70, 72.45]]
+                },
+                {
+                    "mmsi": "419003333", "imo": "9112233", "name": "Mumbai Pioneer", "vessel_type": "Cargo",
+                    "min_dist_nm": 14.5, "hours": 14.0, "heading_delta": 55.0, "sog": 14.2, "intersects": False, "continuity": "continuous",
+                    "track": [[19.80, 72.70], [19.90, 72.85], [20.00, 73.00]]
+                }
             ]
         },
-        {
-            "name": "MT Arabian Trader",
-            "mmsi": "419005678",
-            "type": "Cargo",
-            "confidence": 46,
-            "reason": "Traversed outer boundary of source corridor 11 hours prior to detection.",
-            "position": [round(lon + 0.35, 4), round(lat + 0.25, 4)],
-            "track": [
-                [round(lon + 0.35, 4), round(lat + 0.25, 4)],
-                [round(lon + 0.55, 4), round(lat + 0.45, 4)],
-                [round(lon + 0.75, 4), round(lat + 0.65, 4)]
+        "kg_basin": {
+            "name": "Bay of Bengal (Krishna-Godavari Basin)",
+            "lat": 16.15, "lon": 82.28,
+            "image": "real_grande_america_spill.jpg",
+            "candidates": [
+                {
+                    "mmsi": "419004444", "imo": "9445566", "name": "Bay Explorer", "vessel_type": "Oil Tanker",
+                    "min_dist_nm": 2.4, "hours": 4.0, "heading_delta": 10.0, "sog": 1.8, "intersects": True, "continuity": "continuous",
+                    "track": [[15.80, 81.90], [15.95, 82.10], [16.10, 82.25], [16.20, 82.35]]
+                },
+                {
+                    "mmsi": "419005555", "imo": "9556677", "name": "Godavari Pride", "vessel_type": "Bulk Carrier",
+                    "min_dist_nm": 12.0, "hours": 9.5, "heading_delta": 45.0, "sog": 12.0, "intersects": False, "continuity": "gapped",
+                    "track": [[16.30, 82.60], [16.45, 82.80], [16.60, 83.00]]
+                }
             ]
         },
-        {
-            "name": "Deepsea Sentinel",
-            "mmsi": "419009876",
-            "type": "Container Ship",
-            "confidence": 22,
-            "reason": "Distant transit 18 nm outside backtracked source circle.",
-            "position": [round(lon - 0.85, 4), round(lat + 0.65, 4)],
-            "track": [
-                [round(lon - 0.85, 4), round(lat + 0.65, 4)],
-                [round(lon - 0.95, 4), round(lat + 0.85, 4)]
+        "dark_ship": {
+            "name": "Arabian Sea (AIS Spoofing / Blackout Scenario)",
+            "lat": 17.50, "lon": 72.20,
+            "image": "real_grande_america_spill.jpg",
+            "candidates": [
+                {
+                    "mmsi": "419099999", "imo": "9998888", "name": "Shadow Trader", "vessel_type": "Chemical Tanker",
+                    "min_dist_nm": 2.1, "hours": 4.0, "heading_delta": 10.0, "sog": 1.2, "intersects": True, "continuity": "gapped",
+                    "track": [[17.30, 72.00], [17.65, 72.35]]
+                },
+                {
+                    "mmsi": "419088888", "imo": "9887766", "name": "Kolkata Express", "vessel_type": "Bulk Carrier",
+                    "min_dist_nm": 16.5, "hours": 12.0, "heading_delta": 55.0, "sog": 13.0, "intersects": False, "continuity": "continuous",
+                    "track": [[17.20, 71.90], [17.80, 72.50]]
+                }
+            ]
+        },
+        "alang": {
+            "name": "Gulf of Khambhat (Alang Offshore)",
+            "lat": 20.48, "lon": 67.52,
+            "image": "real_grande_america_spill.jpg",
+            "candidates": [
+                {
+                    "mmsi": "419001234", "imo": "9123456", "name": "MV Ocean Star", "vessel_type": "Tanker",
+                    "min_dist_nm": 3.2, "hours": 5.1, "heading_delta": 12.0, "sog": 1.4, "intersects": True, "continuity": "continuous",
+                    "track": [[19.70, 66.40], [19.85, 66.70], [20.00, 66.90], [20.15, 67.10]]
+                },
+                {
+                    "mmsi": "419005678", "imo": "9007654", "name": "MT Gujarat Pearl", "vessel_type": "Cargo",
+                    "min_dist_nm": 14.6, "hours": 9.8, "heading_delta": 41.0, "sog": 9.2, "intersects": False, "continuity": "gapped",
+                    "track": [[21.40, 67.20], [21.30, 67.35], [21.20, 67.55], [21.10, 67.70]]
+                },
+                {
+                    "mmsi": "419009876", "imo": "9876543", "name": "Deepsea Sentinel", "vessel_type": "Container Ship",
+                    "min_dist_nm": 22.0, "hours": 16.5, "heading_delta": 65.0, "sog": 16.0, "intersects": False, "continuity": "continuous",
+                    "track": [[20.90, 68.50], [21.05, 68.70]]
+                }
             ]
         }
-    ]
+    }
+    key = scenario_name.lower().replace("-", "_")
+    return scenarios.get(key, scenarios["alang"])
 
 
 def run_master_pipeline(
-    image_path: Optional[str] = "real_grande_america_spill.jpg",
+    scenario: str = "alang",
+    image_path: Optional[str] = None,
     auto_fetch: bool = False,
-    ref_lat: float = 13.08,
-    ref_lon: float = 80.27,
     wind_speed: float = 5.4,
-    output_path: str = "dashboard/incident.json"
+    backtrack_hours: int = 24,
+    output_path: str = "dashboard/incident.json",
+    show_table: bool = True
 ) -> Dict[str, Any]:
-    """
-    Executes master automated pipeline:
-    Auto-Fetch / Image -> Phase 1 -> Phase 4a -> Phase 2 -> Phase 3 -> Contract E
-    """
-    print("=" * 70)
-    print("      SIH26143 SLICKMESH-AI — MASTER END-TO-END PIPELINE       ")
-    print("=" * 70)
+    """Executes full integrated pipeline."""
+    sc_data = get_scenario_data(scenario)
+    ref_lat = sc_data["lat"]
+    ref_lon = sc_data["lon"]
+    resolved_img = image_path or sc_data["image"]
 
-    # Step 1: Auto-fetch fresh Sentinel-1 scene if requested
+    print("=" * 80)
+    print(f"      SIH26143 SLICKMESH-AI — MASTER PIPELINE [{sc_data['name'].upper()}]")
+    print("=" * 80)
+
+    # 1. Satellite Scene Fetching / Loading
     if auto_fetch:
-        image_path = fetch_sentinel1_sar_patch(lat=ref_lat, lon=ref_lon)
+        print("\n[STEP 1/5] Auto-fetching fresh Sentinel-1 SAR scene from Copernicus...")
+        resolved_img = fetch_sentinel1_sar_patch(lat=ref_lat, lon=ref_lon)
 
-    # Step 2: Phase 1 — Satellite SAR Detection (detect.py)
-    print("\n[STEP 1/5] Executing Phase 1: Satellite SAR Oil-Spill Detection...")
+    # 2. Phase 1 — Satellite SAR Detection
+    print(f"\n[STEP 2/5] Phase 1: Satellite SAR U-Net Segmentation (Target: Lat {ref_lat:.2f}, Lon {ref_lon:.2f})...")
+    img_exists = os.path.exists(resolved_img) if resolved_img else False
     spill_output = run_detection(
-        image_path=image_path,
-        synthetic=(image_path is None or not os.path.exists(image_path)),
+        image_path=resolved_img if img_exists else None,
+        synthetic=not img_exists,
         ref_lat=ref_lat,
         ref_lon=ref_lon,
         wind_speed_ms=wind_speed,
         output_path="phase1-satellite/spill_detection_output.json"
     )
+    print(f"  * Detected Spill ID: {spill_output.spill_id} | Area: {spill_output.area_km2} km² | Confidence: {int(spill_output.confidence * 100)}%")
 
-    # Step 3: Phase 4a — Environmental Weather Feed
-    print("\n[STEP 2/5] Executing Phase 4a: Environmental Wind & Current Ingestion...")
+    # 3. Phase 4a — Environmental Feed
+    print("\n[STEP 3/5] Phase 4a: Live Environmental Weather & Current Feed...")
     env_output = fetch_open_meteo_environment(ref_lat, ref_lon)
+    print(f"  * Wind: {env_output['wind_speed_ms']} m/s @ {env_output['wind_direction_deg']}° | Current: u={env_output['current_u_ms']}, v={env_output['current_v_ms']} m/s")
 
-    # Step 4: Phase 2 — AIS Backtracking Source Region Estimation
-    print("\n[STEP 3/5] Executing Phase 2: AIS Reverse Drift Backtracking...")
-    source_region = {
-        "latitude": spill_output.centroid.lat,
-        "longitude": spill_output.centroid.lon,
-        "radius_km": 22.0,
-        "backtrack_hours": 24
-    }
+    # 4. Phase 2 — AIS Reverse Drift Backtracking
+    print(f"\n[STEP 4/5] Phase 2: Hydrodynamic Drift Backtracking ({backtrack_hours}h lookback)...")
+    wind_rad = math.radians((env_output["wind_direction_deg"] + 180) % 360)
+    wind_u = env_output["wind_speed_ms"] * math.sin(wind_rad)
+    wind_v = env_output["wind_speed_ms"] * math.cos(wind_rad)
 
-    # Step 5: Phase 3 — Attribution Scoring & Reason Generation
-    print("\n[STEP 4/5] Executing Phase 3: Vessel Evidence Fusion & Ranking...")
-    vessels = generate_ais_candidate_vessels(ref_lat, ref_lon)
+    drift_u = env_output["current_u_ms"] + 0.03 * wind_u
+    drift_v = env_output["current_v_ms"] + 0.03 * wind_v
 
-    # Step 6: Assemble Canonical Contract E Payload for Dashboard
-    print("\n[STEP 5/5] Assembling Canonical Contract E Payload (incident.json)...")
+    disp_u_m = -drift_u * (backtrack_hours * 3600)
+    disp_v_m = -drift_v * (backtrack_hours * 3600)
+
+    lat_deg_per_m = 1.0 / 111320.0
+    lon_deg_per_m = 1.0 / (111320.0 * math.cos(math.radians(spill_output.centroid.lat)))
+
+    origin_lat = round(spill_output.centroid.lat + disp_v_m * lat_deg_per_m, 4)
+    origin_lon = round(spill_output.centroid.lon + disp_u_m * lon_deg_per_m, 4)
+    radius_km = round(10.0 + (0.5 * env_output["wind_speed_ms"] * backtrack_hours) / 10.0, 1)
+
+    source_region_model = SourceRegion(
+        latitude=origin_lat,
+        longitude=origin_lon,
+        radius_km=radius_km,
+        backtrack_hours=float(backtrack_hours)
+    )
+    print(f"  * Inferred Origin: Lat {origin_lat:.4f}, Lon {origin_lon:.4f} (Uncertainty Buffer: {radius_km} km)")
+
+    # Construct Contract C Candidate Models
+    candidates_list = []
+    for c_raw in sc_data["candidates"]:
+        cand = CandidateVessel(
+            mmsi=c_raw["mmsi"],
+            imo=c_raw.get("imo"),
+            name=c_raw["name"],
+            vessel_type=c_raw["vessel_type"],
+            position=Position(latitude=c_raw["track"][-1][0], longitude=c_raw["track"][-1][1]),
+            track=c_raw["track"],
+            evidence=VesselEvidence(
+                min_distance_nm=c_raw["min_dist_nm"],
+                hours_since_passage=c_raw["hours"],
+                heading_delta_deg=c_raw["heading_delta"],
+                sog_at_closest_knots=c_raw["sog"],
+                intersects_source_region=c_raw["intersects"],
+                track_continuity=c_raw["continuity"]
+            )
+        )
+        candidates_list.append(cand)
+
+    backtrack_input = BacktrackInput(source_region=source_region_model, candidates=candidates_list)
+
+    # 5. Phase 3 — Multi-Evidence Attribution Engine
+    print("\n[STEP 5/5] Phase 3: Evidence Fusion & Ranked Vessel Attribution...")
+    engine = AttributionEngine()
+    attribution_output = engine.process(backtrack_input, spill_id=spill_output.spill_id)
+
+    # Assemble Contract E
+    vessels_e = []
+    cand_map = {c.mmsi: c for c in candidates_list}
+    for rv in attribution_output.ranked_vessels:
+        c_obj = cand_map.get(rv.mmsi)
+        if c_obj:
+            pos_lon_lat = [round(c_obj.position.longitude, 4), round(c_obj.position.latitude, 4)]
+            track_lon_lat = [[round(pt[1], 4), round(pt[0], 4)] for pt in c_obj.track]
+            vessels_e.append({
+                "name": rv.name,
+                "mmsi": rv.mmsi,
+                "type": rv.vessel_type,
+                "confidence": rv.confidence,
+                "reason": rv.reason,
+                "position": pos_lon_lat,
+                "track": track_lon_lat,
+                "sub_scores": rv.sub_scores.model_dump()
+            })
+
     contract_e = {
         "incident": {
             "id": spill_output.spill_id,
@@ -164,43 +275,56 @@ def run_master_pipeline(
             "polygon": spill_output.polygon
         },
         "environment": env_output,
-        "source_region": source_region,
-        "vessels": vessels
+        "source_region": {
+            "latitude": origin_lat,
+            "longitude": origin_lon,
+            "radius_km": radius_km,
+            "backtrack_hours": backtrack_hours
+        },
+        "vessels": vessels_e
     }
 
-    # Write output file
-    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
-    json_bytes = json.dumps(contract_e, indent=2)
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(json_bytes)
+    # Save Contract E
+    for dest in (output_path, "incident.json", "dashboard/incident.json"):
+        os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+        with open(dest, "w", encoding="utf-8") as f:
+            json.dump(contract_e, f, indent=2)
 
-    # Also write to root incident.json for static dashboard fallback
-    with open("incident.json", "w", encoding="utf-8") as f:
-        f.write(json_bytes)
+    if show_table:
+        print("\n" + engine.render_ascii_table(attribution_output))
 
-    print("\n" + "=" * 70)
-    print(f" PIPELINE SUCCESS: Merged Contract E written to: {output_path}")
-    print(" Leaflet Dashboard is ready to render incident map!")
-    print("=" * 70)
+    print("=" * 80)
+    print(f" PIPELINE SUCCESS: Merged incident saved to: {output_path}")
+    print(" Dashboard is ready for visualization!")
+    print("=" * 80)
 
     return contract_e
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Master Pipeline Orchestrator for SIH26143.")
-    parser.add_argument("--image", type=str, default="real_grande_america_spill.jpg", help="Path to input SAR image")
-    parser.add_argument("--auto-fetch", action="store_true", help="Auto-download fresh Sentinel-1 scene for target lat/lon")
-    parser.add_argument("--ref-lat", type=float, default=13.08, help="Target reference latitude (e.g. 13.08 N for Chennai)")
-    parser.add_argument("--ref-lon", type=float, default=80.27, help="Target reference longitude (e.g. 80.27 E for Chennai)")
+    parser.add_argument("--scenario", type=str, default="alang", choices=["alang", "mumbai", "kg_basin", "dark_ship"], help="Pre-configured regional test scenario")
+    parser.add_argument("--image", type=str, default=None, help="Path to input SAR image")
+    parser.add_argument("--auto-fetch", action="store_true", help="Auto-download fresh Sentinel-1 scene from Copernicus API")
     parser.add_argument("--wind-speed", type=float, default=5.4, help="Surface wind speed in m/s")
-    parser.add_argument("--output", type=str, default="dashboard/incident.json", help="Target Contract E destination JSON")
+    parser.add_argument("--backtrack-hours", type=int, default=24, help="Backtracking simulation window (hours)")
+    parser.add_argument("--output", type=str, default="dashboard/incident.json", help="Contract E destination JSON path")
+    parser.add_argument("--table", action="store_true", default=True, help="Display formatted ASCII ranking table in terminal")
+    parser.add_argument("--serve", action="store_true", help="Launch FastAPI web dashboard immediately after execution")
 
     args = parser.parse_args()
-    run_master_pipeline(
+    result = run_master_pipeline(
+        scenario=args.scenario,
         image_path=args.image,
         auto_fetch=args.auto_fetch,
-        ref_lat=args.ref_lat,
-        ref_lon=args.ref_lon,
         wind_speed=args.wind_speed,
-        output_path=args.output
+        backtrack_hours=args.backtrack_hours,
+        output_path=args.output,
+        show_table=args.table
     )
+
+    if args.serve:
+        import uvicorn
+        print("\nLaunching Live Dashboard on http://127.0.0.1:8000 ...")
+        uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=False)
+

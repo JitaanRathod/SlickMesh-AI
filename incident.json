@@ -1,136 +1,171 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-08-25T18:05:02Z",
-    "area_km2": 66.35,
-    "confidence": 0.97,
+    "detected_at": "2026-08-26T14:50:03Z",
+    "area_km2": 10.63,
+    "confidence": 0.98,
     "polygon": [
       [
-        80.3273,
-        13.1372
+        72.4049,
+        19.6865
       ],
       [
-        80.2668,
-        13.1228
+        72.3891,
+        19.6775
       ],
       [
-        80.246,
-        13.0273
+        72.3886,
+        19.6694
       ],
       [
-        80.2732,
-        13.0255
+        72.3958,
+        19.6577
       ],
       [
-        80.2806,
-        13.0786
+        72.4116,
+        19.6541
       ],
       [
-        80.2903,
-        13.0246
+        72.4226,
+        19.6608
       ],
       [
-        80.3278,
-        13.0237
+        72.4259,
+        19.6721
       ],
       [
-        80.3028,
-        13.0926
+        72.4187,
+        19.6824
       ],
       [
-        80.3273,
-        13.1372
+        72.4049,
+        19.6865
       ]
     ]
   },
   "environment": {
-    "current_u_ms": 0.18,
-    "current_v_ms": 0.07,
-    "wind_speed_ms": 5.4,
-    "wind_direction_deg": 72,
-    "source_model": "Copernicus / Open-Meteo Fallback"
+    "current_u_ms": 0.12,
+    "current_v_ms": -0.15,
+    "wind_speed_ms": 6.2,
+    "wind_direction_deg": 240.0,
+    "source_model": "Copernicus Marine / Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 13.0755,
-    "longitude": 80.2895,
-    "radius_km": 22.0,
-    "backtrack_hours": 24
+    "latitude": 19.7035,
+    "longitude": 72.2334,
+    "radius_km": 15.6,
+    "backtrack_hours": 18
   },
   "vessels": [
     {
-      "name": "MV Ocean Star",
-      "mmsi": "419001234",
-      "type": "Tanker",
-      "confidence": 84,
-      "reason": "Passed within 3.2 nm of the backtracked source region 5 hours before detection.",
+      "name": "Al-Bahar Crude",
+      "mmsi": "419001111",
+      "type": "Crude Oil Tanker",
+      "confidence": 90,
+      "reason": "Tanker track intersected the backtracked source region 3.5 hours before detection at slow speed (2.1 kts).",
       "position": [
-        79.85,
-        12.75
+        72.38,
+        19.65
       ],
       "track": [
         [
-          79.85,
-          12.75
+          71.9,
+          19.3
         ],
         [
-          79.65,
-          12.6
+          72.1,
+          19.45
         ],
         [
-          79.45,
-          12.45
+          72.25,
+          19.55
         ],
         [
-          79.15,
-          12.3
+          72.38,
+          19.65
         ]
-      ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.968,
+        "distance": 0.836,
+        "time_consistency": 0.831,
+        "track_continuity": 0.9,
+        "heading": 0.956,
+        "speed": 0.9,
+        "vessel_type": 1.0
+      }
     },
     {
-      "name": "MT Arabian Trader",
-      "mmsi": "419005678",
+      "name": "Konkan Star",
+      "mmsi": "419002222",
+      "type": "Chemical Tanker",
+      "confidence": 79,
+      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 4.2 nm).",
+      "position": [
+        72.45,
+        19.7
+      ],
+      "track": [
+        [
+          71.8,
+          19.1
+        ],
+        [
+          72.05,
+          19.35
+        ],
+        [
+          72.2,
+          19.5
+        ],
+        [
+          72.45,
+          19.7
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.925,
+        "distance": 0.616,
+        "time_consistency": 0.662,
+        "track_continuity": 0.9,
+        "heading": 0.878,
+        "speed": 0.65,
+        "vessel_type": 1.0
+      }
+    },
+    {
+      "name": "Mumbai Pioneer",
+      "mmsi": "419003333",
       "type": "Cargo",
-      "confidence": 46,
-      "reason": "Traversed outer boundary of source corridor 11 hours prior to detection.",
+      "confidence": 33,
+      "reason": "Passed outside the origin corridor at 14.5 nm minimum approach distance.",
       "position": [
-        80.62,
-        13.33
+        73.0,
+        20.0
       ],
       "track": [
         [
-          80.62,
-          13.33
+          72.7,
+          19.8
         ],
         [
-          80.82,
-          13.53
+          72.85,
+          19.9
         ],
         [
-          81.02,
-          13.73
+          73.0,
+          20.0
         ]
-      ]
-    },
-    {
-      "name": "Deepsea Sentinel",
-      "mmsi": "419009876",
-      "type": "Container Ship",
-      "confidence": 22,
-      "reason": "Distant transit 18 nm outside backtracked source circle.",
-      "position": [
-        79.42,
-        13.73
       ],
-      "track": [
-        [
-          79.42,
-          13.73
-        ],
-        [
-          79.32,
-          13.93
-        ]
-      ]
+      "sub_scores": {
+        "environmental_consistency": 0.023,
+        "distance": 0.0,
+        "time_consistency": 0.324,
+        "track_continuity": 0.9,
+        "heading": 0.694,
+        "speed": 0.5,
+        "vessel_type": 0.7
+      }
     }
   ]
 }

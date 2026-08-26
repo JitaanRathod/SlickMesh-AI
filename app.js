@@ -143,7 +143,8 @@ function triggerPipeline() {
     wind_direction: parseFloat(document.getElementById("wind-dir").value),
     current_u: parseFloat(document.getElementById("current-u").value),
     current_v: parseFloat(document.getElementById("current-v").value),
-    backtrack_hours: parseInt(document.getElementById("backtrack-hours").value)
+    backtrack_hours: parseInt(document.getElementById("backtrack-hours").value),
+    target_region: document.getElementById("sample-location").value
   };
   
   fetch("/api/run-pipeline", {
@@ -295,17 +296,17 @@ function showVesselDetails(vessel) {
   scoreContainer.innerHTML = "";
   
   const labelMap = {
+    environmental_consistency: "Drift Corridor Intersection",
     distance: "Backtrack Proximity (Distance)",
     time_consistency: "Temporal Window Alignment",
-    speed: "SOG / Speed Profile",
+    track_continuity: "AIS Signal Continuity",
     heading: "Heading & Drift Angle",
-    vessel_type: "Vessel Classification Multiplier",
-    environmental_consistency: "Drift Corridor Intersection"
+    speed: "SOG / Speed Profile",
+    vessel_type: "Vessel Classification Multiplier"
   };
   
   // Populate progress bars
   Object.keys(vessel.sub_scores).forEach(key => {
-    if (key === "track_continuity") return; // Skip minor metric
     const scoreVal = vessel.sub_scores[key];
     const pct = Math.round(scoreVal * 100);
     const label = labelMap[key] || key;

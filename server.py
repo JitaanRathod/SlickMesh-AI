@@ -270,10 +270,29 @@ async def get_mock_incident():
     return execute_integrated_pipeline("s1_active.png", 5.4, 72.0, 0.18, 0.07, 24, "default")
 
 
-# Serve static frontend dashboard assets
+# Serve static frontend dashboard assets with explicit no-cache headers
 @app.get("/")
 async def serve_index():
-    return FileResponse(os.path.join(ROOT_DIR, "index.html"))
+    return FileResponse(
+        os.path.join(ROOT_DIR, "index.html"),
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"}
+    )
+
+@app.get("/style.css")
+async def serve_style():
+    return FileResponse(
+        os.path.join(ROOT_DIR, "style.css"),
+        media_type="text/css",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"}
+    )
+
+@app.get("/app.js")
+async def serve_script():
+    return FileResponse(
+        os.path.join(ROOT_DIR, "app.js"),
+        media_type="application/javascript",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"}
+    )
 
 app.mount("/", StaticFiles(directory=str(ROOT_DIR), html=True), name="static")
 

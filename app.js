@@ -61,13 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function initMap() {
   map = L.map("map", {
     zoomControl: true,
-    attributionControl: false
+    attributionControl: true
   }).setView([20.48, 67.52], 7);
   
-  // High-contrast clean dark carto tiles suitable for maritime tactical displays
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+  // High-performance OpenStreetMap standard layer (100% free, no API key watermark)
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
-    subdomains: "abcd"
+    attribution: "&copy; OpenStreetMap contributors | Sentinel-1 SAR Attribution"
   }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
@@ -240,31 +240,39 @@ function renderIncident(data) {
   }
   
   // 3. Update Incident Telemetry UI Card
-  document.getElementById("incident-card").innerHTML = `
-    <div class="telemetry-grid">
-      <div class="tel-cell"><span class="tel-lbl">SPILL ID</span><span class="tel-val">${data.incident.id}</span></div>
-      <div class="tel-cell"><span class="tel-lbl">SLICK EXTENT</span><span class="tel-val">${data.incident.area_km2} km²</span></div>
-      <div class="tel-cell"><span class="tel-lbl">DETECTION CONFIDENCE</span><span class="tel-val text-green">${Math.round(data.incident.confidence * 100)}%</span></div>
-      <div class="tel-cell"><span class="tel-lbl">ORIGIN UNCERTAINTY</span><span class="tel-val">${data.source_region.radius_km} km</span></div>
-    </div>
-  `;
+  const incCard = document.getElementById("incident-card");
+  if (incCard) {
+    incCard.innerHTML = `
+      <div class="telemetry-grid">
+        <div class="tel-cell"><span class="tel-lbl">SPILL ID</span><span class="tel-val">${data.incident.id}</span></div>
+        <div class="tel-cell"><span class="tel-lbl">SLICK EXTENT</span><span class="tel-val">${data.incident.area_km2} km²</span></div>
+        <div class="tel-cell"><span class="tel-lbl">DETECTION CONFIDENCE</span><span class="tel-val text-green">${Math.round(data.incident.confidence * 100)}%</span></div>
+        <div class="tel-cell"><span class="tel-lbl">ORIGIN UNCERTAINTY</span><span class="tel-val">${data.source_region.radius_km} km</span></div>
+      </div>
+    `;
+  }
   
   // 4. Update Environmental Metocean Feed UI Card
   const env = data.environment;
-  document.getElementById("env-card").innerHTML = `
-    <div class="telemetry-grid">
-      <div class="tel-cell"><span class="tel-lbl">WIND SPEED / DIR</span><span class="tel-val">${env.wind_speed_ms} m/s @ ${env.wind_direction_deg}°</span></div>
-      <div class="tel-cell"><span class="tel-lbl">DRIFT VECTOR (U, V)</span><span class="tel-val">${env.current_u_ms}, ${env.current_v_ms} m/s</span></div>
-      <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">FEED PROVIDER</span><span class="tel-val text-cyan">${env.source_model}</span></div>
-    </div>
-  `;
+  const envCard = document.getElementById("env-card");
+  if (envCard) {
+    envCard.innerHTML = `
+      <div class="telemetry-grid">
+        <div class="tel-cell"><span class="tel-lbl">WIND SPEED / DIR</span><span class="tel-val">${env.wind_speed_ms} m/s @ ${env.wind_direction_deg}°</span></div>
+        <div class="tel-cell"><span class="tel-lbl">DRIFT VECTOR (U, V)</span><span class="tel-val">${env.current_u_ms}, ${env.current_v_ms} m/s</span></div>
+        <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">FEED PROVIDER</span><span class="tel-val text-cyan">${env.source_model}</span></div>
+      </div>
+    `;
+  }
   
   // 5. Plot ALL Candidate Vessels & Trajectories
   const candsContainer = document.getElementById("candidates");
+  if (!candsContainer) return;
   candsContainer.innerHTML = "";
   
   const vessels = data.vessels || [];
-  document.getElementById("vessel-count-badge").textContent = `${vessels.length} vessels`;
+  const countBadge = document.getElementById("vessel-count-badge");
+  if (countBadge) countBadge.textContent = `${vessels.length} vessels`;
 
   if (vessels.length === 0) {
     candsContainer.innerHTML = '<div class="empty-state">No candidate vessels traversed this sector</div>';

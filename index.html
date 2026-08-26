@@ -52,17 +52,36 @@
         
         <!-- Surveillance Sector Selector -->
         <div class="panel-box">
-          <div class="panel-header">
-            <i class="fa-solid fa-map-location-dot"></i> Surveillance Sector
+          <div class="panel-header flex-between">
+            <span><i class="fa-solid fa-map-location-dot"></i> Surveillance Sector</span>
+            <span class="version-tag" id="mode-tag">PRESET</span>
           </div>
           <div class="control-group">
             <label for="sample-location">Target Maritime Zone</label>
             <select id="sample-location" class="custom-select">
-              <option value="mumbai">Arabian Sea — Mumbai High Oilfield (19.65°N, 72.38°E)</option>
-              <option value="bob">Bay of Bengal — KG Deepwater Basin (16.15°N, 82.28°E)</option>
-              <option value="default" selected>Gulf of Khambhat — Alang Anchorage (20.48°N, 67.52°E)</option>
-              <option value="dark_ship">Arabian Sea — AIS Transponder Blackout Scenario</option>
+              <option value="mumbai">Arabian Sea — Mumbai High (19.42°N, 71.35°E)</option>
+              <option value="bob">Bay of Bengal — KG Basin (16.15°N, 82.55°E)</option>
+              <option value="default" selected>Gulf of Khambhat — Alang (20.48°N, 67.52°E)</option>
+              <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Corridor</option>
+              <option value="custom">📍 Custom Map Coordinates / Map Click</option>
             </select>
+          </div>
+          
+          <!-- Custom Coordinate Inputs (Enabled on custom selection or map click) -->
+          <div id="custom-coords-container" style="display: none; margin-top: 8px;" class="control-group">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div>
+                <label style="font-size: 10px;">Latitude (°N)</label>
+                <input type="number" id="custom-lat" step="0.01" value="20.48" class="custom-select" style="padding: 6px 8px; width: 100%;">
+              </div>
+              <div>
+                <label style="font-size: 10px;">Longitude (°E)</label>
+                <input type="number" id="custom-lon" step="0.01" value="67.52" class="custom-select" style="padding: 6px 8px; width: 100%;">
+              </div>
+            </div>
+            <div style="font-size: 10px; color: var(--accent-cyan); margin-top: 4px;">
+              <i class="fa-solid fa-hand-pointer"></i> <em>Tip: Click anywhere on the map to target that sector!</em>
+            </div>
           </div>
         </div>
 

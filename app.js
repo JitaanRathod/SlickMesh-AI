@@ -71,6 +71,46 @@ function initMap() {
   }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
+
+  // Map Click Feature: Click anywhere on Earth to inspect that coordinate sector for oil spills!
+  map.on("click", (e) => {
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
+    
+    const latInput = document.getElementById("custom-lat");
+    const lonInput = document.getElementById("custom-lon");
+    const modeTag = document.getElementById("mode-tag");
+    const presetSelect = document.getElementById("sample-location");
+    const coordsBox = document.getElementById("custom-coords-container");
+
+    if (latInput && lonInput) {
+      latInput.value = lat.toFixed(4);
+      lonInput.value = lon.toFixed(4);
+    }
+    if (presetSelect) presetSelect.value = "custom";
+    if (coordsBox) coordsBox.style.display = "block";
+    if (modeTag) {
+      modeTag.textContent = "LIVE SECTOR";
+      modeTag.style.color = "var(--accent-cyan)";
+    }
+
+    // Auto-fetch live weather for clicked coordinate to update drift sliders
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.current) {
+          const ws = data.current.wind_speed_10m || 5.4;
+          const wd = data.current.wind_direction_10m || 72;
+          const rad = (wd * Math.PI) / 180;
+          document.getElementById("wind-speed").value = (ws / 3.6).toFixed(1);
+          document.getElementById("wind-dir").value = wd;
+          document.getElementById("current-u").value = (0.18 * Math.cos(rad)).toFixed(2);
+          document.getElementById("current-v").value = (0.18 * Math.sin(rad)).toFixed(2);
+          initSliders();
+        }
+      })
+      .catch(() => {});
+  });
 }
 
 function initSliders() {
@@ -132,8 +172,25 @@ function setupEventListeners() {
 }
 
 function applyPreset(presetKey) {
+  const coordsBox = document.getElementById("custom-coords-container");
+  const modeTag = document.getElementById("mode-tag");
+
+  if (presetKey === "custom") {
+    if (coordsBox) coordsBox.style.display = "block";
+    if (modeTag) {
+      modeTag.textContent = "CUSTOM";
+      modeTag.style.color = "var(--accent-cyan)";
+    }
+    return;
+  }
+
+  if (coordsBox) coordsBox.style.display = "none";
+  if (modeTag) {
+    modeTag.textContent = "PRESET";
+    modeTag.style.color = "var(--text-muted)";
+  }
+
   const preset = locationPresets[presetKey] || locationPresets.default;
-  
   document.getElementById("selected-file-label").textContent = preset.image;
   document.getElementById("wind-speed").value = preset.wind_speed;
   document.getElementById("wind-dir").value = preset.wind_dir;
@@ -148,8 +205,11 @@ function applyPreset(presetKey) {
 
 function triggerPipeline() {
   const runBtn = document.getElementById("run-pipeline-btn");
-  runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing Satellite & AIS Feeds...';
+  runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning Satellite & AIS Feeds...';
   runBtn.disabled = true;
+
+  const targetRegion = document.getElementById("sample-location").value;
+  const isCustom = targetRegion === "custom";
   
   const payload = {
     image_name: document.getElementById("selected-file-label").textContent,
@@ -158,7 +218,9 @@ function triggerPipeline() {
     current_u: parseFloat(document.getElementById("current-u").value),
     current_v: parseFloat(document.getElementById("current-v").value),
     backtrack_hours: parseInt(document.getElementById("backtrack-hours").value),
-    target_region: document.getElementById("sample-location").value
+    target_region: targetRegion,
+    custom_lat: isCustom ? parseFloat(document.getElementById("custom-lat").value) : null,
+    custom_lon: isCustom ? parseFloat(document.getElementById("custom-lon").value) : null
   };
   
   fetch("/api/run-pipeline", {

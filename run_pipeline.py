@@ -11,7 +11,7 @@ import math
 import argparse
 from datetime import datetime, timezone
 import urllib.request
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 # Add phase subdirectories to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "phase1-satellite")))

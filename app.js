@@ -2,16 +2,23 @@ let map;
 let layersGroup;
 let currentIncidentData = null;
 
-// Default values for target locations to make the demo realistic
+// Compass direction helper
+function degToCompass(num) {
+  const val = Math.floor((num / 22.5) + 0.5);
+  const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  return arr[(val % 16)];
+}
+
+// Default presets for Indian Maritime Surveillance Zones
 const locationPresets = {
   mumbai: {
-    image: "s1_mumbai_offshore.png",
+    image: "s1_mumbai_high.png",
     current_u: 0.12,
     current_v: -0.15,
     wind_speed: 6.8,
     wind_dir: 240,
     backtrack: 18,
-    name: "Arabian Sea (Mumbai Offshore)"
+    name: "Arabian Sea (Mumbai High Oilfield)"
   },
   bob: {
     image: "s1_kg_basin.png",
@@ -20,7 +27,7 @@ const locationPresets = {
     wind_speed: 8.2,
     wind_dir: 110,
     backtrack: 24,
-    name: "Bay of Bengal (KG Basin)"
+    name: "Bay of Bengal (KG Deepwater Basin)"
   },
   default: {
     image: "s1_active.png",
@@ -29,7 +36,16 @@ const locationPresets = {
     wind_speed: 5.4,
     wind_dir: 72,
     backtrack: 24,
-    name: "Alang Offshore"
+    name: "Gulf of Khambhat (Alang Anchorage)"
+  },
+  dark_ship: {
+    image: "s1_dark_ship.png",
+    current_u: 0.15,
+    current_v: -0.08,
+    wind_speed: 7.2,
+    wind_dir: 275,
+    backtrack: 24,
+    name: "Arabian Sea (AIS Blackout Scenario)"
   }
 };
 
@@ -38,103 +54,101 @@ document.addEventListener("DOMContentLoaded", () => {
   initSliders();
   setupEventListeners();
   
-  // Proactively fetch mock-incident on load to populate screen
-  fetchIncidentData("api/mock-incident");
+  // Proactively fetch initial incident data on load
+  fetchIncidentData("/api/mock-incident");
 });
 
 function initMap() {
-  map = L.map("map").setView([20.48, 67.52], 7);
+  map = L.map("map", {
+    zoomControl: true,
+    attributionControl: false
+  }).setView([20.48, 67.52], 7);
   
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors"
+  // High-contrast clean dark carto tiles suitable for maritime tactical displays
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    maxZoom: 18,
+    subdomains: "abcd"
   }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
 }
 
 function initSliders() {
-  const sliders = [
-    { id: "wind-speed", valId: "wind-speed-val", suffix: " m/s" },
-    { id: "wind-dir", valId: "wind-dir-val", suffix: "°" },
-    { id: "current-u", valId: "current-u-val", suffix: " m/s" },
-    { id: "current-v", valId: "current-v-val", suffix: " m/s" },
-    { id: "backtrack-hours", valId: "backtrack-hours-val", suffix: " hrs" }
-  ];
-  
-  sliders.forEach(slider => {
-    const el = document.getElementById(slider.id);
-    const valEl = document.getElementById(slider.valId);
-    
-    if (el && valEl) {
-      el.addEventListener("input", (e) => {
-        valEl.textContent = e.target.value + slider.suffix;
-      });
-    }
+  const updateLabels = () => {
+    const ws = parseFloat(document.getElementById("wind-speed").value);
+    const wd = parseInt(document.getElementById("wind-dir").value);
+    const cu = parseFloat(document.getElementById("current-u").value);
+    const cv = parseFloat(document.getElementById("current-v").value);
+    const bt = parseInt(document.getElementById("backtrack-hours").value);
+
+    document.getElementById("wind-speed-val").textContent = `${ws.toFixed(1)} m/s`;
+    document.getElementById("wind-dir-val").textContent = `${wd}° (${degToCompass(wd)})`;
+    document.getElementById("current-u-val").textContent = `${cu >= 0 ? '+' : ''}${cu.toFixed(2)} m/s`;
+    document.getElementById("current-v-val").textContent = `${cv >= 0 ? '+' : ''}${cv.toFixed(2)} m/s`;
+    document.getElementById("backtrack-hours-val").textContent = `${bt} hrs`;
+  };
+
+  ["wind-speed", "wind-dir", "current-u", "current-v", "backtrack-hours"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", updateLabels);
   });
+
+  updateLabels();
 }
 
 function setupEventListeners() {
-  // Run button
+  // Run pipeline button
   const runBtn = document.getElementById("run-pipeline-btn");
-  runBtn.addEventListener("click", triggerPipeline);
+  if (runBtn) runBtn.addEventListener("click", triggerPipeline);
   
-  // Preset selector
+  // Preset location dropdown
   const presetSelect = document.getElementById("sample-location");
-  presetSelect.addEventListener("change", (e) => {
-    applyPreset(e.target.value);
-  });
+  if (presetSelect) {
+    presetSelect.addEventListener("change", (e) => {
+      applyPreset(e.target.value);
+    });
+  }
   
-  // File mock upload interaction
+  // Image switcher / upload trigger
   const uploadBox = document.getElementById("upload-box");
   const fileLabel = document.getElementById("selected-file-label");
-  uploadBox.addEventListener("click", () => {
-    // Cycles between images for demo
-    const currentImg = fileLabel.textContent;
-    let nextImg = "s1_active.png";
-    if (currentImg === "s1_active.png") {
-      nextImg = "s1_mumbai_offshore.png";
-    } else if (currentImg === "s1_mumbai_offshore.png") {
-      nextImg = "s1_kg_basin.png";
-    }
-    fileLabel.textContent = nextImg;
-  });
+  if (uploadBox && fileLabel) {
+    uploadBox.addEventListener("click", () => {
+      const currentImg = fileLabel.textContent;
+      const scenes = ["s1_active.png", "s1_mumbai_high.png", "s1_kg_basin.png", "real_grande_america_spill.jpg"];
+      let nextIndex = (scenes.indexOf(currentImg) + 1) % scenes.length;
+      fileLabel.textContent = scenes[nextIndex];
+    });
+  }
 
-  // Modal close
-  document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+  // Modal close events
+  const closeBtn = document.getElementById("close-modal-btn");
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  
   window.addEventListener("click", (e) => {
     const modal = document.getElementById("details-modal");
-    if (e.target === modal) {
-      closeModal();
-    }
+    if (e.target === modal) closeModal();
   });
 }
 
 function applyPreset(presetKey) {
-  const preset = locationPresets[presetKey];
-  if (!preset) return;
+  const preset = locationPresets[presetKey] || locationPresets.default;
   
-  // Update inputs
   document.getElementById("selected-file-label").textContent = preset.image;
-  
   document.getElementById("wind-speed").value = preset.wind_speed;
-  document.getElementById("wind-speed-val").textContent = preset.wind_speed + " m/s";
-  
   document.getElementById("wind-dir").value = preset.wind_dir;
-  document.getElementById("wind-dir-val").textContent = preset.wind_dir + "°";
-  
   document.getElementById("current-u").value = preset.current_u;
-  document.getElementById("current-u-val").textContent = preset.current_u + " m/s";
-  
   document.getElementById("current-v").value = preset.current_v;
-  document.getElementById("current-v-val").textContent = preset.current_v + " m/s";
-  
   document.getElementById("backtrack-hours").value = preset.backtrack;
-  document.getElementById("backtrack-hours-val").textContent = preset.backtrack + " hrs";
+
+  // Re-trigger label updates
+  const event = new Event("input");
+  document.getElementById("wind-speed").dispatchEvent(event);
 }
 
 function triggerPipeline() {
   const runBtn = document.getElementById("run-pipeline-btn");
-  runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing pipeline...';
+  runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing Satellite & AIS Feeds...';
   runBtn.disabled = true;
   
   const payload = {
@@ -153,18 +167,18 @@ function triggerPipeline() {
     body: JSON.stringify(payload)
   })
   .then(res => {
-    if (!res.ok) throw new Error("Pipeline computation failed.");
+    if (!res.ok) throw new Error("Pipeline computation failed on server.");
     return res.json();
   })
   .then(data => {
     renderIncident(data);
   })
   .catch(err => {
-    alert(err.message + " Running local mock visualization instead.");
+    console.warn(err.message + " Loading fallback local telemetry.");
     fetchIncidentData("/api/mock-incident");
   })
   .finally(() => {
-    runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Spill Pipeline';
+    runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Surveillance Pipeline';
     runBtn.disabled = false;
   });
 }
@@ -180,161 +194,221 @@ function renderIncident(data) {
   currentIncidentData = data;
   layersGroup.clearLayers();
   
-  // 1. Plot Spill Polygon
-  const spillLatLng = data.incident.polygon.map(([lon, lat]) => [lat, lon]);
-  const spillPoly = L.polygon(spillLatLng, {
-    color: "#ef4444",
-    fillColor: "#ef4444",
-    fillOpacity: 0.45,
-    weight: 3
-  }).addTo(layersGroup);
+  const mapFeaturesToBound = [];
+
+  // 1. Plot Detected Satellite Oil Slick Polygon (Red)
+  if (data.incident && data.incident.polygon) {
+    const spillLatLng = data.incident.polygon.map(([lon, lat]) => [lat, lon]);
+    const spillPoly = L.polygon(spillLatLng, {
+      color: "#dc2626",
+      fillColor: "#ef4444",
+      fillOpacity: 0.55,
+      weight: 2.5
+    }).addTo(layersGroup);
+    
+    spillPoly.bindPopup(`
+      <div class="map-popup">
+        <div class="popup-title"><i class="fa-solid fa-triangle-exclamation text-red"></i> Detected SAR Oil Slick</div>
+        <table class="popup-table">
+          <tr><td>Incident ID:</td><td><strong>${data.incident.id}</strong></td></tr>
+          <tr><td>Slick Area:</td><td><strong>${data.incident.area_km2} km²</strong></td></tr>
+          <tr><td>AI Confidence:</td><td><strong>${Math.round(data.incident.confidence * 100)}%</strong></td></tr>
+          <tr><td>Timestamp:</td><td>${data.incident.detected_at}</td></tr>
+        </table>
+      </div>
+    `);
+    mapFeaturesToBound.push(spillPoly);
+  }
   
-  spillPoly.bindPopup(`
-    <div style="color:#0f172a; font-family:'Inter', sans-serif;">
-      <strong>Spill ID:</strong> ${data.incident.id}<br>
-      <strong>Area:</strong> ${data.incident.area_km2} km²<br>
-      <strong>Confidence:</strong> ${Math.round(data.incident.confidence * 100)}%<br>
-      <strong>Detected:</strong> ${data.incident.detected_at}
-    </div>
-  `);
+  // 2. Plot Backtracked Origin Corridor (Yellow Dotted Uncertainty Circle)
+  if (data.source_region) {
+    const sourceReg = data.source_region;
+    const sourceCircle = L.circle([sourceReg.latitude, sourceReg.longitude], {
+      radius: sourceReg.radius_km * 1000,
+      color: "#d97706",
+      weight: 2,
+      dashArray: "6, 6",
+      fillColor: "#f59e0b",
+      fillOpacity: 0.12
+    }).addTo(layersGroup);
+    
+    sourceCircle.bindTooltip(
+      `<strong>Estimated Origin Region</strong><br>Radius: ${sourceReg.radius_km} km (Backtracked ${sourceReg.backtrack_hours}h)`,
+      { sticky: true }
+    );
+    mapFeaturesToBound.push(sourceCircle);
+  }
   
-  // 2. Plot Backtracked Source region
-  const sourceReg = data.source_region;
-  const sourceCircle = L.circle([sourceReg.latitude, sourceReg.longitude], {
-    radius: sourceReg.radius_km * 1000,
-    color: "#f59e0b",
-    weight: 2,
-    dashArray: "6 6",
-    fillColor: "#f59e0b",
-    fillOpacity: 0.08
-  }).addTo(layersGroup);
-  
-  sourceCircle.bindTooltip(`Probable backtracked origin (Uncertainty: ${sourceReg.radius_km}km)`);
-  
-  // 3. Update Text Details
+  // 3. Update Incident Telemetry UI Card
   document.getElementById("incident-card").innerHTML = `
-    <div><strong>Incident ID:</strong> ${data.incident.id}</div>
-    <div><strong>Detected At:</strong> ${data.incident.detected_at}</div>
-    <div><strong>Area:</strong> ${data.incident.area_km2} km²</div>
-    <div><strong>Detection Confidence:</strong> <span style="color:var(--success);font-weight:bold;">${Math.round(data.incident.confidence * 100)}%</span></div>
+    <div class="telemetry-grid">
+      <div class="tel-cell"><span class="tel-lbl">SPILL ID</span><span class="tel-val">${data.incident.id}</span></div>
+      <div class="tel-cell"><span class="tel-lbl">SLICK EXTENT</span><span class="tel-val">${data.incident.area_km2} km²</span></div>
+      <div class="tel-cell"><span class="tel-lbl">DETECTION CONFIDENCE</span><span class="tel-val text-green">${Math.round(data.incident.confidence * 100)}%</span></div>
+      <div class="tel-cell"><span class="tel-lbl">ORIGIN UNCERTAINTY</span><span class="tel-val">${data.source_region.radius_km} km</span></div>
+    </div>
   `;
   
+  // 4. Update Environmental Metocean Feed UI Card
+  const env = data.environment;
   document.getElementById("env-card").innerHTML = `
-    <div><strong>Wind:</strong> ${data.environment.wind_speed_ms} m/s at ${data.environment.wind_direction_deg}°</div>
-    <div><strong>Current Vector (u, v):</strong> ${data.environment.current_u_ms}, ${data.environment.current_v_ms} m/s</div>
-    <div><strong>Primary Model:</strong> ${data.environment.source_model}</div>
+    <div class="telemetry-grid">
+      <div class="tel-cell"><span class="tel-lbl">WIND SPEED / DIR</span><span class="tel-val">${env.wind_speed_ms} m/s @ ${env.wind_direction_deg}°</span></div>
+      <div class="tel-cell"><span class="tel-lbl">DRIFT VECTOR (U, V)</span><span class="tel-val">${env.current_u_ms}, ${env.current_v_ms} m/s</span></div>
+      <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">FEED PROVIDER</span><span class="tel-val text-cyan">${env.source_model}</span></div>
+    </div>
   `;
   
-  // 4. Plot Vessels
+  // 5. Plot ALL Candidate Vessels & Trajectories
   const candsContainer = document.getElementById("candidates");
   candsContainer.innerHTML = "";
   
-  if (data.vessels.length === 0) {
-    candsContainer.innerHTML = '<div class="empty-state">No candidate vessels matched coordinates</div>';
+  const vessels = data.vessels || [];
+  document.getElementById("vessel-count-badge").textContent = `${vessels.length} vessels`;
+
+  if (vessels.length === 0) {
+    candsContainer.innerHTML = '<div class="empty-state">No candidate vessels traversed this sector</div>';
   }
   
-  data.vessels.forEach((v, index) => {
-    const isFirst = index === 0;
-    const color = isFirst ? "#ef4444" : "#3b82f6"; // Flagged primary suspect is red, others blue
+  vessels.forEach((v, index) => {
+    const isPrimary = index === 0;
+    const color = isPrimary ? "#dc2626" : "#2563eb"; // Suspect #1 in Red, secondary in Navy/Blue
+    const strokeWidth = isPrimary ? 3.5 : 2.0;
+    const dashStyle = isPrimary ? null : "5, 5";
     
-    // Draw vessel final/closest marker
-    L.circleMarker([v.position[1], v.position[0]], {
-      radius: isFirst ? 8 : 6,
+    // Draw vessel marker at closest/current position
+    const vLat = v.position[1];
+    const vLon = v.position[0];
+    
+    const vesselMarker = L.circleMarker([vLat, vLon], {
+      radius: isPrimary ? 8 : 6,
       color: color,
-      fillColor: color,
+      fillColor: isPrimary ? "#ef4444" : "#60a5fa",
       fillOpacity: 1,
       weight: 2
-    }).addTo(layersGroup).bindTooltip(`<b>${v.name}</b><br>MMSI: ${v.mmsi}`);
-    
-    // Draw Track
-    const trackLatLngs = v.track.map(([lon, lat]) => [lat, lon]);
-    const trackPoly = L.polyline(trackLatLngs, {
-      color: color,
-      weight: isFirst ? 4 : 2,
-      dashArray: isFirst ? null : "4 4"
     }).addTo(layersGroup);
     
-    // Add arrow heads / direction overlays (optional helper)
-    trackPoly.bindPopup(`
-      <div style="color:#0f172a; font-family:'Inter', sans-serif;">
-        <strong>${v.name}</strong> (${v.type})<br>
-        <strong>MMSI:</strong> ${v.mmsi}<br>
-        <strong>Attribution:</strong> ${v.confidence}%<br>
-        <p style="margin-top:5px; font-size:11px;">${v.reason}</p>
-      </div>
-    `);
+    vesselMarker.bindTooltip(
+      `<strong>#${index + 1}: ${v.name}</strong> (${v.type})<br>Attribution Score: ${v.confidence}%`,
+      { direction: "top" }
+    );
+    mapFeaturesToBound.push(vesselMarker);
     
-    // Append Sidebar Card
+    // Draw AIS Track Polyline
+    if (v.track && v.track.length > 0) {
+      const trackLatLngs = v.track.map(([lon, lat]) => [lat, lon]);
+      const trackPoly = L.polyline(trackLatLngs, {
+        color: color,
+        weight: strokeWidth,
+        dashArray: dashStyle,
+        opacity: isPrimary ? 0.95 : 0.75
+      }).addTo(layersGroup);
+      
+      trackPoly.bindPopup(`
+        <div class="map-popup">
+          <div class="popup-title"><strong>${v.name}</strong> (${v.type})</div>
+          <table class="popup-table">
+            <tr><td>MMSI:</td><td>${v.mmsi}</td></tr>
+            <tr><td>Confidence:</td><td><strong style="color:${isPrimary ? '#dc2626' : '#2563eb'}">${v.confidence}%</strong></td></tr>
+            <tr><td>Assessment:</td><td>${v.reason}</td></tr>
+          </table>
+        </div>
+      `);
+      mapFeaturesToBound.push(trackPoly);
+    }
+    
+    // Append Ranked Candidate Card in Sidebar
     const cardEl = document.createElement("div");
-    cardEl.className = `candidate-card ${isFirst ? "flagged" : ""}`;
+    cardEl.className = `candidate-card ${isPrimary ? "primary-suspect" : ""}`;
     cardEl.innerHTML = `
-      <div class="cand-header">
-        <span class="cand-name">${v.name}</span>
-        <span class="cand-conf">${v.confidence}%</span>
+      <div class="cand-top-row">
+        <div class="cand-rank-name">
+          <span class="rank-num">#${index + 1}</span>
+          <span class="vessel-title">${v.name}</span>
+        </div>
+        <span class="cand-score-pill ${isPrimary ? 'pill-danger' : 'pill-info'}">${v.confidence}%</span>
       </div>
-      <div class="cand-desc">${v.reason}</div>
-      <span class="view-details-link">Analyze details &rarr;</span>
+      <div class="cand-type-mmsi"><i class="fa-solid fa-ship"></i> ${v.type} • MMSI ${v.mmsi}</div>
+      <div class="cand-reason-snippet">${v.reason}</div>
+      <div class="cand-footer">
+        <span class="view-analysis-btn"><i class="fa-solid fa-chart-simple"></i> View Evidence Breakdown &rarr;</span>
+      </div>
     `;
     
-    cardEl.addEventListener("click", () => showVesselDetails(v));
+    cardEl.addEventListener("click", () => showVesselDetails(v, index));
     candsContainer.appendChild(cardEl);
   });
   
-  // Adjust Map view boundary to fit both spill and source corridor
-  const bounds = L.featureGroup([spillPoly, sourceCircle]).getBounds();
-  map.fitBounds(bounds.pad(0.2));
+  // 6. Dynamically fit map bounds to enclose ALL vessels, the spill, and the corridor!
+  if (mapFeaturesToBound.length > 0) {
+    const allBounds = L.featureGroup(mapFeaturesToBound).getBounds();
+    map.fitBounds(allBounds.pad(0.18));
+  }
 }
 
-function showVesselDetails(vessel) {
+function showVesselDetails(vessel, rankIndex) {
   document.getElementById("modal-vessel-name").textContent = vessel.name;
-  document.getElementById("modal-mmsi").textContent = vessel.mmsi;
-  document.getElementById("modal-type").textContent = vessel.type;
-  document.getElementById("modal-conf").textContent = vessel.confidence;
+  document.getElementById("modal-type-mmsi").textContent = `${vessel.type} • MMSI: ${vessel.mmsi}`;
+  document.getElementById("modal-conf").textContent = `${vessel.confidence}%`;
+  
+  const verdictEl = document.getElementById("modal-verdict");
+  if (rankIndex === 0 && vessel.confidence >= 70) {
+    verdictEl.textContent = "PRIMARY DISCHARGE SUSPECT";
+    verdictEl.className = "conf-verdict verdict-danger";
+  } else if (vessel.confidence >= 50) {
+    verdictEl.textContent = "CORRIDOR PROXIMITY CANDIDATE";
+    verdictEl.className = "conf-verdict verdict-warning";
+  } else {
+    verdictEl.textContent = "LOW PROBABILITY TRANSIT";
+    verdictEl.className = "conf-verdict verdict-low";
+  }
+
   document.getElementById("modal-reason-str").textContent = vessel.reason;
   
   const scoreContainer = document.getElementById("score-bars-container");
   scoreContainer.innerHTML = "";
   
   const labelMap = {
-    environmental_consistency: "Drift Corridor Intersection",
-    distance: "Backtrack Proximity (Distance)",
+    environmental_consistency: "Metocean Drift Corridor Intersection",
+    distance: "Backtrack Proximity (CPA Distance)",
     time_consistency: "Temporal Window Alignment",
-    track_continuity: "AIS Signal Continuity",
-    heading: "Heading & Drift Angle",
-    speed: "SOG / Speed Profile",
-    vessel_type: "Vessel Classification Multiplier"
+    track_continuity: "AIS Signal Broadcast Continuity",
+    heading: "Slick Alignment / Drift Delta Angle",
+    speed: "SOG Speed Profile Consistency",
+    vessel_type: "Vessel Risk & Cargo Classification"
   };
   
-  // Populate progress bars
-  Object.keys(vessel.sub_scores).forEach(key => {
-    const scoreVal = vessel.sub_scores[key];
-    const pct = Math.round(scoreVal * 100);
-    const label = labelMap[key] || key;
-    
-    const row = document.createElement("div");
-    row.className = "score-row";
-    row.innerHTML = `
-      <div class="score-lbl">
-        <span>${label}</span>
-        <strong>${pct}%</strong>
-      </div>
-      <div class="score-bar-bg">
-        <div class="score-bar-fg" style="width: 0%"></div>
-      </div>
-    `;
-    
-    scoreContainer.appendChild(row);
-    
-    // Trigger animation frame for progress width
-    setTimeout(() => {
-      row.querySelector(".score-bar-fg").style.width = pct + "%";
-    }, 50);
-  });
+  if (vessel.sub_scores) {
+    Object.keys(vessel.sub_scores).forEach(key => {
+      const scoreVal = vessel.sub_scores[key];
+      const pct = Math.round(scoreVal * 100);
+      const label = labelMap[key] || key;
+      
+      const row = document.createElement("div");
+      row.className = "score-row";
+      row.innerHTML = `
+        <div class="score-lbl">
+          <span>${label}</span>
+          <strong class="score-pct-val">${pct}%</strong>
+        </div>
+        <div class="score-track">
+          <div class="score-fill" style="width: 0%"></div>
+        </div>
+      `;
+      
+      scoreContainer.appendChild(row);
+      
+      setTimeout(() => {
+        const fillBar = row.querySelector(".score-fill");
+        if (fillBar) fillBar.style.width = pct + "%";
+      }, 50);
+    });
+  }
   
-  // Display Modal
   document.getElementById("details-modal").style.display = "flex";
 }
 
 function closeModal() {
   document.getElementById("details-modal").style.display = "none";
 }
+

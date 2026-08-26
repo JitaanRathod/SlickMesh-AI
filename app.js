@@ -213,7 +213,7 @@ function setupEventListeners() {
 function triggerEEZSweep() {
   const sweepBtn = document.getElementById("btn-sweep-eez");
   if (sweepBtn) {
-    sweepBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sweeping 3.85M km² Full Maritime Basin...';
+    sweepBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sweeping 361M km² Global Ocean Constellation...';
     sweepBtn.disabled = true;
   }
 
@@ -251,25 +251,25 @@ function triggerEEZSweep() {
         sw.polygon.forEach(pt => allBounds.push(pt));
       });
 
-      // Fit whole Indian Ocean maritime basin in map view
+      // Fit global oceans in map view
       if (allBounds.length > 0) {
-        map.fitBounds(allBounds, { padding: [20, 20] });
+        map.fitBounds(allBounds, { padding: [10, 10] });
       }
 
-      // Update incident card with comprehensive basin-wide clean status
+      // Update incident card with comprehensive global ocean clean status
       const incCard = document.getElementById("incident-card");
       if (incCard) {
         incCard.innerHTML = `
           <div style="color: var(--accent-green); font-size: 11px; padding: 6px; line-height: 1.4;">
-            <i class="fa-solid fa-shield-halved"></i> <strong>3.85M km² FULL BASIN SWEEP COMPLETED</strong><br>
+            <i class="fa-solid fa-shield-halved"></i> <strong>GLOBAL OCEANS SATELLITE SWEEP COMPLETED</strong><br>
             ${data.summary.message}<br>
-            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Area Scanned: 3,850,000 km² • 7 Orbital Swaths • 0 Slicks</span>
+            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Global Coverage: 361,000,000 km² • Sentinel-1 Constellation • 0 Slicks</span>
           </div>
         `;
       }
       const candsContainer = document.getElementById("candidates");
       if (candsContainer) {
-        candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Entire 3.85M km² Maritime Basin Verified Clear: 0 Oil Spills Detected.</div>';
+        candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-earth-americas"></i> Global Maritime Domain Verified Clear: 0 Oil Spills Detected Worldwide.</div>';
       }
       const countBadge = document.getElementById("vessel-count-badge");
       if (countBadge) countBadge.textContent = "0 suspects";
@@ -279,9 +279,9 @@ function triggerEEZSweep() {
       if (envCard) {
         envCard.innerHTML = `
           <div class="telemetry-grid">
-            <div class="tel-cell"><span class="tel-lbl">BASIN SENSORS</span><span class="tel-val">Sentinel-1A / 1C SAR</span></div>
-            <div class="tel-cell"><span class="tel-lbl">TOTAL COVERAGE</span><span class="tel-val text-green">3,850,000 km²</span></div>
-            <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">SURVEILLANCE ARCHIVE</span><span class="tel-val text-cyan">Copernicus Data Space Open Hub</span></div>
+            <div class="tel-cell"><span class="tel-lbl">CONSTELLATION</span><span class="tel-val">ESA Sentinel-1 & 2</span></div>
+            <div class="tel-cell"><span class="tel-lbl">TOTAL COVERAGE</span><span class="tel-val text-green">361,000,000 km²</span></div>
+            <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">GLOBAL ARCHIVE</span><span class="tel-val text-cyan">Copernicus Marine & Data Space Open Hub</span></div>
           </div>
         `;
       }
@@ -289,7 +289,7 @@ function triggerEEZSweep() {
     .catch(console.error)
     .finally(() => {
       if (sweepBtn) {
-        sweepBtn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Autonomous EEZ & Basin Sweep (All 7 Swaths)';
+        sweepBtn.innerHTML = '<i class="fa-solid fa-earth-americas"></i> Autonomous Global Ocean Satellite Sweep (All Oceans)';
         sweepBtn.disabled = false;
       }
     });

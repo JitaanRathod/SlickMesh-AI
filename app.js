@@ -59,57 +59,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initMap() {
+  // Constrained zoom & bounds for optimal maritime surveillance (prevents infinite wrap & cranky zoom)
   map = L.map("map", {
     zoomControl: true,
-    attributionControl: true
-  }).setView([20.48, 67.52], 7);
+    attributionControl: true,
+    minZoom: 5,
+    maxZoom: 13,
+    maxBounds: [[-2.0, 55.0], [32.0, 100.0]],
+    maxBoundsViscosity: 1.0
+  }).setView([19.42, 71.35], 7);
   
   // High-performance OpenStreetMap standard layer (100% free, no API key watermark)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: "&copy; OpenStreetMap contributors | Sentinel-1 SAR Attribution"
+    minZoom: 5,
+    maxZoom: 13,
+    noWrap: true,
+    attribution: "&copy; OpenStreetMap contributors | Sentinel-1 SAR Surveillance"
   }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
 
-  // Map Click Feature: Click anywhere on Earth to inspect that coordinate sector for oil spills!
+  // Map Click Feature: Click to target coordinates directly
   map.on("click", (e) => {
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
     
     const latInput = document.getElementById("custom-lat");
     const lonInput = document.getElementById("custom-lon");
-    const modeTag = document.getElementById("mode-tag");
-    const presetSelect = document.getElementById("sample-location");
-    const coordsBox = document.getElementById("custom-coords-container");
 
     if (latInput && lonInput) {
-      latInput.value = lat.toFixed(4);
-      lonInput.value = lon.toFixed(4);
+      latInput.value = lat.toFixed(3);
+      lonInput.value = lon.toFixed(3);
     }
-    if (presetSelect) presetSelect.value = "custom";
-    if (coordsBox) coordsBox.style.display = "block";
-    if (modeTag) {
-      modeTag.textContent = "LIVE SECTOR";
-      modeTag.style.color = "var(--accent-cyan)";
-    }
-
-    // Auto-fetch live weather for clicked coordinate to update drift sliders
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.current) {
-          const ws = data.current.wind_speed_10m || 5.4;
-          const wd = data.current.wind_direction_10m || 72;
-          const rad = (wd * Math.PI) / 180;
-          document.getElementById("wind-speed").value = (ws / 3.6).toFixed(1);
-          document.getElementById("wind-dir").value = wd;
-          document.getElementById("current-u").value = (0.18 * Math.cos(rad)).toFixed(2);
-          document.getElementById("current-v").value = (0.18 * Math.sin(rad)).toFixed(2);
-          initSliders();
-        }
-      })
-      .catch(() => {});
   });
 }
 
@@ -142,7 +123,9 @@ function setupEventListeners() {
   // Mode Switcher Tabs
   const liveTab = document.getElementById("tab-live-mode");
   const demoTab = document.getElementById("tab-demo-mode");
-  const modeTag = document.getElementById("mode-tag");
+  const runBtn = document.getElementById("run-pipeline-btn");
+  const livePanel = document.getElementById("live-search-panel");
+  const demoPanel = document.getElementById("demo-controls-panel");
 
   if (liveTab && demoTab) {
     liveTab.addEventListener("click", () => {
@@ -151,10 +134,15 @@ function setupEventListeners() {
       liveTab.style.color = "#fff";
       demoTab.style.backgroundColor = "var(--bg-card)";
       demoTab.style.color = "var(--text-muted)";
-      if (modeTag) {
-        modeTag.textContent = "LIVE PASS";
-        modeTag.style.color = "var(--accent-cyan)";
-      }
+      if (livePanel) livePanel.style.display = "block";
+      if (demoPanel) demoPanel.style.display = "none";
+      if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-satellite"></i> Scan Coordinates for Oil Spills';
+      
+      // Clear previous layers & reset view
+      layersGroup.clearLayers();
+      const lat = parseFloat(document.getElementById("custom-lat").value) || 19.42;
+      const lon = parseFloat(document.getElementById("custom-lon").value) || 71.35;
+      map.flyTo([lat, lon], 7);
     });
 
     demoTab.addEventListener("click", () => {
@@ -163,21 +151,32 @@ function setupEventListeners() {
       demoTab.style.color = "#fff";
       liveTab.style.backgroundColor = "var(--bg-card)";
       liveTab.style.color = "var(--text-muted)";
-      if (modeTag) {
-        modeTag.textContent = "FORENSIC DEMO";
-        modeTag.style.color = "var(--accent-red)";
-      }
-      // If in custom mode, switch to a historical verified incident
-      const presetSelect = document.getElementById("sample-location");
-      if (presetSelect && presetSelect.value === "custom") {
-        presetSelect.value = "mumbai";
-        applyPreset("mumbai");
-      }
+      if (livePanel) livePanel.style.display = "none";
+      if (demoPanel) demoPanel.style.display = "block";
+      if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Forensic Attribution Engine';
+
+      // Load initial demo incident
+      applyPreset("mumbai");
+      triggerPipeline();
     });
   }
 
+  // Quick Coordinate Buttons
+  document.querySelectorAll(".quick-coord-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const lat = parseFloat(btn.dataset.lat);
+      const lon = parseFloat(btn.dataset.lon);
+      const latInput = document.getElementById("custom-lat");
+      const lonInput = document.getElementById("custom-lon");
+      if (latInput && lonInput) {
+        latInput.value = lat.toFixed(3);
+        lonInput.value = lon.toFixed(3);
+      }
+      map.flyTo([lat, lon], 8);
+    });
+  });
+
   // Run pipeline button
-  const runBtn = document.getElementById("run-pipeline-btn");
   if (runBtn) runBtn.addEventListener("click", triggerPipeline);
   
   // Preset location dropdown
@@ -244,22 +243,26 @@ function applyPreset(presetKey) {
 
 function triggerPipeline() {
   const runBtn = document.getElementById("run-pipeline-btn");
-  runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning Satellite & AIS Feeds...';
-  runBtn.disabled = true;
+  if (runBtn) {
+    runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Satellite & Marine Feeds...';
+    runBtn.disabled = true;
+  }
 
-  const targetRegion = document.getElementById("sample-location").value;
-  const isCustom = targetRegion === "custom";
+  const isLive = currentMode === "live";
+  const customLat = parseFloat(document.getElementById("custom-lat").value);
+  const customLon = parseFloat(document.getElementById("custom-lon").value);
+  const targetRegion = isLive ? "custom" : (document.getElementById("sample-location").value || "mumbai");
   
   const payload = {
-    image_name: document.getElementById("selected-file-label").textContent,
-    wind_speed: parseFloat(document.getElementById("wind-speed").value),
-    wind_direction: parseFloat(document.getElementById("wind-dir").value),
-    current_u: parseFloat(document.getElementById("current-u").value),
-    current_v: parseFloat(document.getElementById("current-v").value),
-    backtrack_hours: parseInt(document.getElementById("backtrack-hours").value),
+    image_name: document.getElementById("selected-file-label").textContent || "s1_active.png",
+    wind_speed: parseFloat(document.getElementById("wind-speed").value) || 5.4,
+    wind_direction: parseFloat(document.getElementById("wind-dir").value) || 72.0,
+    current_u: parseFloat(document.getElementById("current-u").value) || 0.18,
+    current_v: parseFloat(document.getElementById("current-v").value) || 0.07,
+    backtrack_hours: parseInt(document.getElementById("backtrack-hours").value) || 24,
     target_region: targetRegion,
-    custom_lat: isCustom ? parseFloat(document.getElementById("custom-lat").value) : null,
-    custom_lon: isCustom ? parseFloat(document.getElementById("custom-lon").value) : null,
+    custom_lat: isLive ? customLat : null,
+    custom_lon: isLive ? customLon : null,
     mode: currentMode
   };
   
@@ -280,8 +283,12 @@ function triggerPipeline() {
     fetchIncidentData("/api/mock-incident");
   })
   .finally(() => {
-    runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Surveillance Pipeline';
-    runBtn.disabled = false;
+    if (runBtn) {
+      runBtn.innerHTML = isLive ?
+        '<i class="fa-solid fa-satellite"></i> Scan Coordinates for Oil Spills' :
+        '<i class="fa-solid fa-play"></i> Run Forensic Attribution Engine';
+      runBtn.disabled = false;
+    }
   });
 }
 
@@ -298,7 +305,7 @@ function renderIncident(data) {
   
   const mapFeaturesToBound = [];
 
-  // Check if target is on land
+  // 1. Check if target is on land
   if (data.incident && data.incident.status === "LAND_COORDINATE") {
     const incCard = document.getElementById("incident-card");
     if (incCard) {
@@ -311,15 +318,40 @@ function renderIncident(data) {
     }
     const candsContainer = document.getElementById("candidates");
     if (candsContainer) {
-      candsContainer.innerHTML = '<div class="empty-state">No maritime vessels on land coordinates.</div>';
+      candsContainer.innerHTML = '<div class="empty-state">Selected coordinate is on land. No maritime oil spills.</div>';
     }
     const countBadge = document.getElementById("vessel-count-badge");
     if (countBadge) countBadge.textContent = "0 vessels";
     return;
   }
 
-  // Check if scan is clean ocean (no oil spills)
-  if (data.incident && data.incident.status === "CLEAN_OCEAN") {
+  // 2. Check if scan is clean ocean (Live Pass: no oil spills)
+  if (data.incident && (data.incident.status === "CLEAN_OCEAN" || data.incident.area_km2 === 0.0)) {
+    const sLat = data.source_region.latitude;
+    const sLon = data.source_region.longitude;
+    
+    // Draw Clean Scan Reticle on Map
+    const scanCircle = L.circle([sLat, sLon], {
+      radius: 12000,
+      color: "#10b981",
+      weight: 2,
+      dashArray: "4, 4",
+      fillColor: "#10b981",
+      fillOpacity: 0.08
+    }).addTo(layersGroup);
+
+    const scanPin = L.circleMarker([sLat, sLon], {
+      radius: 6,
+      color: "#10b981",
+      fillColor: "#34d399",
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(layersGroup);
+
+    scanPin.bindTooltip(`<strong>Sentinel-1 SAR Sector Scan</strong><br>Lat: ${sLat.toFixed(2)}°N, Lon: ${sLon.toFixed(2)}°E<br><span style="color:#10b981">Status: Clean Sea Surface</span>`, { permanent: true, direction: "top" });
+    
+    map.flyTo([sLat, sLon], 8);
+
     const incCard = document.getElementById("incident-card");
     if (incCard) {
       incCard.innerHTML = `

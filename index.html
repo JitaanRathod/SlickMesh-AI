@@ -62,51 +62,61 @@
           </div>
         </div>
 
-        <!-- Surveillance Sector Selector -->
-        <div class="panel-box">
+        <!-- 1. LIVE COORDINATE SEARCH PANEL (Visible in Live Mode) -->
+        <div id="live-search-panel" class="panel-box">
           <div class="panel-header flex-between">
-            <span><i class="fa-solid fa-map-location-dot"></i> Surveillance Sector</span>
-            <span class="version-tag" id="mode-tag">LIVE PASS</span>
+            <span><i class="fa-solid fa-crosshairs"></i> Target Coordinates Search</span>
+            <span class="version-tag text-cyan">LIVE S1 FEED</span>
           </div>
           <div class="control-group">
-            <label for="sample-location">Target Maritime Zone</label>
-            <select id="sample-location" class="custom-select">
-              <option value="mumbai">Arabian Sea — Mumbai High (19.42°N, 71.35°E)</option>
-              <option value="bob">Bay of Bengal — KG Basin (16.15°N, 82.55°E)</option>
-              <option value="default" selected>Gulf of Khambhat — Alang (20.48°N, 67.52°E)</option>
-              <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Corridor</option>
-              <option value="custom">📍 Custom Map Coordinates / Map Click</option>
-            </select>
-          </div>
-          
-          <!-- Custom Coordinate Inputs (Enabled on custom selection or map click) -->
-          <div id="custom-coords-container" style="display: none; margin-top: 8px;" class="control-group">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
               <div>
-                <label style="font-size: 10px;">Latitude (°N)</label>
-                <input type="number" id="custom-lat" step="0.01" value="20.48" class="custom-select" style="padding: 6px 8px; width: 100%;">
+                <label style="font-size: 11px;">Latitude (°N)</label>
+                <input type="number" id="custom-lat" step="0.001" value="19.420" class="custom-select" style="padding: 6px 8px; width: 100%;">
               </div>
               <div>
-                <label style="font-size: 10px;">Longitude (°E)</label>
-                <input type="number" id="custom-lon" step="0.01" value="67.52" class="custom-select" style="padding: 6px 8px; width: 100%;">
+                <label style="font-size: 11px;">Longitude (°E)</label>
+                <input type="number" id="custom-lon" step="0.001" value="71.350" class="custom-select" style="padding: 6px 8px; width: 100%;">
               </div>
             </div>
-            <div style="font-size: 10px; color: var(--accent-cyan); margin-top: 4px;">
-              <i class="fa-solid fa-hand-pointer"></i> <em>Tip: Click anywhere on the map to target that sector!</em>
-            </div>
+          </div>
+          
+          <!-- Quick Maritime Coordinate Presets -->
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+            <button type="button" class="quick-coord-btn" data-lat="19.420" data-lon="71.350" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Mumbai High (19.42, 71.35)</button>
+            <button type="button" class="quick-coord-btn" data-lat="16.150" data-lon="82.550" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">KG Basin (16.15, 82.55)</button>
+            <button type="button" class="quick-coord-btn" data-lat="20.480" data-lon="67.520" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Alang Sea (20.48, 67.52)</button>
+            <button type="button" class="quick-coord-btn" data-lat="9.930" data-lon="76.050" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Cochin Offshore (9.93, 76.05)</button>
+          </div>
+          
+          <div style="font-size: 10px; color: var(--text-dim); margin-top: 2px;">
+            <i class="fa-solid fa-circle-info text-cyan"></i> Coordinates are checked against Copernicus STAC & Open-Meteo live feeds.
           </div>
         </div>
 
-        <!-- Satellite SAR Imagery Input -->
-        <div class="panel-box">
-          <div class="panel-header">
-            <i class="fa-solid fa-satellite-dish"></i> Satellite SAR Image Input
-            <span class="tooltip-icon" title="Upload a Sentinel-1 SAR .png/.tif image or use regional pre-calibrated scenes."><i class="fa-solid fa-circle-question"></i></span>
+        <!-- 2. FORENSIC INCIDENT PANEL (Visible in Demo Mode) -->
+        <div id="demo-controls-panel" class="panel-box" style="display: none;">
+          <div class="panel-header flex-between">
+            <span><i class="fa-solid fa-triangle-exclamation text-red"></i> Historical Incident Scene</span>
+            <span class="version-tag text-red">GROUND TRUTH</span>
           </div>
-          <div class="upload-container" id="upload-box">
-            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-            <div class="upload-text">Click to load or drop Sentinel-1 SAR scene</div>
-            <span class="file-badge" id="selected-file-label">s1_active.png</span>
+          <div class="control-group">
+            <label for="sample-location">Target Incident Scenario</label>
+            <select id="sample-location" class="custom-select">
+              <option value="mumbai" selected>Arabian Sea — Mumbai High Tanker Spill</option>
+              <option value="bob">Bay of Bengal — KG Basin Offshore Discharge</option>
+              <option value="default">Gulf of Khambhat — Alang Anchorage Spill</option>
+              <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Transponder Blackout</option>
+            </select>
+          </div>
+
+          <div class="control-group" style="margin-top: 6px;">
+            <label>Sentinel-1 SAR Radar Scene</label>
+            <div class="upload-container" id="upload-box" style="padding: 8px;">
+              <i class="fa-solid fa-satellite upload-icon" style="font-size: 16px;"></i>
+              <div class="upload-text" style="font-size: 10px;">Click to switch calibrated SAR image</div>
+              <span class="file-badge" id="selected-file-label">s1_active.png</span>
+            </div>
           </div>
         </div>
 

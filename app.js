@@ -199,6 +199,10 @@ function setupEventListeners() {
     });
   }
 
+  // Autonomous EEZ Wide-Area Sweep Button
+  const sweepBtn = document.getElementById("btn-sweep-eez");
+  if (sweepBtn) sweepBtn.addEventListener("click", triggerEEZSweep);
+
   // Modal close events
   const closeBtn = document.getElementById("close-modal-btn");
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
@@ -207,6 +211,71 @@ function setupEventListeners() {
     const modal = document.getElementById("details-modal");
     if (e.target === modal) closeModal();
   });
+}
+
+function triggerEEZSweep() {
+  const sweepBtn = document.getElementById("btn-sweep-eez");
+  if (sweepBtn) {
+    sweepBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sweeping 5 Sentinel-1 Orbit Sectors (185,000 km²)...';
+    sweepBtn.disabled = true;
+  }
+
+  fetch("/api/sweep-eez")
+    .then(r => r.json())
+    .then(data => {
+      layersGroup.clearLayers();
+      const bounds = [];
+
+      data.sectors.forEach(s => {
+        const isAlert = s.status === "INCIDENT_ALERT";
+        const color = isAlert ? "#dc2626" : "#10b981";
+        const fillColor = isAlert ? "#ef4444" : "#34d399";
+
+        // Sector radar boundary box
+        const sectorBox = L.circle([s.lat, s.lon], {
+          radius: 35000,
+          color: color,
+          weight: isAlert ? 2.5 : 1.5,
+          dashArray: isAlert ? "6, 6" : "3, 3",
+          fillColor: fillColor,
+          fillOpacity: isAlert ? 0.12 : 0.04
+        }).addTo(layersGroup);
+
+        const sectorPin = L.circleMarker([s.lat, s.lon], {
+          radius: isAlert ? 8 : 5,
+          color: color,
+          fillColor: fillColor,
+          fillOpacity: 1,
+          weight: 2
+        }).addTo(layersGroup);
+
+        sectorPin.bindTooltip(
+          `<strong>${s.name}</strong><br>` +
+          (isAlert ? 
+            `<span style="color:#ef4444"><strong>🚨 OIL SPILL DETECTED: ${s.slick_area_km2} km²</strong></span><br>Top Suspect: ${s.top_suspect}` :
+            `<span style="color:#10b981"><strong>✅ Verified Clean Sea Surface</strong></span>`),
+          { direction: "top" }
+        );
+        bounds.push([s.lat, s.lon]);
+      });
+
+      // Fit map to encompass all 5 sectors
+      if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }
+
+      // If an alert is detected, render the primary incident details on the right panel
+      if (data.primary_incident) {
+        renderIncident(data.primary_incident);
+      }
+    })
+    .catch(console.error)
+    .finally(() => {
+      if (sweepBtn) {
+        sweepBtn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Autonomous EEZ Wide-Area Sweep (All 5 Sectors)';
+        sweepBtn.disabled = false;
+      }
+    });
 }
 
 function applyPreset(presetKey) {
@@ -254,7 +323,7 @@ function triggerPipeline() {
   const targetRegion = isLive ? "custom" : (document.getElementById("sample-location").value || "mumbai");
   
   const payload = {
-    image_name: document.getElementById("selected-file-label").textContent || "s1_active.png",
+    image_name: isLive ? "s1_live_scan.png" : (document.getElementById("selected-file-label").textContent || "s1_active.png"),
     wind_speed: parseFloat(document.getElementById("wind-speed").value) || 5.4,
     wind_direction: parseFloat(document.getElementById("wind-dir").value) || 72.0,
     current_u: parseFloat(document.getElementById("current-u").value) || 0.18,

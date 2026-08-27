@@ -9,8 +9,44 @@ function degToCompass(num) {
   return arr[(val % 16)];
 }
 
-// Default presets for Indian Maritime Surveillance Zones
+// Default presets for Global Maritime Surveillance Zones
 const locationPresets = {
+  usa_gom: {
+    image: "s1_mumbai_high.png",
+    current_u: -0.22,
+    current_v: 0.14,
+    wind_speed: 6.2,
+    wind_dir: 140,
+    backtrack: 18,
+    name: "US Gulf of Mexico (Deepwater Energy Basin)"
+  },
+  usa_pacific: {
+    image: "s1_active.png",
+    current_u: 0.08,
+    current_v: -0.18,
+    wind_speed: 7.5,
+    wind_dir: 310,
+    backtrack: 24,
+    name: "US Pacific Coast (Port of Long Beach)"
+  },
+  usa_atlantic: {
+    image: "s1_kg_basin.png",
+    current_u: 0.25,
+    current_v: 0.12,
+    wind_speed: 5.8,
+    wind_dir: 80,
+    backtrack: 20,
+    name: "US Atlantic Seaboard (Chesapeake Approach)"
+  },
+  bilge_dump: {
+    image: "s1_mumbai_high.png",
+    current_u: 0.18,
+    current_v: 0.07,
+    wind_speed: 5.4,
+    wind_dir: 72,
+    backtrack: 18,
+    name: "Arabian Sea (MARPOL Illegal Bilge Discharge)"
+  },
   mumbai: {
     image: "s1_mumbai_high.png",
     current_u: 0.12,
@@ -61,18 +97,22 @@ document.addEventListener("DOMContentLoaded", () => {
 function initMap() {
   // Enhanced zoom controls: allows smooth zoom out for global ocean lanes and deep zoom in for port-level inspection
   map = L.map("map", {
-    zoomControl: true,
+    zoomControl: false,
     attributionControl: true,
-    minZoom: 3,
-    maxZoom: 18
-  }).setView([16.0, 78.0], 5);
+    minZoom: 2,
+    maxZoom: 19
+  }).setView([26.0, -85.0], 5);
   
-  // High-performance OpenStreetMap standard layer (100% free, no API key watermark)
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    minZoom: 3,
-    maxZoom: 18,
-    attribution: "&copy; OpenStreetMap contributors | Sentinel-1 SAR Surveillance"
+  // High-performance CartoDB Dark Matter Tactical Map Layer (Free, dark oceans with luminous coastlines)
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    minZoom: 2,
+    maxZoom: 19,
+    subdomains: "abcd",
+    attribution: "&copy; OpenStreetMap &copy; CARTO | Sentinel-1 SAR Constellation"
   }).addTo(map);
+
+  // Add zoom control in bottom-right
+  L.control.zoom({ position: "bottomright" }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
 
@@ -117,49 +157,45 @@ function initSliders() {
 let currentMode = "live";
 
 function setupEventListeners() {
-  // Mode Switcher Tabs
+  const runBtn = document.getElementById("run-pipeline-btn");
   const liveTab = document.getElementById("tab-live-mode");
   const demoTab = document.getElementById("tab-demo-mode");
-  const runBtn = document.getElementById("run-pipeline-btn");
   const livePanel = document.getElementById("live-search-panel");
   const demoPanel = document.getElementById("demo-controls-panel");
 
+  // Mode Switcher Listeners
   if (liveTab && demoTab) {
     liveTab.addEventListener("click", () => {
       currentMode = "live";
-      liveTab.style.backgroundColor = "var(--primary-blue)";
-      liveTab.style.color = "#fff";
-      demoTab.style.backgroundColor = "var(--bg-card)";
-      demoTab.style.color = "var(--text-muted)";
+      liveTab.classList.add("active");
+      demoTab.classList.remove("active");
       if (livePanel) livePanel.style.display = "block";
       if (demoPanel) demoPanel.style.display = "none";
       if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-satellite"></i> Scan Coordinates for Oil Spills';
       
       // Clear previous layers & reset view
       layersGroup.clearLayers();
-      const lat = parseFloat(document.getElementById("custom-lat").value) || 19.42;
-      const lon = parseFloat(document.getElementById("custom-lon").value) || 71.35;
+      const lat = parseFloat(document.getElementById("custom-lat").value) || 28.74;
+      const lon = parseFloat(document.getElementById("custom-lon").value) || -88.36;
       map.flyTo([lat, lon], 7);
     });
 
     demoTab.addEventListener("click", () => {
       currentMode = "demo";
-      demoTab.style.backgroundColor = "var(--accent-red)";
-      demoTab.style.color = "#fff";
-      liveTab.style.backgroundColor = "var(--bg-card)";
-      liveTab.style.color = "var(--text-muted)";
+      demoTab.classList.add("active");
+      liveTab.classList.remove("active");
       if (livePanel) livePanel.style.display = "none";
       if (demoPanel) demoPanel.style.display = "block";
       if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Forensic Attribution Engine';
 
       // Load initial demo incident
-      applyPreset("mumbai");
+      applyPreset("usa_gom");
       triggerPipeline();
     });
   }
 
-  // Quick Coordinate Buttons
-  document.querySelectorAll(".quick-coord-btn").forEach(btn => {
+  // Quick Coordinate Buttons & Header Theater Chips
+  document.querySelectorAll(".quick-coord-btn, .theater-chip").forEach(btn => {
     btn.addEventListener("click", () => {
       const lat = parseFloat(btn.dataset.lat);
       const lon = parseFloat(btn.dataset.lon);
@@ -169,7 +205,7 @@ function setupEventListeners() {
         latInput.value = lat.toFixed(3);
         lonInput.value = lon.toFixed(3);
       }
-      map.flyTo([lat, lon], 8);
+      map.flyTo([lat, lon], 7);
     });
   });
 
@@ -224,27 +260,32 @@ function triggerEEZSweep() {
       const allBounds = [];
 
       data.swaths.forEach(sw => {
+        const isAlert = sw.status === "INCIDENT_ALERT";
+        const color = isAlert ? "#dc2626" : "#10b981";
+        const fillColor = isAlert ? "#ef4444" : "#34d399";
+
         // Render Continuous Swath Polygon covering full waterbody
         const swathPoly = L.polygon(sw.polygon, {
-          color: "#10b981",
-          weight: 2,
-          dashArray: "6, 6",
-          fillColor: "#34d399",
-          fillOpacity: 0.14
+          color: color,
+          weight: isAlert ? 2.5 : 1.5,
+          dashArray: isAlert ? "6, 6" : "3, 3",
+          fillColor: fillColor,
+          fillOpacity: isAlert ? 0.16 : 0.08
         }).addTo(layersGroup);
 
         const centerMarker = L.circleMarker(sw.center, {
-          radius: 6,
-          color: "#10b981",
-          fillColor: "#34d399",
+          radius: isAlert ? 8 : 5,
+          color: color,
+          fillColor: fillColor,
           fillOpacity: 1,
           weight: 2
         }).addTo(layersGroup);
 
         centerMarker.bindTooltip(
           `<strong>${sw.name}</strong><br>` +
-          `<span style="font-family: var(--font-mono); color: #10b981;">Coverage: ${sw.area_km2.toLocaleString()} km²</span><br>` +
-          `<span style="color: #34d399;">✅ 100% Water-Body Verified Clean (0 Slicks)</span>`,
+          (isAlert ?
+            `<span style="color: #ef4444;"><strong>🚨 MARPOL ILLEGAL BILGE DISCHARGE DETECTED</strong></span><br>Slick Extent: ${sw.slick_area_km2} km² • Suspect: <strong>${sw.top_suspect}</strong>` :
+            `<span style="font-family: var(--font-mono); color: #10b981;">Coverage: ${sw.area_km2.toLocaleString()} km²</span><br><span style="color: #34d399;">✅ Verified Clean Ocean (0 Slicks)</span>`),
           { direction: "top" }
         );
 
@@ -256,23 +297,27 @@ function triggerEEZSweep() {
         map.fitBounds(allBounds, { padding: [10, 10] });
       }
 
-      // Update incident card with comprehensive global ocean clean status
-      const incCard = document.getElementById("incident-card");
-      if (incCard) {
-        incCard.innerHTML = `
-          <div style="color: var(--accent-green); font-size: 11px; padding: 6px; line-height: 1.4;">
-            <i class="fa-solid fa-shield-halved"></i> <strong>GLOBAL OCEANS SATELLITE SWEEP COMPLETED</strong><br>
-            ${data.summary.message}<br>
-            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Global Coverage: 361,000,000 km² • Sentinel-1 Constellation • 0 Slicks</span>
-          </div>
-        `;
+      // If an alert is detected, render the primary incident details on the right panel
+      if (data.primary_incident) {
+        renderIncident(data.primary_incident);
+      } else {
+        const incCard = document.getElementById("incident-card");
+        if (incCard) {
+          incCard.innerHTML = `
+            <div style="color: var(--accent-green); font-size: 11px; padding: 6px; line-height: 1.4;">
+              <i class="fa-solid fa-shield-halved"></i> <strong>GLOBAL OCEANS SATELLITE SWEEP COMPLETED</strong><br>
+              ${data.summary.message}<br>
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 10px;">Global Coverage: 361,000,000 km² • Sentinel-1 Constellation • 0 Slicks</span>
+            </div>
+          `;
+        }
+        const candsContainer = document.getElementById("candidates");
+        if (candsContainer) {
+          candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-earth-americas"></i> Global Maritime Domain Verified Clear: 0 Oil Spills Detected Worldwide.</div>';
+        }
+        const countBadge = document.getElementById("vessel-count-badge");
+        if (countBadge) countBadge.textContent = "0 suspects";
       }
-      const candsContainer = document.getElementById("candidates");
-      if (candsContainer) {
-        candsContainer.innerHTML = '<div class="empty-state" style="color: var(--accent-green);"><i class="fa-solid fa-earth-americas"></i> Global Maritime Domain Verified Clear: 0 Oil Spills Detected Worldwide.</div>';
-      }
-      const countBadge = document.getElementById("vessel-count-badge");
-      if (countBadge) countBadge.textContent = "0 suspects";
 
       // Update environment card with maritime summary
       const envCard = document.getElementById("env-card");

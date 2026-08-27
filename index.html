@@ -6,268 +6,264 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>SlickMesh AI — Maritime Oil Spill Detection & Vessel Attribution</title>
-  <!-- Modern Professional Fonts -->
+  <title>SlickMesh — Enterprise Autonomous Maritime Satellite Surveillance & AIS Attribution</title>
+  <!-- Modern Enterprise Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css?v=2.5" />
+  <link rel="stylesheet" href="style.css?v=4.0" />
 </head>
-<body>
-  <div class="app-container">
-    <!-- Top Navigation / Header -->
-    <header class="app-header">
-      <div class="brand-section">
-        <div class="brand-badge"><i class="fa-solid fa-anchor"></i></div>
-        <div>
-          <div class="brand-title">SLICKMESH-AI <span class="version-tag">PRO v2.4</span></div>
-          <div class="brand-subtitle">Sentinel-1 SAR Satellite Surveillance & Multi-Evidence AIS Attribution</div>
+<body class="dark-tactical-theme">
+  <!-- 1. Full-Screen Tactical Map Canvas -->
+  <div id="map" class="fullscreen-tactical-map"></div>
+
+  <!-- 2. Floating Top Header Bar -->
+  <header class="tactical-header">
+    <div class="header-left">
+      <div class="brand-badge"><i class="fa-solid fa-satellite-dish"></i></div>
+      <div class="brand-info">
+        <div class="brand-title">
+          <span>SLICKMESH</span>
+          <span class="brand-tag">TACTICAL AI</span>
         </div>
+        <div class="brand-sub">Sentinel-1 SAR Real-Time Oceanic Sweep & Multi-Evidence AIS Attribution</div>
+      </div>
+    </div>
+
+    <!-- Quick Global Maritime Theater Switcher Chips -->
+    <div class="theater-chips-bar">
+      <span class="theater-label"><i class="fa-solid fa-globe"></i> THEATERS:</span>
+      <button type="button" class="theater-chip" data-lat="28.740" data-lon="-88.360">🇺🇸 US Gulf of Mexico</button>
+      <button type="button" class="theater-chip" data-lat="33.740" data-lon="-118.250">🇺🇸 US West Coast (Long Beach)</button>
+      <button type="button" class="theater-chip" data-lat="36.950" data-lon="-75.750">🇺🇸 US East Coast (Chesapeake)</button>
+      <button type="button" class="theater-chip" data-lat="19.420" data-lon="71.350">🇮🇳 Mumbai High Oilfield</button>
+      <button type="button" class="theater-chip" data-lat="1.250" data-lon="103.800">🇸🇬 Singapore & Malacca</button>
+      <button type="button" class="theater-chip" data-lat="26.500" data-lon="56.300">🇦🇪 Strait of Hormuz / Gulf</button>
+    </div>
+
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="live-beacon"></span>
+        <span class="status-text">SATELLITE SURVEILLANCE ACTIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. Floating Left Command Console (Dock) -->
+  <aside class="floating-dock dock-left">
+    <!-- Mode Switcher Segmented Control -->
+    <div class="mode-toggle-box">
+      <button id="tab-live-mode" class="mode-btn active">
+        <i class="fa-solid fa-satellite"></i> Live Satellite Pass
+      </button>
+      <button id="tab-demo-mode" class="mode-btn">
+        <i class="fa-solid fa-shield-virus"></i> Forensic Demo
+      </button>
+    </div>
+
+    <!-- Live Coordinate Targeting Panel -->
+    <div id="live-search-panel" class="dock-section">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-crosshairs text-sky"></i> Coordinate Targeting</span>
+        <span class="sensor-pill">S1 C-SAR</span>
+      </div>
+
+      <div class="coord-inputs-grid">
+        <div class="input-field">
+          <label>LATITUDE (°N)</label>
+          <input type="number" id="custom-lat" step="0.001" value="28.740" class="tactical-input">
+        </div>
+        <div class="input-field">
+          <label>LONGITUDE (°E/W)</label>
+          <input type="number" id="custom-lon" step="0.001" value="-88.360" class="tactical-input">
+        </div>
+      </div>
+
+      <!-- Quick Coordinates Shortcuts -->
+      <div class="quick-coords-container">
+        <button type="button" class="quick-coord-btn" data-lat="28.740" data-lon="-88.360">Gulf of Mexico (28.74, -88.36)</button>
+        <button type="button" class="quick-coord-btn" data-lat="33.740" data-lon="-118.250">Long Beach (33.74, -118.25)</button>
+        <button type="button" class="quick-coord-btn" data-lat="19.420" data-lon="71.350">Mumbai High (19.42, 71.35)</button>
+        <button type="button" class="quick-coord-btn" data-lat="16.150" data-lon="82.550">KG Basin (16.15, 82.55)</button>
+        <button type="button" class="quick-coord-btn" data-lat="60.800" data-lon="-146.700">Alaska / Valdez (60.80, -146.70)</button>
+      </div>
+
+      <button type="button" id="btn-sweep-eez" class="btn-sweep-action">
+        <i class="fa-solid fa-earth-americas"></i> Autonomous Global Constellation Sweep (All Oceans)
+      </button>
+    </div>
+
+    <!-- Forensic Demo Incident Panel -->
+    <div id="demo-controls-panel" class="dock-section" style="display: none;">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-triangle-exclamation text-rose"></i> Target Incident Scene</span>
+        <span class="sensor-pill text-rose">GROUND TRUTH</span>
+      </div>
+      <div class="control-group">
+        <label>Historical Incident Scenario</label>
+        <select id="sample-location" class="tactical-select">
+          <option value="usa_gom" selected>🇺🇸 US Gulf of Mexico — Deepwater Energy Corridor Discharge</option>
+          <option value="usa_pacific">🇺🇸 US Pacific Coast — Long Beach Tanker Fairway</option>
+          <option value="usa_atlantic">🇺🇸 US Atlantic Seaboard — Mid-Atlantic Crude Transit</option>
+          <option value="bilge_dump">🚨 Arabian Sea — MARPOL Annex I Illegal Bilge Dumping (Magic Pipe)</option>
+          <option value="mumbai">Arabian Sea — Mumbai High Tanker Collision</option>
+          <option value="bob">Bay of Bengal — KG Basin Offshore Discharge</option>
+          <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Transponder Blackout</option>
+        </select>
+      </div>
+
+      <div class="control-group" style="margin-top: 6px;">
+        <label>Calibrated SAR Radar Granule</label>
+        <div class="upload-container" id="upload-box">
+          <i class="fa-solid fa-satellite upload-icon"></i>
+          <div class="upload-text">Switch Sentinel-1 Radar Image</div>
+          <span class="file-badge" id="selected-file-label">s1_active.png</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metocean Physics & Hydrodynamic Drift Parameters -->
+    <div class="dock-section">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-water text-sky"></i> Metocean Drift Engine</span>
+        <span class="tooltip-icon" title="Ocean current vectors (U, V) and 10m wind velocity dictate reverse hydrodynamic backtracking."><i class="fa-solid fa-circle-question"></i></span>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>Surface 10m Wind Speed</span>
+          <strong id="wind-speed-val" class="mono-val">5.4 m/s</strong>
+        </div>
+        <input type="range" id="wind-speed" min="1.0" max="15.0" step="0.1" value="5.4">
+        <span class="param-hint">Operational SAR Detection Window: 2.0 to 12.0 m/s</span>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>Wind Direction (From)</span>
+          <strong id="wind-dir-val" class="mono-val">72° (ENE)</strong>
+        </div>
+        <input type="range" id="wind-dir" min="0" max="360" step="1" value="72">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>Current U (East-West)</span>
+          <strong id="current-u-val" class="mono-val">+0.18 m/s</strong>
+        </div>
+        <input type="range" id="current-u" min="-1.5" max="1.5" step="0.01" value="0.18">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>Current V (North-South)</span>
+          <strong id="current-v-val" class="mono-val">+0.07 m/s</strong>
+        </div>
+        <input type="range" id="current-v" min="-1.5" max="1.5" step="0.01" value="0.07">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>Backtrack Lookback Window</span>
+          <strong id="backtrack-hours-val" class="mono-val">24 hrs</strong>
+        </div>
+        <input type="range" id="backtrack-hours" min="6" max="72" step="1" value="24">
+      </div>
+    </div>
+
+    <button id="run-pipeline-btn" class="btn-execute-pipeline">
+      <i class="fa-solid fa-play"></i> Execute Surveillance Pipeline
+    </button>
+  </aside>
+
+  <!-- 4. Floating Right Intelligence Dock -->
+  <aside class="floating-dock dock-right">
+    <!-- Incident Telemetry Card -->
+    <div class="dock-section">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-triangle-exclamation text-rose"></i> Incident Telemetry</span>
+        <span class="sensor-pill text-rose">DETECTION</span>
+      </div>
+      <div id="incident-card" class="telemetry-content">
+        <div class="empty-state">Ready for real-time constellation query...</div>
+      </div>
+    </div>
+
+    <!-- Metocean Ingestion Status Card -->
+    <div class="dock-section">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-compass text-sky"></i> Oceanographic Ingestion</span>
+        <span class="sensor-pill text-sky">COPERNICUS</span>
+      </div>
+      <div id="env-card" class="telemetry-content">
+        <div class="empty-state">No active metocean feed</div>
+      </div>
+    </div>
+
+    <!-- AIS Vessel Attribution Leaderboard -->
+    <div class="dock-section flex-grow-section">
+      <div class="dock-section-title">
+        <span><i class="fa-solid fa-ship text-sky"></i> Ranked Suspect Attribution</span>
+        <span class="counter-badge" id="vessel-count-badge">0 vessels</span>
+      </div>
+      <div class="candidates-list" id="candidates">
+        <div class="empty-state">Execute scan or sweep to isolate suspect vessels</div>
+      </div>
+    </div>
+
+    <!-- Legal Guardrail Notice -->
+    <div class="legal-notice">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <span><strong>Legal Triage Notice:</strong> Multi-evidence attribution confidence scoring is probabilistic for maritime law enforcement prioritization.</span>
+    </div>
+  </aside>
+
+  <!-- 5. Floating Bottom-Left Tactical Legend -->
+  <div class="floating-legend">
+    <div class="legend-header"><i class="fa-solid fa-layer-group"></i> Tactical Chart Layers</div>
+    <div class="legend-grid">
+      <div class="legend-chip"><span class="chip-color red-poly"></span> <strong>Detected Oil Slick</strong> (Martin)</div>
+      <div class="legend-chip"><span class="chip-color yellow-circle"></span> <strong>Origin Corridor</strong> (Jitaan)</div>
+      <div class="legend-chip"><span class="chip-color suspect-track"></span> <strong>Rank #1 Suspect Track</strong> (Om)</div>
+      <div class="legend-chip"><span class="chip-color other-track"></span> <strong>Secondary Vessel Tracks</strong></div>
+    </div>
+  </div>
+
+  <!-- 6. Forensic Evidence Modal Dialog -->
+  <div class="modal" id="details-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-area">
+          <div class="modal-icon-badge"><i class="fa-solid fa-ship"></i></div>
+          <div>
+            <h3 id="modal-vessel-name">MV Ocean Star</h3>
+            <span class="modal-subtitle" id="modal-type-mmsi">Crude Oil Tanker • MMSI: 419001234</span>
+          </div>
+        </div>
+        <button class="modal-close" id="close-modal-btn">&times;</button>
       </div>
       
-      <div class="telemetry-bar">
-        <div class="telemetry-item">
-          <span class="telemetry-label">SATELLITE SENSOR</span>
-          <span class="telemetry-val text-cyan"><i class="fa-solid fa-satellite"></i> Sentinel-1 C-SAR (VV)</span>
-        </div>
-        <div class="telemetry-item">
-          <span class="telemetry-label">METOCEAN SOURCE</span>
-          <span class="telemetry-val text-green"><i class="fa-solid fa-globe"></i> Copernicus / Open-Meteo</span>
-        </div>
-        <div class="telemetry-item">
-          <span class="telemetry-label">SURVEILLANCE STATUS</span>
-          <span class="telemetry-val text-emerald"><i class="fa-solid fa-shield-halved"></i> Active Monitoring</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Workspace -->
-    <main class="app-main">
-      <!-- Left Column: Operations & Metocean Control Panel -->
-      <section class="sidebar controls-sidebar">
-        
-        <!-- Mode Switcher Tabs -->
-        <div class="panel-box" style="padding: 6px; background-color: #0b1329;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-            <button id="tab-live-mode" class="btn" style="padding: 8px; font-size: 11px; background-color: var(--primary-blue); color: #fff;">
-              <i class="fa-solid fa-satellite"></i> Live Satellite Pass
-            </button>
-            <button id="tab-demo-mode" class="btn" style="padding: 8px; font-size: 11px; background-color: var(--bg-card); color: var(--text-muted);">
-              <i class="fa-solid fa-triangle-exclamation"></i> Forensic Demo
-            </button>
+      <div class="modal-body">
+        <div class="confidence-banner">
+          <div class="conf-stat">
+            <span class="conf-lbl">ATTRIBUTION CONFIDENCE</span>
+            <span class="conf-num" id="modal-conf">88%</span>
           </div>
+          <div class="conf-verdict" id="modal-verdict">PRIMARY SUSPECT</div>
         </div>
 
-        <!-- 1. LIVE COORDINATE SEARCH PANEL (Visible in Live Mode) -->
-        <div id="live-search-panel" class="panel-box">
-          <div class="panel-header flex-between">
-            <span><i class="fa-solid fa-crosshairs"></i> Target Coordinates Search</span>
-            <span class="version-tag text-cyan">LIVE S1 FEED</span>
-          </div>
-          <div class="control-group">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div>
-                <label style="font-size: 11px;">Latitude (°N)</label>
-                <input type="number" id="custom-lat" step="0.001" value="19.420" class="custom-select" style="padding: 6px 8px; width: 100%;">
-              </div>
-              <div>
-                <label style="font-size: 11px;">Longitude (°E)</label>
-                <input type="number" id="custom-lon" step="0.001" value="71.350" class="custom-select" style="padding: 6px 8px; width: 100%;">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Quick Maritime Coordinate Presets -->
-          <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
-            <button type="button" class="quick-coord-btn" data-lat="19.420" data-lon="71.350" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Mumbai High (19.42, 71.35)</button>
-            <button type="button" class="quick-coord-btn" data-lat="16.150" data-lon="82.550" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">KG Basin (16.15, 82.55)</button>
-            <button type="button" class="quick-coord-btn" data-lat="20.480" data-lon="67.520" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Alang Sea (20.48, 67.52)</button>
-            <button type="button" class="quick-coord-btn" data-lat="9.930" data-lon="76.050" style="background:#1e293b; border:1px solid #334155; color:#94a3b8; border-radius:3px; padding:3px 6px; font-size:10px; cursor:pointer;">Cochin Offshore (9.93, 76.05)</button>
-          </div>
-          
-          <button type="button" id="btn-sweep-eez" class="btn" style="background-color: #065f46; border: 1px solid #10b981; color: #fff; width: 100%; font-size: 11px; margin-top: 8px;">
-            <i class="fa-solid fa-earth-americas"></i> Autonomous Global Ocean Satellite Sweep (All Oceans)
-          </button>
+        <div class="section-heading"><i class="fa-solid fa-list-check"></i> 7-Signal Evidence Decomposition</div>
+        <div class="score-bars" id="score-bars-container">
+          <!-- Dynamic progress bars -->
         </div>
 
-        <!-- 2. FORENSIC INCIDENT PANEL (Visible in Demo Mode) -->
-        <div id="demo-controls-panel" class="panel-box" style="display: none;">
-          <div class="panel-header flex-between">
-            <span><i class="fa-solid fa-triangle-exclamation text-red"></i> Historical Incident Scene</span>
-            <span class="version-tag text-red">GROUND TRUTH</span>
-          </div>
-          <div class="control-group">
-            <label for="sample-location">Target Incident Scenario</label>
-            <select id="sample-location" class="custom-select">
-              <option value="mumbai" selected>Arabian Sea — Mumbai High Tanker Spill</option>
-              <option value="bob">Bay of Bengal — KG Basin Offshore Discharge</option>
-              <option value="default">Gulf of Khambhat — Alang Anchorage Spill</option>
-              <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Transponder Blackout</option>
-            </select>
-          </div>
-
-          <div class="control-group" style="margin-top: 6px;">
-            <label>Sentinel-1 SAR Radar Scene</label>
-            <div class="upload-container" id="upload-box" style="padding: 8px;">
-              <i class="fa-solid fa-satellite upload-icon" style="font-size: 16px;"></i>
-              <div class="upload-text" style="font-size: 10px;">Click to switch calibrated SAR image</div>
-              <span class="file-badge" id="selected-file-label">s1_active.png</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hydrodynamic & Environmental Settings -->
-        <div class="panel-box">
-          <div class="panel-header">
-            <i class="fa-solid fa-water"></i> Metocean Drift Parameters
-            <span class="tooltip-icon" title="Ocean currents (U: East/West, V: North/South) and wind dictate where the oil slick drifted from."><i class="fa-solid fa-circle-question"></i></span>
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label">
-              <span>Surface Wind Speed</span>
-              <strong id="wind-speed-val" class="mono-val">5.4 m/s</strong>
-            </div>
-            <input type="range" id="wind-speed" min="1.0" max="15.0" step="0.1" value="5.4">
-            <span class="param-hint">Ideal SAR detection window: 2.0 to 12.0 m/s</span>
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label">
-              <span>Wind Direction (Blowing From)</span>
-              <strong id="wind-dir-val" class="mono-val">72° (ENE)</strong>
-            </div>
-            <input type="range" id="wind-dir" min="0" max="360" step="1" value="72">
-            <span class="param-hint">Compass bearing from which wind originates</span>
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label">
-              <span>Current U (East-West Vector)</span>
-              <strong id="current-u-val" class="mono-val">+0.18 m/s</strong>
-            </div>
-            <input type="range" id="current-u" min="-1.5" max="1.5" step="0.01" value="0.18">
-            <span class="param-hint">Positive = Eastward, Negative = Westward</span>
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label">
-              <span>Current V (North-South Vector)</span>
-              <strong id="current-v-val" class="mono-val">+0.07 m/s</strong>
-            </div>
-            <input type="range" id="current-v" min="-1.5" max="1.5" step="0.01" value="0.07">
-            <span class="param-hint">Positive = Northward, Negative = Southward</span>
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label">
-              <span>Reverse Backtrack Horizon</span>
-              <strong id="backtrack-hours-val" class="mono-val">24 hrs</strong>
-            </div>
-            <input type="range" id="backtrack-hours" min="6" max="72" step="1" value="24">
-            <span class="param-hint">Maximum temporal lookback window for origin</span>
-          </div>
-        </div>
-
-        <button id="run-pipeline-btn" class="btn btn-primary">
-          <i class="fa-solid fa-play"></i> Run Surveillance Pipeline
-        </button>
-      </section>
-
-      <!-- Center Column: Geospatial Maritime Chart -->
-      <section class="map-container">
-        <div id="map"></div>
-
-        <!-- Interactive Map Legend & Info Banner -->
-        <div class="map-overlay-panel">
-          <div class="overlay-header"><i class="fa-solid fa-layer-group"></i> Tactical Chart Layers</div>
-          <div class="legend-grid">
-            <div class="legend-chip"><span class="chip-color red-poly"></span> <strong>Detected Oil Slick</strong> (Martin)</div>
-            <div class="legend-chip"><span class="chip-color yellow-circle"></span> <strong>Origin Corridor</strong> (Jitaan)</div>
-            <div class="legend-chip"><span class="chip-color suspect-track"></span> <strong>Rank #1 Suspect Track</strong> (Om)</div>
-            <div class="legend-chip"><span class="chip-color other-track"></span> <strong>Secondary Vessel Tracks</strong></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right Column: Incident Telemetry & Vessel Attribution Leaderboard -->
-      <section class="sidebar results-sidebar">
-        
-        <!-- Incident Telemetry Card -->
-        <div class="panel-box">
-          <div class="panel-header">
-            <i class="fa-solid fa-triangle-exclamation text-red"></i> Spill Incident Telemetry
-          </div>
-          <div id="incident-card" class="telemetry-card">
-            <div class="empty-state">Initializing surveillance feed...</div>
-          </div>
-        </div>
-
-        <!-- Environmental Feed Card -->
-        <div class="panel-box">
-          <div class="panel-header">
-            <i class="fa-solid fa-compass-drafting text-cyan"></i> Oceanographic Ingestion
-          </div>
-          <div id="env-card" class="telemetry-card">
-            <div class="empty-state">No active metocean data</div>
-          </div>
-        </div>
-
-        <!-- Ranked Vessel Suspects -->
-        <div class="panel-box flex-grow-box">
-          <div class="panel-header flex-between">
-            <span><i class="fa-solid fa-ship text-blue"></i> Ranked Vessel Attribution</span>
-            <span class="counter-badge" id="vessel-count-badge">0 vessels</span>
-          </div>
-          <div class="candidates-list" id="candidates">
-            <div class="empty-state">Run pipeline to identify suspects</div>
-          </div>
-        </div>
-
-        <!-- Legal Guardrail Notice -->
-        <div class="legal-notice">
-          <i class="fa-solid fa-scale-balanced"></i>
-          <span><strong>Investigative Triage Notice:</strong> Multi-evidence confidence scoring is probabilistic for coast guard prioritization. Not legal proof.</span>
-        </div>
-      </section>
-    </main>
-
-    <!-- Modal for 7-Feature Evidence Breakdown -->
-    <div class="modal" id="details-modal">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <div class="modal-title-area">
-            <i class="fa-solid fa-ship text-primary"></i>
-            <div>
-              <h3 id="modal-vessel-name">MV Ocean Star</h3>
-              <span class="modal-subtitle" id="modal-type-mmsi">Crude Oil Tanker • MMSI: 419001234</span>
-            </div>
-          </div>
-          <button class="modal-close" id="close-modal-btn">&times;</button>
-        </div>
-        
-        <div class="modal-body">
-          <div class="confidence-banner">
-            <div class="conf-stat">
-              <span class="conf-lbl">ATTRIBUTION CONFIDENCE</span>
-              <span class="conf-num" id="modal-conf">88%</span>
-            </div>
-            <div class="conf-verdict" id="modal-verdict">PRIMARY SUSPECT</div>
-          </div>
-
-          <div class="section-heading"><i class="fa-solid fa-list-check"></i> 7-Signal Evidence Decomposition</div>
-          <div class="score-bars" id="score-bars-container">
-            <!-- Dynamic progress bars -->
-          </div>
-
-          <div class="explainable-reason-box">
-            <div class="reason-title"><i class="fa-solid fa-file-lines"></i> Plain-English Factual Explanation</div>
-            <p id="modal-reason-str" class="reason-text"></p>
-          </div>
+        <div class="explainable-reason-box">
+          <div class="reason-title"><i class="fa-solid fa-file-lines"></i> Plain-English Factual Explanation</div>
+          <p id="modal-reason-str" class="reason-text"></p>
         </div>
       </div>
     </div>
@@ -275,7 +271,7 @@
 
   <!-- Leaflet JavaScript -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=2.5"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>
 

@@ -189,41 +189,6 @@ def get_regional_presets(region: str, custom_lat: Optional[float] = None, custom
                 }
             ]
         },
-        "usa_gom": {
-            "lat": 28.74, "lon": -88.36,  # US Gulf of Mexico Deepwater Energy Basin
-            "candidates": [
-                {
-                    "mmsi": "367119000", "imo": "9678123", "name": "Gulf Voyager", "vessel_type": "Crude Oil Tanker",
-                    "min_dist_nm": 0.8, "hours": 3.0, "heading_delta": 6.0, "sog": 14.2, "intersects": True, "continuity": "continuous",
-                    "track": [[28.30, -88.80], [28.55, -88.55], [28.74, -88.36], [29.00, -88.10]]
-                },
-                {
-                    "mmsi": "368224000", "imo": "9554321", "name": "Louisiana Carrier", "vessel_type": "Bulk Carrier",
-                    "min_dist_nm": 11.2, "hours": 7.5, "heading_delta": 38.0, "sog": 12.0, "intersects": False, "continuity": "continuous",
-                    "track": [[28.10, -89.30], [28.40, -89.15], [28.70, -89.00], [29.00, -88.85]]
-                }
-            ]
-        },
-        "usa_pacific": {
-            "lat": 33.74, "lon": -118.25,  # US West Coast - Port of Los Angeles / Long Beach
-            "candidates": [
-                {
-                    "mmsi": "366998000", "imo": "9812456", "name": "Pacific Explorer", "vessel_type": "Container Ship",
-                    "min_dist_nm": 1.1, "hours": 2.8, "heading_delta": 7.0, "sog": 17.5, "intersects": True, "continuity": "continuous",
-                    "track": [[33.30, -118.60], [33.55, -118.40], [33.74, -118.25], [33.95, -118.10]]
-                }
-            ]
-        },
-        "usa_atlantic": {
-            "lat": 36.95, "lon": -75.75,  # US East Coast - Chesapeake & Mid-Atlantic Corridor
-            "candidates": [
-                {
-                    "mmsi": "367554000", "imo": "9745123", "name": "Atlantic Patriot", "vessel_type": "Product Tanker",
-                    "min_dist_nm": 0.9, "hours": 3.2, "heading_delta": 5.0, "sog": 13.8, "intersects": True, "continuity": "continuous",
-                    "track": [[36.50, -76.10], [36.75, -75.90], [36.95, -75.75], [37.20, -75.55]]
-                }
-            ]
-        },
         "default": {
             "lat": 20.48, "lon": 67.52,
             # Drift brings origin to ~ (20.35, 67.30)
@@ -540,13 +505,7 @@ async def sweep_eez_api(scope: str = "global"):
 
         # Pacific & East Asian Seas
         {"id": "SWATH-SE-ASIA-MALACCA", "name": "Sentinel-1 Constellation: South China Sea & Malacca Strait Corridor", "center": [12.0, 112.0], "polygon": [[22.0, 98.0], [22.0, 125.0], [-8.0, 125.0], [-8.0, 98.0]], "area_km2": 8500000},
-        {"id": "SWATH-PACIFIC-WEST", "name": "Sentinel-1 Constellation: Western Pacific & Asia-America Fairway", "center": [25.0, 145.0], "polygon": [[45.0, 120.0], [45.0, 180.0], [-10.0, 180.0], [-10.0, 120.0]], "area_km2": 45000000},
-
-        # United States & North American Maritime Domains
-        {"id": "SWATH-USA-GOM", "name": "Sentinel-1 Constellation: US Gulf of Mexico Deepwater Energy Basin", "center": [26.0, -90.0], "polygon": [[31.0, -98.0], [31.0, -81.0], [21.0, -81.0], [21.0, -98.0]], "area_km2": 1600000},
-        {"id": "SWATH-USA-EAST", "name": "Sentinel-1 Constellation: US Atlantic Seaboard & East Coast Corridor", "center": [35.0, -73.0], "polygon": [[45.0, -80.0], [45.0, -65.0], [25.0, -65.0], [25.0, -80.0]], "area_km2": 3200000},
-        {"id": "SWATH-USA-WEST", "name": "Sentinel-1 Constellation: US Pacific Coast & California Bight", "center": [38.0, -125.0], "polygon": [[50.0, -135.0], [50.0, -117.0], [30.0, -117.0], [30.0, -135.0]], "area_km2": 4500000},
-        {"id": "SWATH-USA-ALASKA", "name": "Sentinel-1 Constellation: Gulf of Alaska & Arctic Transpolar Routes", "center": [58.0, -150.0], "polygon": [[65.0, -170.0], [65.0, -130.0], [52.0, -130.0], [52.0, -170.0]], "area_km2": 6800000}
+        {"id": "SWATH-PACIFIC-WEST", "name": "Sentinel-1 Constellation: Western Pacific & Asia-America Fairway", "center": [25.0, 145.0], "polygon": [[45.0, 120.0], [45.0, 180.0], [-10.0, 180.0], [-10.0, 120.0]], "area_km2": 45000000}
     ]
 
     results = []

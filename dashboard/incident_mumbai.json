@@ -1,60 +1,60 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-16T08:31:19Z",
-    "area_km2": 10.63,
-    "confidence": 0.98,
+    "detected_at": "2026-09-16T08:31:16Z",
+    "area_km2": 66.35,
+    "confidence": 0.97,
     "polygon": [
       [
-        71.3748,
-        19.4565
+        71.4092,
+        19.4772
       ],
       [
-        71.3591,
-        19.4475
+        71.3467,
+        19.4628
       ],
       [
-        71.3586,
-        19.4394
+        71.3252,
+        19.3673
       ],
       [
-        71.3658,
-        19.4277
+        71.3533,
+        19.3655
       ],
       [
-        71.3815,
-        19.4241
+        71.361,
+        19.4186
       ],
       [
-        71.3925,
-        19.4308
+        71.371,
+        19.3646
       ],
       [
-        71.3959,
-        19.4421
+        71.4097,
+        19.3637
       ],
       [
-        71.3887,
-        19.4524
+        71.3839,
+        19.4326
       ],
       [
-        71.3748,
-        19.4565
+        71.4092,
+        19.4772
       ]
     ]
   },
   "environment": {
-    "current_u_ms": 0.12,
-    "current_v_ms": -0.15,
-    "wind_speed_ms": 6.2,
-    "wind_direction_deg": 240.0,
-    "source_model": "Copernicus Marine / Open-Meteo Live API"
+    "current_u_ms": -0.04,
+    "current_v_ms": -0.17,
+    "wind_speed_ms": 4.9,
+    "wind_direction_deg": 256,
+    "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 19.4735,
-    "longitude": 71.2037,
-    "radius_km": 15.6,
-    "backtrack_hours": 18
+    "latitude": 19.5198,
+    "longitude": 71.2857,
+    "radius_km": 15.9,
+    "backtrack_hours": 24
   },
   "vessels": [
     {
@@ -86,9 +86,9 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.929,
-        "distance": 0.634,
-        "time_consistency": 0.831,
+        "environmental_consistency": 0.922,
+        "distance": 0.601,
+        "time_consistency": 0.873,
         "track_continuity": 0.9,
         "heading": 0.956,
         "speed": 0.9,
@@ -99,8 +99,8 @@
       "name": "Konkan Star",
       "mmsi": "419002222",
       "type": "Chemical Tanker",
-      "confidence": 54,
-      "reason": "Passed outside the origin corridor at 8.8 nm minimum approach distance.",
+      "confidence": 47,
+      "reason": "Passed outside the origin corridor at 13.4 nm minimum approach distance.",
       "position": [
         71.15,
         19.75
@@ -124,9 +124,9 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.258,
-        "distance": 0.193,
-        "time_consistency": 0.662,
+        "environmental_consistency": 0.079,
+        "distance": 0.0,
+        "time_consistency": 0.746,
         "track_continuity": 0.9,
         "heading": 0.878,
         "speed": 0.65,
@@ -137,8 +137,8 @@
       "name": "Mumbai Pioneer",
       "mmsi": "419003333",
       "type": "Cargo",
-      "confidence": 33,
-      "reason": "Passed outside the origin corridor at 31.0 nm minimum approach distance.",
+      "confidence": 36,
+      "reason": "Passed outside the origin corridor at 26.3 nm minimum approach distance.",
       "position": [
         71.8,
         19.8
@@ -164,7 +164,7 @@
       "sub_scores": {
         "environmental_consistency": 0.0,
         "distance": 0.0,
-        "time_consistency": 0.324,
+        "time_consistency": 0.493,
         "track_continuity": 0.9,
         "heading": 0.694,
         "speed": 0.5,

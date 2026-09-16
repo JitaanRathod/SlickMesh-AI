@@ -1,0 +1,137 @@
+{
+  "incident": {
+    "id": "SPILL-001",
+    "detected_at": "2026-09-16T08:31:17Z",
+    "area_km2": 66.35,
+    "confidence": 0.97,
+    "polygon": [
+      [
+        82.6082,
+        16.2072
+      ],
+      [
+        82.5467,
+        16.1928
+      ],
+      [
+        82.5256,
+        16.0973
+      ],
+      [
+        82.5533,
+        16.0955
+      ],
+      [
+        82.5608,
+        16.1486
+      ],
+      [
+        82.5706,
+        16.0946
+      ],
+      [
+        82.6086,
+        16.0937
+      ],
+      [
+        82.5833,
+        16.1626
+      ],
+      [
+        82.6082,
+        16.2072
+      ]
+    ]
+  },
+  "environment": {
+    "current_u_ms": -0.09,
+    "current_v_ms": -0.16,
+    "wind_speed_ms": 13.7,
+    "wind_direction_deg": 240,
+    "source_model": "Open-Meteo Live API"
+  },
+  "source_region": {
+    "latitude": 16.1102,
+    "longitude": 82.3549,
+    "radius_km": 26.4,
+    "backtrack_hours": 24
+  },
+  "vessels": [
+    {
+      "name": "Bay Explorer",
+      "mmsi": "419004444",
+      "type": "Oil Tanker",
+      "confidence": 57,
+      "reason": "Passed outside the origin corridor at 16.4 nm minimum approach distance.",
+      "position": [
+        82.6,
+        16.25
+      ],
+      "track": [
+        [
+          82.85,
+          15.6
+        ],
+        [
+          82.78,
+          15.85
+        ],
+        [
+          82.7,
+          16.03
+        ],
+        [
+          82.6,
+          16.25
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.221,
+        "distance": 0.113,
+        "time_consistency": 0.855,
+        "track_continuity": 0.9,
+        "heading": 0.944,
+        "speed": 0.9,
+        "vessel_type": 1.0
+      }
+    },
+    {
+      "name": "Godavari Pride",
+      "mmsi": "419005555",
+      "type": "Bulk Carrier",
+      "confidence": 33,
+      "reason": "Passed 33.4 nm from origin corridor 9.5 hours before detection with discontinuous AIS broadcast.",
+      "position": [
+        82.85,
+        16.4
+      ],
+      "track": [
+        [
+          83.15,
+          15.5
+        ],
+        [
+          83.05,
+          15.8
+        ],
+        [
+          82.95,
+          16.1
+        ],
+        [
+          82.85,
+          16.4
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.0,
+        "distance": 0.0,
+        "time_consistency": 0.656,
+        "track_continuity": 0.4,
+        "heading": 0.75,
+        "speed": 0.65,
+        "vessel_type": 0.7
+      }
+    }
+  ]
+}

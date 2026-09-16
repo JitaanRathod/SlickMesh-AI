@@ -6,245 +6,517 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>SlickMesh — Enterprise Autonomous Maritime Satellite Surveillance & AIS Attribution</title>
-  <!-- Modern Enterprise Fonts -->
+  <title>SlickMesh AI — Autonomous Marine Surveillance & Vessel Attribution Platform</title>
+  
+  <!-- SlideX Typography: Inter & IBM Plex Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Leaflet CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet GIS Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- FontAwesome Icons -->
+  <!-- FontAwesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css?v=4.0" />
+  
+  <link rel="stylesheet" href="style.css?v=5.0" />
 </head>
-<body class="dark-tactical-theme">
-  <!-- 1. Full-Screen Tactical Map Canvas -->
-  <div id="map" class="fullscreen-tactical-map"></div>
+<body class="slidex-body">
 
-  <!-- 2. Floating Top Header Bar -->
-  <header class="tactical-header">
-    <div class="header-left">
-      <div class="brand-badge"><i class="fa-solid fa-satellite-dish"></i></div>
-      <div class="brand-info">
-        <div class="brand-title">
-          <span>SLICKMESH</span>
-          <span class="brand-tag">TACTICAL AI</span>
+  <!-- SlideX Top Announcement Banner -->
+  <div class="top-banner">
+    <div class="banner-content">
+      <span class="banner-badge">SIH26143</span>
+      <span class="banner-text">Autonomous Spaceborne Radar Surveillance & Vessel Attribution Pipeline Active</span>
+      <span class="banner-sep">•</span>
+      <a href="#console-section" class="banner-link">Launch Live Tactical Console &rarr;</a>
+    </div>
+  </div>
+
+  <!-- SlideX Sticky Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <div class="nav-logo-icon">
+          <i class="fa-solid fa-satellite-dish"></i>
         </div>
-        <div class="brand-sub">Sentinel-1 SAR Real-Time Oceanic Sweep & Multi-Evidence AIS Attribution</div>
+        <div class="nav-brand-text">
+          <span class="nav-title">SLICKMESH</span>
+          <span class="nav-tag">AI</span>
+        </div>
+      </a>
+
+      <div class="nav-links">
+        <a href="#console-section" class="nav-link active">Live Console</a>
+        <a href="#architecture-section" class="nav-link">4-Phase Engine</a>
+        <a href="#metrics-section" class="nav-link">Global Coverage</a>
+        <a href="#research-section" class="nav-link">Research & Citations</a>
+      </div>
+
+      <div class="nav-actions">
+        <div class="telemetry-pill">
+          <span class="live-dot"></span>
+          <span>S1 C-SAR ONLINE</span>
+        </div>
+        <a href="#console-section" class="btn-launch-nav">Explore Console</a>
       </div>
     </div>
+  </nav>
 
-    <!-- Quick Global Maritime Theater Switcher Chips -->
-    <div class="theater-chips-bar">
-      <span class="theater-label"><i class="fa-solid fa-globe"></i> THEATERS:</span>
-      <button type="button" class="theater-chip" data-lat="28.740" data-lon="-88.360">🇺🇸 US Gulf of Mexico</button>
-      <button type="button" class="theater-chip" data-lat="33.740" data-lon="-118.250">🇺🇸 US West Coast (Long Beach)</button>
-      <button type="button" class="theater-chip" data-lat="36.950" data-lon="-75.750">🇺🇸 US East Coast (Chesapeake)</button>
-      <button type="button" class="theater-chip" data-lat="19.420" data-lon="71.350">🇮🇳 Mumbai High Oilfield</button>
-      <button type="button" class="theater-chip" data-lat="1.250" data-lon="103.800">🇸🇬 Singapore & Malacca</button>
-      <button type="button" class="theater-chip" data-lat="26.500" data-lon="56.300">🇦🇪 Strait of Hormuz / Gulf</button>
-    </div>
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-container">
+      <div class="hero-pill-badge">
+        <i class="fa-solid fa-sparkles text-amber"></i>
+        <span>Copernicus Sentinel-1 SAR + Multi-Evidence AIS Engine</span>
+        <i class="fa-solid fa-chevron-right badge-arrow"></i>
+      </div>
 
-    <div class="header-right">
-      <div class="status-indicator">
-        <span class="live-beacon"></span>
-        <span class="status-text">SATELLITE SURVEILLANCE ACTIVE</span>
+      <h1 class="hero-heading">
+        Turn Spaceborne Radar into <br>
+        <span class="gradient-text">Actionable Maritime Attribution</span>
+      </h1>
+
+      <p class="hero-subtext">
+        Autonomous all-weather oil spill detection via Sentinel-1 Synthetic Aperture Radar, hydrodynamic reverse-drift physics, and 7-signal explainable AIS vessel ranking for maritime law enforcement.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#console-section" class="btn-primary-hero">
+          <span>Launch Surveillance Console</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button type="button" id="hero-quick-sweep-btn" class="btn-secondary-hero">
+          <i class="fa-solid fa-earth-americas"></i>
+          <span>Run Global Ocean Sweep</span>
+        </button>
+      </div>
+
+      <div class="hero-feature-pills">
+        <div class="feature-pill"><i class="fa-solid fa-check text-emerald"></i> All-Weather Radar Vision</div>
+        <div class="feature-pill"><i class="fa-solid fa-check text-emerald"></i> 3% Windage Drift Solver</div>
+        <div class="feature-pill"><i class="fa-solid fa-check text-emerald"></i> 7-Signal Explainable XAI</div>
+        <div class="feature-pill"><i class="fa-solid fa-check text-emerald"></i> Zero-Key Open Data APIs</div>
       </div>
     </div>
   </header>
 
-  <!-- 3. Floating Left Command Console (Dock) -->
-  <aside class="floating-dock dock-left">
-    <!-- Mode Switcher Segmented Control -->
-    <div class="mode-toggle-box">
-      <button id="tab-live-mode" class="mode-btn active">
-        <i class="fa-solid fa-satellite"></i> Live Satellite Pass
-      </button>
-      <button id="tab-demo-mode" class="mode-btn">
-        <i class="fa-solid fa-shield-virus"></i> Forensic Demo
-      </button>
-    </div>
-
-    <!-- Live Coordinate Targeting Panel -->
-    <div id="live-search-panel" class="dock-section">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-crosshairs text-sky"></i> Coordinate Targeting</span>
-        <span class="sensor-pill">S1 C-SAR</span>
-      </div>
-
-      <div class="coord-inputs-grid">
-        <div class="input-field">
-          <label>LATITUDE (°N)</label>
-          <input type="number" id="custom-lat" step="0.001" value="28.740" class="tactical-input">
+  <!-- Main Embedded Tactical Surveillance Console -->
+  <section id="console-section" class="console-wrapper-section">
+    <div class="console-container">
+      
+      <!-- Console Header Bar -->
+      <div class="console-top-bar">
+        <div class="console-title-group">
+          <div class="console-badge"><i class="fa-solid fa-radar"></i></div>
+          <div>
+            <div class="console-heading">TACTICAL MARITIME COMMAND CONSOLE</div>
+            <div class="console-subheading">Live Satellite Ingestion & Automated Multi-Evidence Vessel Attribution</div>
+          </div>
         </div>
-        <div class="input-field">
-          <label>LONGITUDE (°E/W)</label>
-          <input type="number" id="custom-lon" step="0.001" value="-88.360" class="tactical-input">
-        </div>
-      </div>
 
-      <!-- Quick Coordinates Shortcuts -->
-      <div class="quick-coords-container">
-        <button type="button" class="quick-coord-btn" data-lat="28.740" data-lon="-88.360">Gulf of Mexico (28.74, -88.36)</button>
-        <button type="button" class="quick-coord-btn" data-lat="33.740" data-lon="-118.250">Long Beach (33.74, -118.25)</button>
-        <button type="button" class="quick-coord-btn" data-lat="19.420" data-lon="71.350">Mumbai High (19.42, 71.35)</button>
-        <button type="button" class="quick-coord-btn" data-lat="16.150" data-lon="82.550">KG Basin (16.15, 82.55)</button>
-        <button type="button" class="quick-coord-btn" data-lat="60.800" data-lon="-146.700">Alaska / Valdez (60.80, -146.70)</button>
-      </div>
-
-      <button type="button" id="btn-sweep-eez" class="btn-sweep-action">
-        <i class="fa-solid fa-earth-americas"></i> Autonomous Global Constellation Sweep (All Oceans)
-      </button>
-    </div>
-
-    <!-- Forensic Demo Incident Panel -->
-    <div id="demo-controls-panel" class="dock-section" style="display: none;">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-triangle-exclamation text-rose"></i> Target Incident Scene</span>
-        <span class="sensor-pill text-rose">GROUND TRUTH</span>
-      </div>
-      <div class="control-group">
-        <label>Historical Incident Scenario</label>
-        <select id="sample-location" class="tactical-select">
-          <option value="usa_gom" selected>🇺🇸 US Gulf of Mexico — Deepwater Energy Corridor Discharge</option>
-          <option value="usa_pacific">🇺🇸 US Pacific Coast — Long Beach Tanker Fairway</option>
-          <option value="usa_atlantic">🇺🇸 US Atlantic Seaboard — Mid-Atlantic Crude Transit</option>
-          <option value="bilge_dump">🚨 Arabian Sea — MARPOL Annex I Illegal Bilge Dumping (Magic Pipe)</option>
-          <option value="mumbai">Arabian Sea — Mumbai High Tanker Collision</option>
-          <option value="bob">Bay of Bengal — KG Basin Offshore Discharge</option>
-          <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Transponder Blackout</option>
-        </select>
-      </div>
-
-      <div class="control-group" style="margin-top: 6px;">
-        <label>Calibrated SAR Radar Granule</label>
-        <div class="upload-container" id="upload-box">
-          <i class="fa-solid fa-satellite upload-icon"></i>
-          <div class="upload-text">Switch Sentinel-1 Radar Image</div>
-          <span class="file-badge" id="selected-file-label">s1_active.png</span>
+        <div class="console-telemetry-group">
+          <div class="tel-item">
+            <span class="tel-label">RADAR SOURCE</span>
+            <span class="tel-value"><i class="fa-solid fa-satellite"></i> Sentinel-1 C-SAR</span>
+          </div>
+          <div class="tel-item">
+            <span class="tel-label">DRIFT MODEL</span>
+            <span class="tel-value"><i class="fa-solid fa-wind"></i> ECMWF + Copernicus</span>
+          </div>
+          <div class="tel-item status-item">
+            <span class="live-dot"></span>
+            <span class="tel-value text-emerald">SYSTEM ACTIVE</span>
+          </div>
         </div>
       </div>
+
+      <!-- 3-Column Tactical Workspace Grid -->
+      <div class="console-grid">
+        
+        <!-- Left Column: Operations & Metocean Parameters -->
+        <aside class="console-panel sidebar-left">
+          
+          <!-- Mode Switcher Segmented Control -->
+          <div class="mode-switcher-container">
+            <div class="mode-segmented-pill">
+              <button id="tab-live-mode" class="mode-btn active" type="button">
+                <i class="fa-solid fa-satellite"></i> Live Satellite Pass
+              </button>
+              <button id="tab-demo-mode" class="mode-btn" type="button">
+                <i class="fa-solid fa-shield-halved"></i> Forensic Demo
+              </button>
+            </div>
+          </div>
+
+          <!-- 1. LIVE COORDINATE SEARCH PANEL (Visible in Live Mode) -->
+          <div id="live-search-panel" class="card-box">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-crosshairs text-sky"></i>
+                <span>Target Coordinate Search</span>
+              </div>
+              <span class="badge-tag tag-cyan">LIVE S1 FEED</span>
+            </div>
+            
+            <div class="form-group-grid">
+              <div class="input-block">
+                <label>Latitude (°N)</label>
+                <div class="input-affix-wrap">
+                  <input type="number" id="custom-lat" step="0.001" value="19.420" class="input-mono">
+                  <span class="affix">°N</span>
+                </div>
+              </div>
+              <div class="input-block">
+                <label>Longitude (°E)</label>
+                <div class="input-affix-wrap">
+                  <input type="number" id="custom-lon" step="0.001" value="71.350" class="input-mono">
+                  <span class="affix">°E</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Maritime Coordinate Presets -->
+            <div class="quick-sectors-wrap">
+              <span class="quick-title">Quick Maritime Sectors:</span>
+              <div class="quick-chips-row">
+                <button type="button" class="quick-coord-btn" data-lat="19.420" data-lon="71.350">Mumbai High</button>
+                <button type="button" class="quick-coord-btn" data-lat="16.150" data-lon="82.550">KG Basin</button>
+                <button type="button" class="quick-coord-btn" data-lat="20.480" data-lon="67.520">Alang Anchorage</button>
+                <button type="button" class="quick-coord-btn" data-lat="9.930" data-lon="76.050">Cochin Offshore</button>
+              </div>
+            </div>
+
+            <button type="button" id="btn-sweep-eez" class="btn-action-sweep">
+              <i class="fa-solid fa-earth-americas"></i> Autonomous Global Ocean Satellite Sweep
+            </button>
+          </div>
+
+          <!-- 2. FORENSIC INCIDENT PANEL (Visible in Demo Mode) -->
+          <div id="demo-controls-panel" class="card-box" style="display: none;">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-triangle-exclamation text-rose"></i>
+                <span>Historical Incident Scene</span>
+              </div>
+              <span class="badge-tag tag-rose">GROUND TRUTH</span>
+            </div>
+
+            <div class="form-field">
+              <label for="sample-location">Target Incident Scenario</label>
+              <select id="sample-location" class="form-select-styled">
+                <option value="bilge_dump" selected>🚨 Arabian Sea — MARPOL Annex I Illegal Bilge Dumping (Magic Pipe)</option>
+                <option value="mumbai">Arabian Sea — Mumbai High Tanker Collision</option>
+                <option value="bob">Bay of Bengal — KG Basin Offshore Discharge</option>
+                <option value="default">Gulf of Khambhat — Alang Anchorage Spill</option>
+                <option value="dark_ship">Arabian Sea — Ratnagiri Dark Ship Transponder Blackout</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Sentinel-1 SAR Radar Scene</label>
+              <div class="upload-dropzone" id="upload-box">
+                <i class="fa-solid fa-satellite upload-icon"></i>
+                <div class="upload-text">Calibrated SAR Sentinel-1 C-Band Tile</div>
+                <span class="file-tag" id="selected-file-label">s1_active.png</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metocean Parameters Card -->
+          <div class="card-box">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-water text-sky"></i>
+                <span>Metocean Drift Parameters</span>
+              </div>
+              <span class="tooltip-icon" title="Ocean currents (U/V) and surface wind vectors dictate hydrodynamic drift trajectory."><i class="fa-solid fa-circle-question"></i></span>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-meta">
+                <span>Surface Wind Speed</span>
+                <strong id="wind-speed-val" class="mono-value">5.4 m/s</strong>
+              </div>
+              <input type="range" id="wind-speed" min="1.0" max="15.0" step="0.1" value="5.4" class="range-track">
+              <span class="param-hint">Ideal SAR detection window: 2.0 to 12.0 m/s</span>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-meta">
+                <span>Wind Direction (Blowing From)</span>
+                <strong id="wind-dir-val" class="mono-value">72° (ENE)</strong>
+              </div>
+              <input type="range" id="wind-dir" min="0" max="360" step="1" value="72" class="range-track">
+              <span class="param-hint">Compass bearing from which wind originates</span>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-meta">
+                <span>Current U (East-West Vector)</span>
+                <strong id="current-u-val" class="mono-value">+0.18 m/s</strong>
+              </div>
+              <input type="range" id="current-u" min="-1.5" max="1.5" step="0.01" value="0.18" class="range-track">
+              <span class="param-hint">Positive = Eastward, Negative = Westward</span>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-meta">
+                <span>Current V (North-South Vector)</span>
+                <strong id="current-v-val" class="mono-value">+0.07 m/s</strong>
+              </div>
+              <input type="range" id="current-v" min="-1.5" max="1.5" step="0.01" value="0.07" class="range-track">
+              <span class="param-hint">Positive = Northward, Negative = Southward</span>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-meta">
+                <span>Reverse Backtrack Horizon</span>
+                <strong id="backtrack-hours-val" class="mono-value">24 hrs</strong>
+              </div>
+              <input type="range" id="backtrack-hours" min="6" max="72" step="1" value="24" class="range-track">
+              <span class="param-hint">Maximum temporal lookback window for origin</span>
+            </div>
+          </div>
+
+          <button id="run-pipeline-btn" class="btn-execute-pipeline" type="button">
+            <i class="fa-solid fa-play"></i> Execute Surveillance Pipeline
+          </button>
+        </aside>
+
+        <!-- Center Column: Cartographic GIS Map Viewport -->
+        <section class="console-panel map-viewport">
+          <div id="map"></div>
+
+          <!-- Floating Tactical Legend -->
+          <div class="map-floating-legend">
+            <div class="legend-header">
+              <i class="fa-solid fa-layer-group"></i> Tactical Chart Layers
+            </div>
+            <div class="legend-items-list">
+              <div class="legend-row">
+                <span class="swatch red-poly"></span>
+                <span><strong>Detected Oil Slick</strong> (Phase 1 AI)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch yellow-circle"></span>
+                <span><strong>Origin Corridor</strong> (Phase 2 Drift)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch suspect-track"></span>
+                <span><strong>Rank #1 Culprit Track</strong> (Phase 3)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch other-track"></span>
+                <span><strong>Secondary Vessels</strong> (AIS Transponders)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Column: Incident Telemetry & Suspect Ranking Leaderboard -->
+        <aside class="console-panel sidebar-right">
+          
+          <!-- Incident Telemetry Card -->
+          <div class="card-box">
+            <div class="card-header">
+              <i class="fa-solid fa-triangle-exclamation text-rose"></i>
+              <span>Spill Incident Telemetry</span>
+            </div>
+            <div id="incident-card" class="telemetry-card">
+              <div class="empty-state">Initializing surveillance feed...</div>
+            </div>
+          </div>
+
+          <!-- Environmental Ingestion Card -->
+          <div class="card-box">
+            <div class="card-header">
+              <i class="fa-solid fa-compass-drafting text-sky"></i>
+              <span>Oceanographic Ingestion</span>
+            </div>
+            <div id="env-card" class="telemetry-card">
+              <div class="empty-state">No active metocean data</div>
+            </div>
+          </div>
+
+          <!-- Suspect Attribution Leaderboard -->
+          <div class="card-box flex-expand-box">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-ship text-sky"></i>
+                <span>Ranked Vessel Attribution</span>
+              </div>
+              <span class="badge-count" id="vessel-count-badge">0 vessels</span>
+            </div>
+            <div class="candidates-list" id="candidates">
+              <div class="empty-state">Run pipeline to identify suspects</div>
+            </div>
+          </div>
+
+          <!-- Legal Guardrail Notice -->
+          <div class="legal-notice">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span><strong>Investigative Triage Notice:</strong> Multi-evidence confidence scoring is probabilistic for Coast Guard patrol prioritization and Port State Control triage. Not final judicial proof.</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-Phase System Architecture Section -->
+  <section id="architecture-section" class="section-container">
+    <div class="section-title-wrap">
+      <span class="section-tag">ENGINE ARCHITECTURE</span>
+      <h2 class="section-title">4-Phase Autonomous Pipeline</h2>
+      <p class="section-subtitle">Loosely coupled modules communicating strictly via standardized JSON schemas.</p>
     </div>
 
-    <!-- Metocean Physics & Hydrodynamic Drift Parameters -->
-    <div class="dock-section">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-water text-sky"></i> Metocean Drift Engine</span>
-        <span class="tooltip-icon" title="Ocean current vectors (U, V) and 10m wind velocity dictate reverse hydrodynamic backtracking."><i class="fa-solid fa-circle-question"></i></span>
-      </div>
-
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Surface 10m Wind Speed</span>
-          <strong id="wind-speed-val" class="mono-val">5.4 m/s</strong>
+    <div class="architecture-cards-grid">
+      <div class="arch-card">
+        <div class="arch-number">01</div>
+        <div class="arch-icon-wrap icon-blue"><i class="fa-solid fa-satellite"></i></div>
+        <h3 class="arch-heading">Spaceborne SAR Detection</h3>
+        <p class="arch-desc">Ingests Sentinel-1 C-SAR radar imagery. PyTorch U-Net extracts slick geometry, polygon coordinates, and surface area (km²).</p>
+        <div class="arch-tech-tags">
+          <span>PyTorch</span>
+          <span>U-Net</span>
+          <span>Rasterio</span>
         </div>
-        <input type="range" id="wind-speed" min="1.0" max="15.0" step="0.1" value="5.4">
-        <span class="param-hint">Operational SAR Detection Window: 2.0 to 12.0 m/s</span>
       </div>
 
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Wind Direction (From)</span>
-          <strong id="wind-dir-val" class="mono-val">72° (ENE)</strong>
+      <div class="arch-card">
+        <div class="arch-number">02</div>
+        <div class="arch-icon-wrap icon-emerald"><i class="fa-solid fa-wind"></i></div>
+        <h3 class="arch-heading">Hydrodynamic Backtracking</h3>
+        <p class="arch-desc">Reverses ocean current and 3% windage drift vectors (T-24h) to construct an adaptive buffered release corridor.</p>
+        <div class="arch-tech-tags">
+          <span>GeoPandas</span>
+          <span>Shapely</span>
+          <span>Open-Meteo</span>
         </div>
-        <input type="range" id="wind-dir" min="0" max="360" step="1" value="72">
       </div>
 
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Current U (East-West)</span>
-          <strong id="current-u-val" class="mono-val">+0.18 m/s</strong>
+      <div class="arch-card">
+        <div class="arch-number">03</div>
+        <div class="arch-icon-wrap icon-purple"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h3 class="arch-heading">Attribution & Forensic Scoring</h3>
+        <p class="arch-desc">Evaluates 7 independent evidence signals (CPA distance, time delta, heading delta, dark ship transponder gaps) to rank suspects.</p>
+        <div class="arch-tech-tags">
+          <span>NumPy</span>
+          <span>Pydantic v2</span>
+          <span>Bayesian</span>
         </div>
-        <input type="range" id="current-u" min="-1.5" max="1.5" step="0.01" value="0.18">
       </div>
 
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Current V (North-South)</span>
-          <strong id="current-v-val" class="mono-val">+0.07 m/s</strong>
+      <div class="arch-card">
+        <div class="arch-number">04</div>
+        <div class="arch-icon-wrap icon-amber"><i class="fa-solid fa-chart-line"></i></div>
+        <h3 class="arch-heading">Tactical Command & Triage</h3>
+        <p class="arch-desc">Delivers interactive geospatial GIS charting and plain-English explainable dossiers for Coast Guard interception.</p>
+        <div class="arch-tech-tags">
+          <span>FastAPI</span>
+          <span>Leaflet.js</span>
+          <span>ES6+</span>
         </div>
-        <input type="range" id="current-v" min="-1.5" max="1.5" step="0.01" value="0.07">
       </div>
+    </div>
+  </section>
 
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Backtrack Lookback Window</span>
-          <strong id="backtrack-hours-val" class="mono-val">24 hrs</strong>
+  <!-- Global Metrics Section -->
+  <section id="metrics-section" class="metrics-section">
+    <div class="metrics-container">
+      <div class="metric-block">
+        <div class="metric-num">361M <span class="metric-unit">km²</span></div>
+        <div class="metric-label">Global Ocean Surveillance</div>
+      </div>
+      <div class="metric-block">
+        <div class="metric-num">&lt; 15 <span class="metric-unit">ms</span></div>
+        <div class="metric-label">Attribution Computation Speed</div>
+      </div>
+      <div class="metric-block">
+        <div class="metric-num">7 <span class="metric-unit">Signals</span></div>
+        <div class="metric-label">Forensic Multi-Evidence Fusion</div>
+      </div>
+      <div class="metric-block">
+        <div class="metric-num">100%</div>
+        <div class="metric-label">Open-Data API Architecture</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research & References Section -->
+  <section id="research-section" class="section-container">
+    <div class="section-title-wrap">
+      <span class="section-tag">BENCHMARKS & CITATIONS</span>
+      <h2 class="section-title">Research & Operational Frameworks</h2>
+      <p class="section-subtitle">Grounded in international maritime environmental protocols and spaceborne SAR remote sensing standards.</p>
+    </div>
+
+    <div class="research-grid">
+      <div class="research-item">
+        <i class="fa-solid fa-book-bookmark text-sky"></i>
+        <div>
+          <h4>EMSA CleanSeaNet & SkyTruth Cerulean</h4>
+          <p>Operational satellite radar maritime surveillance and oil slick detection reference architectures.</p>
         </div>
-        <input type="range" id="backtrack-hours" min="6" max="72" step="1" value="24">
+      </div>
+      <div class="research-item">
+        <i class="fa-solid fa-book-bookmark text-sky"></i>
+        <div>
+          <h4>NOAA GNOME Modeling Environment</h4>
+          <p>Standard 3% empirical windage factor and Lagrangian particle transport physics formulation.</p>
+        </div>
+      </div>
+      <div class="research-item">
+        <i class="fa-solid fa-book-bookmark text-sky"></i>
+        <div>
+          <h4>IEEE Deep-SAR Benchmark Datasets</h4>
+          <p>Deep Learning semantic segmentation architectures for Synthetic Aperture Radar marine imagery.</p>
+        </div>
+      </div>
+      <div class="research-item">
+        <i class="fa-solid fa-book-bookmark text-sky"></i>
+        <div>
+          <h4>IMO MARPOL Annex I & UNCLOS Art. 217</h4>
+          <p>International conventions governing shipboard discharge limits and Port State Control enforcement.</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <button id="run-pipeline-btn" class="btn-execute-pipeline">
-      <i class="fa-solid fa-play"></i> Execute Surveillance Pipeline
-    </button>
-  </aside>
+  <!-- SlideX Footer -->
+  <footer class="footer-section">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <i class="fa-solid fa-satellite-dish"></i>
+          <span>SLICKMESH AI</span>
+        </div>
+        <p class="footer-desc">Autonomous Satellite Surveillance & AIS-Based Vessel Attribution for Smart India Hackathon 2026 (SIH26143).</p>
+      </div>
 
-  <!-- 4. Floating Right Intelligence Dock -->
-  <aside class="floating-dock dock-right">
-    <!-- Incident Telemetry Card -->
-    <div class="dock-section">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-triangle-exclamation text-rose"></i> Incident Telemetry</span>
-        <span class="sensor-pill text-rose">DETECTION</span>
-      </div>
-      <div id="incident-card" class="telemetry-content">
-        <div class="empty-state">Ready for real-time constellation query...</div>
-      </div>
-    </div>
-
-    <!-- Metocean Ingestion Status Card -->
-    <div class="dock-section">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-compass text-sky"></i> Oceanographic Ingestion</span>
-        <span class="sensor-pill text-sky">COPERNICUS</span>
-      </div>
-      <div id="env-card" class="telemetry-content">
-        <div class="empty-state">No active metocean feed</div>
+      <div class="footer-links-group">
+        <a href="https://github.com/JitaanRathod/SlickMesh-AI" target="_blank"><i class="fa-brands fa-github"></i> GitHub Repository</a>
+        <a href="#console-section"><i class="fa-solid fa-terminal"></i> Tactical Console</a>
+        <a href="#architecture-section"><i class="fa-solid fa-layer-group"></i> Architecture</a>
       </div>
     </div>
-
-    <!-- AIS Vessel Attribution Leaderboard -->
-    <div class="dock-section flex-grow-section">
-      <div class="dock-section-title">
-        <span><i class="fa-solid fa-ship text-sky"></i> Ranked Suspect Attribution</span>
-        <span class="counter-badge" id="vessel-count-badge">0 vessels</span>
-      </div>
-      <div class="candidates-list" id="candidates">
-        <div class="empty-state">Execute scan or sweep to isolate suspect vessels</div>
-      </div>
+    <div class="footer-bottom">
+      &copy; 2026 SlickMesh AI. Built for Smart India Hackathon 2026. All rights reserved.
     </div>
+  </footer>
 
-    <!-- Legal Guardrail Notice -->
-    <div class="legal-notice">
-      <i class="fa-solid fa-scale-balanced"></i>
-      <span><strong>Legal Triage Notice:</strong> Multi-evidence attribution confidence scoring is probabilistic for maritime law enforcement prioritization.</span>
-    </div>
-  </aside>
-
-  <!-- 5. Floating Bottom-Left Tactical Legend -->
-  <div class="floating-legend">
-    <div class="legend-header"><i class="fa-solid fa-layer-group"></i> Tactical Chart Layers</div>
-    <div class="legend-grid">
-      <div class="legend-chip"><span class="chip-color red-poly"></span> <strong>Detected Oil Slick</strong> (Martin)</div>
-      <div class="legend-chip"><span class="chip-color yellow-circle"></span> <strong>Origin Corridor</strong> (Jitaan)</div>
-      <div class="legend-chip"><span class="chip-color suspect-track"></span> <strong>Rank #1 Suspect Track</strong> (Om)</div>
-      <div class="legend-chip"><span class="chip-color other-track"></span> <strong>Secondary Vessel Tracks</strong></div>
-    </div>
-  </div>
-
-  <!-- 6. Forensic Evidence Modal Dialog -->
+  <!-- Modal for 7-Feature Evidence Breakdown -->
   <div class="modal" id="details-modal">
     <div class="modal-dialog">
       <div class="modal-header">
         <div class="modal-title-area">
-          <div class="modal-icon-badge"><i class="fa-solid fa-ship"></i></div>
+          <div class="modal-ship-icon"><i class="fa-solid fa-ship"></i></div>
           <div>
             <h3 id="modal-vessel-name">MV Ocean Star</h3>
             <span class="modal-subtitle" id="modal-type-mmsi">Crude Oil Tanker • MMSI: 419001234</span>
           </div>
         </div>
-        <button class="modal-close" id="close-modal-btn">&times;</button>
+        <button class="modal-close" id="close-modal-btn" type="button">&times;</button>
       </div>
       
       <div class="modal-body">
@@ -271,7 +543,6 @@
 
   <!-- Leaflet JavaScript -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=4.0"></script>
+  <script src="app.js?v=5.0"></script>
 </body>
 </html>
-

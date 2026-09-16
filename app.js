@@ -9,35 +9,8 @@ function degToCompass(num) {
   return arr[(val % 16)];
 }
 
-// Default presets for Global Maritime Surveillance Zones
+// Default presets for Indian Maritime Surveillance Zones
 const locationPresets = {
-  usa_gom: {
-    image: "s1_mumbai_high.png",
-    current_u: -0.22,
-    current_v: 0.14,
-    wind_speed: 6.2,
-    wind_dir: 140,
-    backtrack: 18,
-    name: "US Gulf of Mexico (Deepwater Energy Basin)"
-  },
-  usa_pacific: {
-    image: "s1_active.png",
-    current_u: 0.08,
-    current_v: -0.18,
-    wind_speed: 7.5,
-    wind_dir: 310,
-    backtrack: 24,
-    name: "US Pacific Coast (Port of Long Beach)"
-  },
-  usa_atlantic: {
-    image: "s1_kg_basin.png",
-    current_u: 0.25,
-    current_v: 0.12,
-    wind_speed: 5.8,
-    wind_dir: 80,
-    backtrack: 20,
-    name: "US Atlantic Seaboard (Chesapeake Approach)"
-  },
   bilge_dump: {
     image: "s1_mumbai_high.png",
     current_u: 0.18,
@@ -97,22 +70,18 @@ document.addEventListener("DOMContentLoaded", () => {
 function initMap() {
   // Enhanced zoom controls: allows smooth zoom out for global ocean lanes and deep zoom in for port-level inspection
   map = L.map("map", {
-    zoomControl: false,
+    zoomControl: true,
     attributionControl: true,
-    minZoom: 2,
-    maxZoom: 19
-  }).setView([26.0, -85.0], 5);
+    minZoom: 3,
+    maxZoom: 18
+  }).setView([16.0, 78.0], 5);
   
-  // High-performance CartoDB Dark Matter Tactical Map Layer (Free, dark oceans with luminous coastlines)
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    minZoom: 2,
-    maxZoom: 19,
-    subdomains: "abcd",
-    attribution: "&copy; OpenStreetMap &copy; CARTO | Sentinel-1 SAR Constellation"
+  // Clean OpenStreetMap Layer (100% Free, No API Key Required, No Watermark)
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    minZoom: 3,
+    maxZoom: 18,
+    attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> | Sentinel-1 SAR Surveillance"
   }).addTo(map);
-
-  // Add zoom control in bottom-right
-  L.control.zoom({ position: "bottomright" }).addTo(map);
   
   layersGroup = L.layerGroup().addTo(map);
 
@@ -157,26 +126,28 @@ function initSliders() {
 let currentMode = "live";
 
 function setupEventListeners() {
-  const runBtn = document.getElementById("run-pipeline-btn");
+  // Mode Switcher Tabs
   const liveTab = document.getElementById("tab-live-mode");
   const demoTab = document.getElementById("tab-demo-mode");
+  const runBtn = document.getElementById("run-pipeline-btn");
   const livePanel = document.getElementById("live-search-panel");
   const demoPanel = document.getElementById("demo-controls-panel");
 
-  // Mode Switcher Listeners
   if (liveTab && demoTab) {
     liveTab.addEventListener("click", () => {
       currentMode = "live";
       liveTab.classList.add("active");
       demoTab.classList.remove("active");
+      liveTab.style.backgroundColor = "";
+      demoTab.style.backgroundColor = "";
       if (livePanel) livePanel.style.display = "block";
       if (demoPanel) demoPanel.style.display = "none";
       if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-satellite"></i> Scan Coordinates for Oil Spills';
       
       // Clear previous layers & reset view
       layersGroup.clearLayers();
-      const lat = parseFloat(document.getElementById("custom-lat").value) || 28.74;
-      const lon = parseFloat(document.getElementById("custom-lon").value) || -88.36;
+      const lat = parseFloat(document.getElementById("custom-lat").value) || 19.42;
+      const lon = parseFloat(document.getElementById("custom-lon").value) || 71.35;
       map.flyTo([lat, lon], 7);
     });
 
@@ -184,18 +155,30 @@ function setupEventListeners() {
       currentMode = "demo";
       demoTab.classList.add("active");
       liveTab.classList.remove("active");
+      liveTab.style.backgroundColor = "";
+      demoTab.style.backgroundColor = "";
       if (livePanel) livePanel.style.display = "none";
       if (demoPanel) demoPanel.style.display = "block";
       if (runBtn) runBtn.innerHTML = '<i class="fa-solid fa-play"></i> Run Forensic Attribution Engine';
 
       // Load initial demo incident
-      applyPreset("usa_gom");
+      applyPreset("bilge_dump");
       triggerPipeline();
     });
   }
 
-  // Quick Coordinate Buttons & Header Theater Chips
-  document.querySelectorAll(".quick-coord-btn, .theater-chip").forEach(btn => {
+  // Hero Quick Sweep Button
+  const heroSweepBtn = document.getElementById("hero-quick-sweep-btn");
+  if (heroSweepBtn) {
+    heroSweepBtn.addEventListener("click", () => {
+      const consoleEl = document.getElementById("console-section");
+      if (consoleEl) consoleEl.scrollIntoView({ behavior: "smooth" });
+      setTimeout(triggerEEZSweep, 400);
+    });
+  }
+
+  // Quick Coordinate Buttons
+  document.querySelectorAll(".quick-coord-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const lat = parseFloat(btn.dataset.lat);
       const lon = parseFloat(btn.dataset.lon);
@@ -205,7 +188,7 @@ function setupEventListeners() {
         latInput.value = lat.toFixed(3);
         lonInput.value = lon.toFixed(3);
       }
-      map.flyTo([lat, lon], 7);
+      map.flyTo([lat, lon], 8);
     });
   });
 

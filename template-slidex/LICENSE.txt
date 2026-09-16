@@ -1,0 +1,86 @@
+PrebuiltUI Template License Agreement
+Copyright © 2026 PrebuiltUI. All rights reserved.
+
+IMPORTANT: This template is licensed, not sold.
+
+Template Name: SlideX
+Template Title: SlideX - React JS AI Presentation Template
+Available Versions: Next.js, React, HTML
+
+License ID: PBU-23e941f9-27ef-4c0c-bf6e-2d9375dbc8a0
+Issued To: 4707omvpatel@gmail.com
+Issued At: 2026-09-16T08:21:12.559Z
+
+By purchasing, downloading or using this template, you agree to the terms of this license.
+
+1. Grant of License
+
+You are granted a non-exclusive, non-transferable license to use
+the template "SlideX" for one single end product.
+
+You may modify the template to create a finished website or application
+for personal or commercial use.
+
+2. Permitted Use
+
+You may:
+
+- Use the template in one live or staging project.
+- Modify the design, layout and source code.
+- Deploy the final product for commercial purposes.
+- Customize UI, content and styling.
+
+3. Prohibited Use
+
+You may NOT:
+
+- Resell, redistribute, sublicense or share the template source files.
+- Publish the source files publicly (including GitHub, marketplaces, etc.).
+- Use the template to create competing template products.
+- Transfer or assign this license to another individual or organization.
+- Include the template in SaaS builders, template generators or UI kits.
+
+4. Definition of a Project
+
+A project is defined as one website or application intended
+for a single business, brand, startup or client.
+
+Multiple deployments for different businesses require a separate license.
+
+5. Ownership
+
+All intellectual property rights remain exclusively with PrebuiltUI.
+
+This license grants usage rights only.
+Ownership of the template source code is not transferred.
+
+6. Extended Usage
+
+If you require:
+
+- Multiple project usage
+- Agency or client redistribution rights
+- White-label permissions
+- SaaS resale rights
+
+You must contact PrebuiltUI for a custom enterprise license agreement.
+
+7. Termination
+
+Violation of this license results in immediate termination
+of usage rights without refund.
+
+PrebuiltUI reserves the right to pursue legal action
+in case of license violation.
+
+8. Disclaimer of Warranty
+
+The template is provided "as is" without warranties of any kind,
+express or implied, including but not limited to warranties of
+merchantability, fitness for a particular purpose and non-infringement.
+
+PrebuiltUI does not guarantee that the template will be error-free,
+secure or uninterrupted. Use of the template is at your own risk.
+
+For licensing inquiries:
+contact@prebuiltui.com

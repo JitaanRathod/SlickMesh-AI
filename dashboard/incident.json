@@ -1,45 +1,45 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-08-26T14:50:03Z",
+    "detected_at": "2026-09-16T08:31:19Z",
     "area_km2": 10.63,
     "confidence": 0.98,
     "polygon": [
       [
-        72.4049,
-        19.6865
+        71.3748,
+        19.4565
       ],
       [
-        72.3891,
-        19.6775
+        71.3591,
+        19.4475
       ],
       [
-        72.3886,
-        19.6694
+        71.3586,
+        19.4394
       ],
       [
-        72.3958,
-        19.6577
+        71.3658,
+        19.4277
       ],
       [
-        72.4116,
-        19.6541
+        71.3815,
+        19.4241
       ],
       [
-        72.4226,
-        19.6608
+        71.3925,
+        19.4308
       ],
       [
-        72.4259,
-        19.6721
+        71.3959,
+        19.4421
       ],
       [
-        72.4187,
-        19.6824
+        71.3887,
+        19.4524
       ],
       [
-        72.4049,
-        19.6865
+        71.3748,
+        19.4565
       ]
     ]
   },
@@ -51,8 +51,8 @@
     "source_model": "Copernicus Marine / Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 19.7035,
-    "longitude": 72.2334,
+    "latitude": 19.4735,
+    "longitude": 71.2037,
     "radius_km": 15.6,
     "backtrack_hours": 18
   },
@@ -61,33 +61,33 @@
       "name": "Al-Bahar Crude",
       "mmsi": "419001111",
       "type": "Crude Oil Tanker",
-      "confidence": 90,
+      "confidence": 85,
       "reason": "Tanker track intersected the backtracked source region 3.5 hours before detection at slow speed (2.1 kts).",
       "position": [
-        72.38,
-        19.65
+        71.28,
+        19.75
       ],
       "track": [
         [
-          71.9,
-          19.3
+          71.05,
+          19.1
         ],
         [
-          72.1,
-          19.45
+          71.15,
+          19.35
         ],
         [
-          72.25,
-          19.55
+          71.21,
+          19.54
         ],
         [
-          72.38,
-          19.65
+          71.28,
+          19.75
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.968,
-        "distance": 0.836,
+        "environmental_consistency": 0.929,
+        "distance": 0.634,
         "time_consistency": 0.831,
         "track_continuity": 0.9,
         "heading": 0.956,
@@ -99,33 +99,33 @@
       "name": "Konkan Star",
       "mmsi": "419002222",
       "type": "Chemical Tanker",
-      "confidence": 79,
-      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 4.2 nm).",
+      "confidence": 54,
+      "reason": "Passed outside the origin corridor at 8.8 nm minimum approach distance.",
       "position": [
-        72.45,
-        19.7
+        71.15,
+        19.75
       ],
       "track": [
         [
-          71.8,
-          19.1
+          70.85,
+          19.0
         ],
         [
-          72.05,
-          19.35
+          70.95,
+          19.25
         ],
         [
-          72.2,
+          71.05,
           19.5
         ],
         [
-          72.45,
-          19.7
+          71.15,
+          19.75
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.925,
-        "distance": 0.616,
+        "environmental_consistency": 0.258,
+        "distance": 0.193,
         "time_consistency": 0.662,
         "track_continuity": 0.9,
         "heading": 0.878,
@@ -138,27 +138,31 @@
       "mmsi": "419003333",
       "type": "Cargo",
       "confidence": 33,
-      "reason": "Passed outside the origin corridor at 14.5 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 31.0 nm minimum approach distance.",
       "position": [
-        73.0,
-        20.0
+        71.8,
+        19.8
       ],
       "track": [
         [
-          72.7,
+          71.65,
+          18.9
+        ],
+        [
+          71.7,
+          19.2
+        ],
+        [
+          71.75,
+          19.5
+        ],
+        [
+          71.8,
           19.8
-        ],
-        [
-          72.85,
-          19.9
-        ],
-        [
-          73.0,
-          20.0
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.023,
+        "environmental_consistency": 0.0,
         "distance": 0.0,
         "time_consistency": 0.324,
         "track_continuity": 0.9,

@@ -1,0 +1,137 @@
+{
+  "incident": {
+    "id": "SPILL-001",
+    "detected_at": "2026-09-16T08:31:18Z",
+    "area_km2": 66.35,
+    "confidence": 0.97,
+    "polygon": [
+      [
+        72.0583,
+        16.5572
+      ],
+      [
+        71.9967,
+        16.5428
+      ],
+      [
+        71.9756,
+        16.4473
+      ],
+      [
+        72.0033,
+        16.4455
+      ],
+      [
+        72.0108,
+        16.4986
+      ],
+      [
+        72.0207,
+        16.4446
+      ],
+      [
+        72.0587,
+        16.4437
+      ],
+      [
+        72.0334,
+        16.5126
+      ],
+      [
+        72.0583,
+        16.5572
+      ]
+    ]
+  },
+  "environment": {
+    "current_u_ms": 0.05,
+    "current_v_ms": -0.17,
+    "wind_speed_ms": 7.1,
+    "wind_direction_deg": 286,
+    "source_model": "Open-Meteo Live API"
+  },
+  "source_region": {
+    "latitude": 16.673,
+    "longitude": 71.8136,
+    "radius_km": 18.5,
+    "backtrack_hours": 24
+  },
+  "vessels": [
+    {
+      "name": "Shadow Trader",
+      "mmsi": "419099999",
+      "type": "Chemical Tanker",
+      "confidence": 52,
+      "reason": "Passed 10.8 nm from origin corridor 4.0 hours before detection with discontinuous AIS broadcast.",
+      "position": [
+        72.05,
+        16.8
+      ],
+      "track": [
+        [
+          71.75,
+          16.1
+        ],
+        [
+          71.88,
+          16.35
+        ],
+        [
+          71.95,
+          16.55
+        ],
+        [
+          72.05,
+          16.8
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.247,
+        "distance": 0.17,
+        "time_consistency": 0.855,
+        "track_continuity": 0.4,
+        "heading": 0.944,
+        "speed": 0.9,
+        "vessel_type": 1.0
+      }
+    },
+    {
+      "name": "Kolkata Express",
+      "mmsi": "419088888",
+      "type": "Bulk Carrier",
+      "confidence": 38,
+      "reason": "Passed outside the origin corridor at 39.7 nm minimum approach distance.",
+      "position": [
+        72.55,
+        16.9
+      ],
+      "track": [
+        [
+          72.4,
+          16.0
+        ],
+        [
+          72.45,
+          16.3
+        ],
+        [
+          72.5,
+          16.6
+        ],
+        [
+          72.55,
+          16.9
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.0,
+        "distance": 0.0,
+        "time_consistency": 0.565,
+        "track_continuity": 0.9,
+        "heading": 0.694,
+        "speed": 0.5,
+        "vessel_type": 0.7
+      }
+    }
+  ]
+}

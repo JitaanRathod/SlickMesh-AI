@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-16T08:31:14Z",
+    "detected_at": "2026-09-24T10:27:45Z",
     "area_km2": 66.35,
     "confidence": 0.97,
     "polygon": [
@@ -44,16 +44,16 @@
     ]
   },
   "environment": {
-    "current_u_ms": -0.0,
+    "current_u_ms": 0.04,
     "current_v_ms": -0.18,
-    "wind_speed_ms": 8.8,
-    "wind_direction_deg": 269,
+    "wind_speed_ms": 7.1,
+    "wind_direction_deg": 282,
     "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 20.6116,
-    "longitude": 67.3216,
-    "radius_km": 20.6,
+    "latitude": 20.6496,
+    "longitude": 67.3346,
+    "radius_km": 18.5,
     "backtrack_hours": 24
   },
   "vessels": [
@@ -61,7 +61,7 @@
       "name": "MV Ocean Star",
       "mmsi": "419001234",
       "type": "Tanker",
-      "confidence": 81,
+      "confidence": 80,
       "reason": "Tanker track intersected the backtracked source region 5.1 hours before detection at slow speed (1.4 kts).",
       "position": [
         67.45,
@@ -86,8 +86,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.902,
-        "distance": 0.499,
+        "environmental_consistency": 0.893,
+        "distance": 0.45,
         "time_consistency": 0.815,
         "track_continuity": 0.9,
         "heading": 0.933,
@@ -100,7 +100,7 @@
       "mmsi": "419009876",
       "type": "Container Ship",
       "confidence": 34,
-      "reason": "Passed outside the origin corridor at 47.0 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 45.5 nm minimum approach distance.",
       "position": [
         68.3,
         20.5
@@ -134,7 +134,7 @@
       "mmsi": "419005678",
       "type": "Cargo",
       "confidence": 33,
-      "reason": "Passed 21.3 nm from origin corridor 9.8 hours before detection with discontinuous AIS broadcast.",
+      "reason": "Passed 19.9 nm from origin corridor 9.8 hours before detection with discontinuous AIS broadcast.",
       "position": [
         67.75,
         20.4

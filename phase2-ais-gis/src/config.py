@@ -11,7 +11,7 @@ Everything else has sensible defaults for the Arabian Sea / Bay of Bengal AoI.
 
 # AISstream.io WebSocket endpoint + API key
 # Get a free key at: https://aisstream.io/authenticate
-AISSTREAM_API_KEY: str = "0a2e259c33beea0ea9d47e642362a0fc906d8118"
+AISSTREAM_API_KEY: str = "577b4b7d3708c4b0926c39e929baf2ad44f69401"
 AISSTREAM_WS_URL: str = "wss://stream.aisstream.io/v0/stream"
 
 # Bounding box for the AIS listener filter (Arabian Sea + Bay of Bengal + Indian coastline)

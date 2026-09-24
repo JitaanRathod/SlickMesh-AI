@@ -1,173 +1,281 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-16T08:31:19Z",
+    "detected_at": "2026-09-24T10:28:53Z",
     "area_km2": 10.63,
     "confidence": 0.98,
     "polygon": [
       [
-        71.3748,
-        19.4565
+        71.1248,
+        18.8865
       ],
       [
-        71.3591,
-        19.4475
+        71.109,
+        18.8775
       ],
       [
-        71.3586,
-        19.4394
+        71.1086,
+        18.8694
       ],
       [
-        71.3658,
-        19.4277
+        71.1157,
+        18.8577
       ],
       [
-        71.3815,
-        19.4241
+        71.1314,
+        18.8541
       ],
       [
-        71.3925,
-        19.4308
+        71.1424,
+        18.8608
       ],
       [
-        71.3959,
-        19.4421
+        71.1457,
+        18.8721
       ],
       [
-        71.3887,
-        19.4524
+        71.1386,
+        18.8824
       ],
       [
-        71.3748,
-        19.4565
+        71.1248,
+        18.8865
       ]
-    ]
+    ],
+    "confidence_decomposition": {
+      "detection_confidence": 98.0,
+      "origin_confidence": 82.5,
+      "attribution_evidence_index": 91
+    }
   },
   "environment": {
-    "current_u_ms": 0.12,
-    "current_v_ms": -0.15,
-    "wind_speed_ms": 6.2,
-    "wind_direction_deg": 240.0,
+    "current_u_ms": 0.18,
+    "current_v_ms": 0.07,
+    "wind_speed_ms": 5.4,
+    "wind_direction_deg": 72.0,
     "source_model": "Copernicus Marine / Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 19.4735,
-    "longitude": 71.2037,
-    "radius_km": 15.6,
-    "backtrack_hours": 18
+    "latitude": 18.8587,
+    "longitude": 71.1111,
+    "radius_km": 14.9,
+    "backtrack_hours": 18,
+    "origin_confidence": 82.5
   },
+  "filtering_funnel": {
+    "fleet_in_basin": 427,
+    "spatial_intersect_corridor": 38,
+    "temporal_window_aligned": 11,
+    "scored_candidates": 2,
+    "status": "PRIMARY_LEAD_IDENTIFIED"
+  },
+  "validation": {
+    "iou_score": 0.76,
+    "centroid_error_km": 1.8,
+    "temporal_concordance": "HIGH (0.88)",
+    "drift_agreement": "OPTIMAL \u2014 Hydrodynamic 3% windage physics validated against SAR slick morphology"
+  },
+  "timeline_frames": [
+    {
+      "step_index": 0,
+      "t_offset_hours": -18.0,
+      "label": "T-18h",
+      "plume_center": [
+        18.8587,
+        71.1111
+      ],
+      "plume_radius_km": 2.5,
+      "vessel_positions": {
+        "352001944": [
+          70.8,
+          18.5
+        ],
+        "419008811": [
+          71.5,
+          18.4
+        ]
+      }
+    },
+    {
+      "step_index": 1,
+      "t_offset_hours": -13.5,
+      "label": "T-14h",
+      "plume_center": [
+        18.8616,
+        71.1151
+      ],
+      "plume_radius_km": 5.6,
+      "vessel_positions": {
+        "352001944": [
+          70.8,
+          18.5
+        ],
+        "419008811": [
+          71.5,
+          18.4
+        ]
+      }
+    },
+    {
+      "step_index": 2,
+      "t_offset_hours": -9.0,
+      "label": "T-9h",
+      "plume_center": [
+        18.8645,
+        71.1191
+      ],
+      "plume_radius_km": 8.7,
+      "vessel_positions": {
+        "352001944": [
+          70.98,
+          18.7
+        ],
+        "419008811": [
+          71.55,
+          18.7
+        ]
+      }
+    },
+    {
+      "step_index": 3,
+      "t_offset_hours": -4.5,
+      "label": "T-4h",
+      "plume_center": [
+        18.8674,
+        71.1231
+      ],
+      "plume_radius_km": 11.8,
+      "vessel_positions": {
+        "352001944": [
+          71.1,
+          18.85
+        ],
+        "419008811": [
+          71.6,
+          19.0
+        ]
+      }
+    },
+    {
+      "step_index": 4,
+      "t_offset_hours": 0.0,
+      "label": "T=0h (Observation Pass)",
+      "plume_center": [
+        18.8703,
+        71.1271
+      ],
+      "plume_radius_km": 14.9,
+      "vessel_positions": {
+        "352001944": [
+          71.35,
+          19.15
+        ],
+        "419008811": [
+          71.65,
+          19.3
+        ]
+      }
+    }
+  ],
   "vessels": [
     {
-      "name": "Al-Bahar Crude",
-      "mmsi": "419001111",
+      "name": "Pacific Vanguard",
+      "mmsi": "352001944",
       "type": "Crude Oil Tanker",
-      "confidence": 85,
-      "reason": "Tanker track intersected the backtracked source region 3.5 hours before detection at slow speed (2.1 kts).",
+      "confidence": 91,
+      "reason": "Tanker track intersected estimated source corridor 2.5 hours prior to detection (CPA 0.8 nm).",
       "position": [
-        71.28,
-        19.75
+        71.35,
+        19.15
       ],
       "track": [
         [
-          71.05,
-          19.1
+          70.8,
+          18.5
         ],
         [
-          71.15,
-          19.35
+          70.98,
+          18.7
         ],
         [
-          71.21,
-          19.54
+          71.1,
+          18.85
         ],
         [
-          71.28,
-          19.75
+          71.35,
+          19.15
         ]
       ],
+      "distance_nm": 0.82,
+      "sog": 15.8,
+      "cog": 4,
+      "supporting_evidence": [
+        "Trajectory passed within 0.8 nm of estimated origin corridor",
+        "Vessel classification (Crude Oil Tanker) matches hydrocarbon carriage risk profile",
+        "Temporal window alignment within 2.5 hours of estimated release"
+      ],
+      "counter_evidence": [
+        "AIS transponder continuous broadcast maintained (no deliberate blackout gap)"
+      ],
       "sub_scores": {
-        "environmental_consistency": 0.929,
-        "distance": 0.634,
-        "time_consistency": 0.831,
+        "environmental_consistency": 0.985,
+        "distance": 0.922,
+        "time_consistency": 0.879,
         "track_continuity": 0.9,
-        "heading": 0.956,
-        "speed": 0.9,
+        "heading": 0.978,
+        "speed": 0.5,
         "vessel_type": 1.0
       }
     },
     {
-      "name": "Konkan Star",
-      "mmsi": "419002222",
-      "type": "Chemical Tanker",
-      "confidence": 54,
-      "reason": "Passed outside the origin corridor at 8.8 nm minimum approach distance.",
+      "name": "Golden Horizon",
+      "mmsi": "419008811",
+      "type": "Container Ship",
+      "confidence": 38,
+      "reason": "Passed outside the origin corridor at 26.7 nm minimum approach distance.",
       "position": [
-        71.15,
-        19.75
+        71.65,
+        19.3
       ],
       "track": [
         [
-          70.85,
+          71.5,
+          18.4
+        ],
+        [
+          71.55,
+          18.7
+        ],
+        [
+          71.6,
           19.0
         ],
         [
-          70.95,
-          19.25
-        ],
-        [
-          71.05,
-          19.5
-        ],
-        [
-          71.15,
-          19.75
-        ]
-      ],
-      "sub_scores": {
-        "environmental_consistency": 0.258,
-        "distance": 0.193,
-        "time_consistency": 0.662,
-        "track_continuity": 0.9,
-        "heading": 0.878,
-        "speed": 0.65,
-        "vessel_type": 1.0
-      }
-    },
-    {
-      "name": "Mumbai Pioneer",
-      "mmsi": "419003333",
-      "type": "Cargo",
-      "confidence": 33,
-      "reason": "Passed outside the origin corridor at 31.0 nm minimum approach distance.",
-      "position": [
-        71.8,
-        19.8
-      ],
-      "track": [
-        [
           71.65,
-          18.9
-        ],
-        [
-          71.7,
-          19.2
-        ],
-        [
-          71.75,
-          19.5
-        ],
-        [
-          71.8,
-          19.8
+          19.3
         ]
+      ],
+      "distance_nm": 26.71,
+      "sog": 18.2,
+      "cog": 42,
+      "supporting_evidence": [
+        "Closest passage was 26.7 nm from origin",
+        "Vessel classification (Container Ship) matches hydrocarbon carriage risk profile",
+        "Temporal window alignment within 8.0 hours of estimated release"
+      ],
+      "counter_evidence": [
+        "CPA offset (26.7 nm) lies outside primary hydrodynamic corridor",
+        "Transit speed (18.2 kts) is high for slow-speed operational bilge discharge",
+        "AIS transponder continuous broadcast maintained (no deliberate blackout gap)",
+        "Kinematic and corridor overlap scores are significantly lower than primary leads"
       ],
       "sub_scores": {
         "environmental_consistency": 0.0,
         "distance": 0.0,
-        "time_consistency": 0.324,
+        "time_consistency": 0.614,
         "track_continuity": 0.9,
-        "heading": 0.694,
-        "speed": 0.5,
+        "heading": 0.767,
+        "speed": 0.3,
         "vessel_type": 0.7
       }
     }

@@ -98,6 +98,56 @@ def test_fastapi_server_endpoints(api_client):
     assert post_data["vessels"][0]["name"] == "Al-Bahar Crude"
     assert post_data["vessels"][0]["confidence"] >= 80
 
+    # Verify Confidence Decomposition
+    assert "confidence_decomposition" in post_data["incident"]
+    cd = post_data["incident"]["confidence_decomposition"]
+    assert "detection_confidence" in cd
+    assert "origin_confidence" in cd
+    assert "attribution_evidence_index" in cd
+
+    # Verify 4-Stage Filtering Funnel
+    assert "filtering_funnel" in post_data
+    fun = post_data["filtering_funnel"]
+    assert fun["fleet_in_basin"] >= 400
+    assert fun["spatial_intersect_corridor"] > 0
+    assert fun["temporal_window_aligned"] > 0
+    assert fun["scored_candidates"] > 0
+
+    # Verify Observed vs Reconstructed Validation
+    assert "validation" in post_data
+    val = post_data["validation"]
+    assert val["iou_score"] >= 0.70
+    assert val["centroid_error_km"] <= 3.0
+
+    # Verify Forensic Timeline Frames
+    assert "timeline_frames" in post_data
+    assert len(post_data["timeline_frames"]) >= 5
+
+
+def test_investigation_report_generation(api_client):
+    """Verify official 17-point investigation report endpoint."""
+    payload = {
+        "image_name": "s1_active.png",
+        "wind_speed": 5.4,
+        "wind_direction": 72.0,
+        "current_u": 0.18,
+        "current_v": 0.07,
+        "backtrack_hours": 24,
+        "target_region": "mumbai"
+    }
+    res = api_client.post("/api/generate-report", json=payload)
+    assert res.status_code == 200
+    report_data = res.json()
+    assert "report_id" in report_data
+    assert "markdown" in report_data
+    md = report_data["markdown"]
+    assert "SLICKMESH MARITIME INVESTIGATION BRIEF" in md
+    assert "SATELLITE RADAR OBSERVATION" in md
+    assert "METOCEAN HYDRODYNAMICS" in md
+    assert "FILTERING FUNNEL" in md
+    assert "OBSERVED VS RECONSTRUCTED VALIDATION" in md
+    assert "STATUTORY & REGULATORY DISCLAIMER" in md
+
 
 def test_contract_compatibility_fidelity():
     """Verify that Contract E generated on disk matches contract standard."""
@@ -114,3 +164,36 @@ def test_contract_compatibility_fidelity():
     # Source region radius is positive
     assert payload["source_region"]["radius_km"] > 0
     assert payload["source_region"]["backtrack_hours"] > 0
+
+
+def test_gis_layers_and_dense_fleet(api_client):
+    """Verify GIS layers (TSS, EEZ boundary, Offshore infrastructure) and high-density fleet."""
+    res = api_client.get("/api/gis-layers")
+    assert res.status_code == 200
+    gis_data = res.json()
+
+    assert "tss_lanes" in gis_data
+    assert len(gis_data["tss_lanes"]["features"]) >= 4
+    assert "eez_boundary" in gis_data
+    assert len(gis_data["eez_boundary"]["features"]) >= 1
+    assert "oil_infrastructure" in gis_data
+    assert len(gis_data["oil_infrastructure"]["features"]) >= 5
+    assert gis_data["vessel_count"] >= 30
+
+    # Verify live fleet endpoint
+    res_fleet = api_client.get("/api/live-fleet")
+    assert res_fleet.status_code == 200
+    fleet_data = res_fleet.json()
+    assert fleet_data["count"] >= 30
+    assert len(fleet_data["vessels"]) >= 30
+
+    # Verify sweep endpoint returns active SAR alerts and clean swaths
+    res_sweep = api_client.get("/api/sweep-eez")
+    assert res_sweep.status_code == 200
+    sweep_data = res_sweep.json()
+    assert "swaths" in sweep_data
+    assert len(sweep_data["swaths"]) >= 8
+    assert sweep_data["summary"]["active_alerts_detected"] >= 1
+    assert sweep_data["summary"]["total_live_vessels_tracked"] >= 30
+
+

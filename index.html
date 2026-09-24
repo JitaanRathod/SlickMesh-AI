@@ -287,27 +287,70 @@
         <section class="console-panel map-viewport">
           <div id="map"></div>
 
-          <!-- Floating Tactical Legend -->
+          <!-- Forensic Timeline Scrubber Bar -->
+          <div class="map-timeline-bar" id="timeline-controls-bar">
+            <div class="timeline-header">
+              <div class="timeline-title">
+                <i class="fa-solid fa-clock-rotate-left text-amber"></i>
+                <span>Forensic Timeline Scrubber (Lagrangian Plume Drift)</span>
+              </div>
+              <div class="timeline-status-badge" id="timeline-badge">T=0h (Observation Pass)</div>
+            </div>
+            <div class="timeline-slider-row">
+              <button type="button" class="btn-timeline-play" id="btn-timeline-play" title="Play / Pause Reconstructed Simulation">
+                <i class="fa-solid fa-play" id="timeline-play-icon"></i>
+              </button>
+              <input type="range" id="timeline-slider" min="0" max="4" step="1" value="4" class="timeline-range">
+              <div class="timeline-ticks" id="timeline-ticks">
+                <span>T-24h (Release)</span>
+                <span>T-18h</span>
+                <span>T-12h</span>
+                <span>T-6h</span>
+                <span>T=0 (Detection)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Tactical Legend & GIS Layer Controls -->
           <div class="map-floating-legend">
             <div class="legend-header">
-              <i class="fa-solid fa-layer-group"></i> Tactical Chart Layers
+              <i class="fa-solid fa-layer-group text-sky"></i> <strong>GIS Maritime Layers & Legend</strong>
             </div>
+            <div class="gis-layer-toggles">
+              <label class="gis-toggle-label">
+                <input type="checkbox" id="toggle-layer-vessels" checked>
+                <span><i class="fa-solid fa-ship text-sky"></i> Live AIS Fleet (<span id="gis-vessel-count">100+</span>)</span>
+              </label>
+              <label class="gis-toggle-label">
+                <input type="checkbox" id="toggle-layer-tss" checked>
+                <span><i class="fa-solid fa-route" style="color:#8b5cf6"></i> IMO Shipping Lanes (TSS)</span>
+              </label>
+              <label class="gis-toggle-label">
+                <input type="checkbox" id="toggle-layer-eez" checked>
+                <span><i class="fa-solid fa-shield-halved text-emerald"></i> India 200 NM EEZ Boundary</span>
+              </label>
+              <label class="gis-toggle-label">
+                <input type="checkbox" id="toggle-layer-infra" checked>
+                <span><i class="fa-solid fa-industry" style="color:#f59e0b"></i> Offshore Platforms & SPMs</span>
+              </label>
+            </div>
+            <hr style="border:0; border-top:1px solid #e2e8f0; margin:6px 0;">
             <div class="legend-items-list">
               <div class="legend-row">
                 <span class="swatch red-poly"></span>
-                <span><strong>Detected Oil Slick</strong> (Phase 1 AI)</span>
+                <span><strong>Detected Oil Slick</strong> (SAR U-Net)</span>
               </div>
               <div class="legend-row">
                 <span class="swatch yellow-circle"></span>
-                <span><strong>Origin Corridor</strong> (Phase 2 Drift)</span>
+                <span><strong>Origin Corridor / GIS Buffer</strong></span>
               </div>
               <div class="legend-row">
                 <span class="swatch suspect-track"></span>
-                <span><strong>Rank #1 Culprit Track</strong> (Phase 3)</span>
+                <span><strong>Rank #1 Culprit Track</strong></span>
               </div>
               <div class="legend-row">
                 <span class="swatch other-track"></span>
-                <span><strong>Secondary Vessels</strong> (AIS Transponders)</span>
+                <span><strong>Commercial Merchant Transit</strong></span>
               </div>
             </div>
           </div>
@@ -316,14 +359,69 @@
         <!-- Right Column: Incident Telemetry & Suspect Ranking Leaderboard -->
         <aside class="console-panel sidebar-right">
           
-          <!-- Incident Telemetry Card -->
+          <!-- Incident Telemetry Card with Confidence Decomposition -->
           <div class="card-box">
-            <div class="card-header">
-              <i class="fa-solid fa-triangle-exclamation text-rose"></i>
-              <span>Spill Incident Telemetry</span>
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-triangle-exclamation text-rose"></i>
+                <span>Spill Telemetry & Confidence</span>
+              </div>
+              <button type="button" class="btn-report-trigger-inline" id="btn-open-report-inline" title="Generate Official Investigation Report">
+                <i class="fa-solid fa-file-contract"></i> Audit Brief
+              </button>
             </div>
             <div id="incident-card" class="telemetry-card">
               <div class="empty-state">Initializing surveillance feed...</div>
+            </div>
+          </div>
+
+          <!-- 4-Stage Filtering Funnel Card -->
+          <div class="card-box">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-filter text-sky"></i>
+                <span>4-Stage Attribution Funnel</span>
+              </div>
+              <span class="badge-tag tag-cyan" id="funnel-status-tag">4 SCORED</span>
+            </div>
+            <div class="funnel-steps-container">
+              <div class="funnel-step">
+                <span class="funnel-num" id="funnel-fleet">427</span>
+                <span class="funnel-lbl">Basin Fleet</span>
+              </div>
+              <div class="funnel-arrow">&rarr;</div>
+              <div class="funnel-step">
+                <span class="funnel-num" id="funnel-spatial">38</span>
+                <span class="funnel-lbl">Spatial Intersect</span>
+              </div>
+              <div class="funnel-arrow">&rarr;</div>
+              <div class="funnel-step">
+                <span class="funnel-num" id="funnel-temporal">11</span>
+                <span class="funnel-lbl">Time Aligned</span>
+              </div>
+              <div class="funnel-arrow">&rarr;</div>
+              <div class="funnel-step active-step">
+                <span class="funnel-num" id="funnel-scored">4</span>
+                <span class="funnel-lbl">Scored Leads</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observed vs Reconstructed Validation Card -->
+          <div class="card-box" id="validation-card-box">
+            <div class="card-header flex-between">
+              <div class="header-title">
+                <i class="fa-solid fa-circle-check text-emerald"></i>
+                <span>Observed vs Reconstructed Validation</span>
+              </div>
+              <span class="badge-tag tag-emerald" id="val-iou-tag">IoU: 0.76</span>
+            </div>
+            <div id="validation-metrics" class="telemetry-card">
+              <div class="telemetry-grid">
+                <div class="tel-cell"><span class="tel-lbl">DRIFT OVERLAP (IoU)</span><span class="tel-val text-emerald" id="val-iou-val">0.76 (76%)</span></div>
+                <div class="tel-cell"><span class="tel-lbl">CENTROID ERROR</span><span class="tel-val" id="val-centroid-val">1.8 km</span></div>
+                <div class="tel-cell" style="grid-column: span 2;"><span class="tel-lbl">PHYSICS AGREEMENT</span><span class="tel-val" id="val-drift-val" style="font-size:10px; color:var(--text-body); font-weight:normal;">3% windage hydrodynamic agreement</span></div>
+              </div>
             </div>
           </div>
 
@@ -505,7 +603,7 @@
     </div>
   </footer>
 
-  <!-- Modal for 7-Feature Evidence Breakdown -->
+  <!-- Modal for 7-Feature Evidence Breakdown & Counter-Evidence -->
   <div class="modal" id="details-modal">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -522,20 +620,85 @@
       <div class="modal-body">
         <div class="confidence-banner">
           <div class="conf-stat">
-            <span class="conf-lbl">ATTRIBUTION CONFIDENCE</span>
+            <span class="conf-lbl">ATTRIBUTION EVIDENCE INDEX</span>
             <span class="conf-num" id="modal-conf">88%</span>
           </div>
           <div class="conf-verdict" id="modal-verdict">PRIMARY SUSPECT</div>
         </div>
 
-        <div class="section-heading"><i class="fa-solid fa-list-check"></i> 7-Signal Evidence Decomposition</div>
-        <div class="score-bars" id="score-bars-container">
-          <!-- Dynamic progress bars -->
+        <!-- Modal Tab Switcher -->
+        <div class="modal-tabs-bar">
+          <button type="button" class="modal-tab-btn active" id="modal-tab-signals">
+            <i class="fa-solid fa-chart-column"></i> 7-Signal Decomposition
+          </button>
+          <button type="button" class="modal-tab-btn" id="modal-tab-evidence">
+            <i class="fa-solid fa-scale-balanced"></i> Supporting vs Counter-Evidence
+          </button>
+        </div>
+
+        <!-- Tab 1: 7-Signal Scores -->
+        <div id="tab-pane-signals" class="modal-tab-pane active">
+          <div class="score-bars" id="score-bars-container">
+            <!-- Dynamic progress bars -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Supporting vs Counter Evidence Lists -->
+        <div id="tab-pane-evidence" class="modal-tab-pane" style="display: none;">
+          <div class="evidence-columns-grid">
+            <div class="evidence-col col-supporting">
+              <div class="evidence-col-title"><i class="fa-solid fa-circle-plus text-emerald"></i> Supporting Indicators</div>
+              <ul class="evidence-list" id="modal-supporting-list"></ul>
+            </div>
+            <div class="evidence-col col-counter">
+              <div class="evidence-col-title"><i class="fa-solid fa-circle-minus text-rose"></i> Counter-Evidence & Limitations</div>
+              <ul class="evidence-list" id="modal-counter-list"></ul>
+            </div>
+          </div>
         </div>
 
         <div class="explainable-reason-box">
-          <div class="reason-title"><i class="fa-solid fa-file-lines"></i> Plain-English Factual Explanation</div>
+          <div class="reason-title"><i class="fa-solid fa-file-lines"></i> Factual Plain-English Assessment</div>
           <p id="modal-reason-str" class="reason-text"></p>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button type="button" class="btn-primary-hero modal-btn-report" id="modal-gen-report-btn">
+            <i class="fa-solid fa-file-pdf"></i> Generate Full Audit Brief
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Official 17-Point Investigation Report Preview & Export -->
+  <div class="modal" id="report-modal">
+    <div class="modal-dialog modal-report-dialog">
+      <div class="modal-header">
+        <div class="modal-title-area">
+          <div class="modal-ship-icon"><i class="fa-solid fa-file-shield text-sky"></i></div>
+          <div>
+            <h3>Official Maritime Investigation Report (SIH26143)</h3>
+            <span class="modal-subtitle">17-Point Audit Dossier • Legal Decision Support / PSC Triage</span>
+          </div>
+        </div>
+        <button class="modal-close" id="close-report-modal-btn" type="button">&times;</button>
+      </div>
+      
+      <div class="modal-body report-modal-body">
+        <div class="report-actions-row">
+          <button type="button" class="btn-report-action btn-print-cta" id="btn-print-report">
+            <i class="fa-solid fa-print"></i> Print / Save as PDF
+          </button>
+          <button type="button" class="btn-report-action btn-secondary" id="btn-copy-report">
+            <i class="fa-solid fa-copy"></i> Copy Markdown
+          </button>
+          <button type="button" class="btn-report-action btn-secondary" id="btn-download-report">
+            <i class="fa-solid fa-download"></i> Download Brief (.md)
+          </button>
+        </div>
+        <div class="report-content-rendered" id="report-rendered-box">
+          <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Generating official investigation report...</div>
         </div>
       </div>
     </div>
@@ -543,6 +706,6 @@
 
   <!-- Leaflet JavaScript -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=5.0"></script>
+  <script src="app.js?v=6.0"></script>
 </body>
 </html>

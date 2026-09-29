@@ -9,7 +9,7 @@ run_train.log
 
 # ZIP Archives
 *.zip
-
+.env
 # Virtual Environments
 .venv/
 venv/

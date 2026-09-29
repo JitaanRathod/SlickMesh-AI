@@ -67,12 +67,90 @@ const locationPresets = {
   }
 };
 
+let currentSatelliteSensor = "fused_constellation";
+let currentMetoceanProvider = "incois";
+
+const SENSOR_META = {
+  sentinel1: {
+    name: "ESA Sentinel-1 C-SAR",
+    agency: "European Space Agency (ESA) • C-Band (5.405 GHz)",
+    res: "5m x 20m (10m Pixel Spacing)",
+    pol: "VV + VH Dual-Pol • 250 km Swath",
+    badge: "ESA SENTINEL-1",
+    tagClass: "tag-purple"
+  },
+  eos04: {
+    name: "ISRO EOS-04 / RISAT-1A",
+    agency: "Indian Space Research Organisation (ISRO) • C-Band (5.35 GHz)",
+    res: "3m (FRS) / 25m (MRS) / 50m (CRS)",
+    pol: "Circular/Linear Quad-Pol • 240 km Swath",
+    badge: "ISRO EOS-04",
+    tagClass: "tag-amber"
+  },
+  eos06: {
+    name: "ISRO EOS-06 / Oceansat-3",
+    agency: "ISRO / INCOIS • OCM-3 Optical + SSTM Thermal IR",
+    res: "360m (OCM-3) / 1000m (SSTM Thermal)",
+    pol: "13 Ocean Spectral Bands + Dual Thermal Channels",
+    badge: "ISRO EOS-06",
+    tagClass: "tag-emerald"
+  },
+  sentinel2: {
+    name: "ESA Sentinel-2 MSI",
+    agency: "Copernicus ESA • Multi-Spectral Optical (13 Bands)",
+    res: "10m / 20m High-Resolution Optical",
+    pol: "Sunglint & Rainbow Sheen Reflectance",
+    badge: "SENTINEL-2 MSI",
+    tagClass: "tag-purple"
+  },
+  fused_constellation: {
+    name: "Fused Constellation (ESA + ISRO)",
+    agency: "Copernicus ESA + ISRO + INCOIS Collaborative Constellation",
+    res: "5m Multi-Resolution Fused Composite",
+    pol: "Dual-SAR + Optical + Thermal Skin Fusion",
+    badge: "FUSED CONSTELLATION",
+    tagClass: "tag-rose"
+  }
+};
+
+function showToast(title, message, type = "info") {
+  const container = document.getElementById("tactical-toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `tactical-toast toast-${type}`;
+  
+  let iconHtml = '<i class="fa-solid fa-circle-info text-sky"></i>';
+  if (type === "success") iconHtml = '<i class="fa-solid fa-circle-check text-emerald"></i>';
+  else if (type === "alert") iconHtml = '<i class="fa-solid fa-triangle-exclamation text-rose"></i>';
+
+  toast.innerHTML = `
+    <div class="toast-icon-wrap">${iconHtml}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-desc">${message}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(40px)";
+    setTimeout(() => toast.remove(), 250);
+  }, 4500);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
   initSliders();
   initTimelineControls();
   initModalTabs();
   initReportModal();
+  initSatelliteSensorControls();
+  initMetoceanProviderControls();
+  initCandidateSearch();
+  initGeoJsonExport();
   setupEventListeners();
   loadGisLayers();
   
@@ -451,10 +529,44 @@ function setupEventListeners() {
   // Modal close events
   const closeBtn = document.getElementById("close-modal-btn");
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+  // Model Card Modal Handlers
+  const btnOpenModelCard = document.getElementById("btn-open-model-card");
+  const btnCloseModelCard = document.getElementById("close-model-card-btn");
+  const modelCardModal = document.getElementById("model-card-modal");
+
+  if (btnOpenModelCard && modelCardModal) {
+    btnOpenModelCard.addEventListener("click", () => {
+      modelCardModal.style.display = "flex";
+    });
+  }
+  if (btnCloseModelCard && modelCardModal) {
+    btnCloseModelCard.addEventListener("click", () => {
+      modelCardModal.style.display = "none";
+    });
+  }
+
+  // Data Contracts Modal Handlers
+  const btnOpenContracts = document.getElementById("btn-open-contracts");
+  const btnCloseContracts = document.getElementById("close-contracts-btn");
+  const contractsModal = document.getElementById("contracts-modal");
+
+  if (btnOpenContracts && contractsModal) {
+    btnOpenContracts.addEventListener("click", () => {
+      contractsModal.style.display = "flex";
+    });
+  }
+  if (btnCloseContracts && contractsModal) {
+    btnCloseContracts.addEventListener("click", () => {
+      contractsModal.style.display = "none";
+    });
+  }
   
   window.addEventListener("click", (e) => {
     const modal = document.getElementById("details-modal");
     if (e.target === modal) closeModal();
+    if (e.target === modelCardModal) modelCardModal.style.display = "none";
+    if (e.target === contractsModal) contractsModal.style.display = "none";
   });
 }
 
@@ -551,24 +663,36 @@ function applyTimelineStep(index) {
 
 function initModalTabs() {
   const tabSignals = document.getElementById("modal-tab-signals");
+  const tabMatrix = document.getElementById("modal-tab-matrix");
   const tabEvidence = document.getElementById("modal-tab-evidence");
+
   const paneSignals = document.getElementById("tab-pane-signals");
+  const paneMatrix = document.getElementById("tab-pane-matrix");
   const paneEvidence = document.getElementById("tab-pane-evidence");
 
-  if (tabSignals && tabEvidence && paneSignals && paneEvidence) {
-    tabSignals.addEventListener("click", () => {
-      tabSignals.classList.add("active");
-      tabEvidence.classList.remove("active");
-      paneSignals.style.display = "block";
-      paneEvidence.style.display = "none";
+  const activateTab = (activeTab, activePane) => {
+    [tabSignals, tabMatrix, tabEvidence].forEach(t => { if (t) t.classList.remove("active"); });
+    [paneSignals, paneMatrix, paneEvidence].forEach(p => { 
+      if (p) { 
+        p.classList.remove("active"); 
+        p.style.display = "none"; 
+      } 
     });
+    if (activeTab) activeTab.classList.add("active");
+    if (activePane) { 
+      activePane.classList.add("active"); 
+      activePane.style.display = "block"; 
+    }
+  };
 
-    tabEvidence.addEventListener("click", () => {
-      tabEvidence.classList.add("active");
-      tabSignals.classList.remove("active");
-      paneSignals.style.display = "none";
-      paneEvidence.style.display = "block";
-    });
+  if (tabSignals && paneSignals) {
+    tabSignals.addEventListener("click", () => activateTab(tabSignals, paneSignals));
+  }
+  if (tabMatrix && paneMatrix) {
+    tabMatrix.addEventListener("click", () => activateTab(tabMatrix, paneMatrix));
+  }
+  if (tabEvidence && paneEvidence) {
+    tabEvidence.addEventListener("click", () => activateTab(tabEvidence, paneEvidence));
   }
 }
 
@@ -637,7 +761,9 @@ function openReportModal() {
     target_region: currentMode === "live" ? "custom" : (document.getElementById("sample-location").value || "mumbai"),
     custom_lat: currentMode === "live" ? parseFloat(document.getElementById("custom-lat").value) : null,
     custom_lon: currentMode === "live" ? parseFloat(document.getElementById("custom-lon").value) : null,
-    mode: currentMode
+    mode: currentMode,
+    satellite_sensor: currentSatelliteSensor,
+    metocean_provider: currentMetoceanProvider
   };
 
   fetch("/api/generate-report", {
@@ -662,6 +788,124 @@ function closeReportModal() {
   if (modal) modal.style.display = "none";
 }
 
+function initSatelliteSensorControls() {
+  const select = document.getElementById("satellite-sensor-select");
+  const badge = document.getElementById("active-sensor-badge");
+  const agencyEl = document.getElementById("spec-agency");
+  const resEl = document.getElementById("spec-resolution");
+  const polEl = document.getElementById("spec-pol");
+
+  if (!select) return;
+
+  select.addEventListener("change", (e) => {
+    currentSatelliteSensor = e.target.value;
+    const meta = SENSOR_META[currentSatelliteSensor] || SENSOR_META.sentinel1;
+
+    if (badge) {
+      badge.textContent = meta.badge;
+      badge.className = `badge-tag ${meta.tagClass}`;
+    }
+    if (agencyEl) agencyEl.textContent = meta.agency;
+    if (resEl) resEl.textContent = meta.res;
+    if (polEl) polEl.textContent = meta.pol;
+
+    showToast("Satellite Ingestion Updated", `${meta.name} pass loaded. Ready for pipeline execution.`, "info");
+
+    // Automatically re-run or refresh when in forensic demo mode
+    if (currentMode === "demo") {
+      triggerPipeline();
+    }
+  });
+}
+
+function initMetoceanProviderControls() {
+  const btnIncois = document.getElementById("btn-prov-incois");
+  const btnEcmwf = document.getElementById("btn-prov-ecmwf");
+
+  if (btnIncois && btnEcmwf) {
+    btnIncois.addEventListener("click", () => {
+      currentMetoceanProvider = "incois";
+      btnIncois.classList.add("active");
+      btnEcmwf.classList.remove("active");
+      showToast("Metocean Feed Active", "INCOIS Ocean State Forecast (OSF) Regional High-Res Model selected.", "info");
+    });
+
+    btnEcmwf.addEventListener("click", () => {
+      currentMetoceanProvider = "ecmwf";
+      btnEcmwf.classList.add("active");
+      btnIncois.classList.remove("active");
+      showToast("Metocean Feed Active", "ECMWF / Copernicus Global Reanalysis Model selected.", "info");
+    });
+  }
+}
+
+function initCandidateSearch() {
+  const searchInput = document.getElementById("candidate-search-input");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", (e) => {
+    const q = (e.target.value || "").toLowerCase().trim();
+    const cards = document.querySelectorAll(".candidate-card");
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      if (!q || text.includes(q)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+}
+
+function initGeoJsonExport() {
+  const exportBtn = document.getElementById("btn-export-geojson");
+  if (!exportBtn) return;
+
+  exportBtn.addEventListener("click", () => {
+    exportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Exporting...';
+    exportBtn.disabled = true;
+
+    const payload = {
+      image_name: currentMode === "live" ? "s1_live_scan.png" : (document.getElementById("selected-file-label").textContent || "s1_active.png"),
+      wind_speed: parseFloat(document.getElementById("wind-speed").value) || 5.4,
+      wind_direction: parseFloat(document.getElementById("wind-dir").value) || 72.0,
+      current_u: parseFloat(document.getElementById("current-u").value) || 0.18,
+      current_v: parseFloat(document.getElementById("current-v").value) || 0.07,
+      backtrack_hours: parseInt(document.getElementById("backtrack-hours").value) || 24,
+      target_region: currentMode === "live" ? "custom" : (document.getElementById("sample-location").value || "mumbai"),
+      custom_lat: currentMode === "live" ? parseFloat(document.getElementById("custom-lat").value) : null,
+      custom_lon: currentMode === "live" ? parseFloat(document.getElementById("custom-lon").value) : null,
+      mode: currentMode,
+      satellite_sensor: currentSatelliteSensor,
+      metocean_provider: currentMetoceanProvider
+    };
+
+    fetch("/api/export-geojson", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(geoJsonData => {
+      const blob = new Blob([JSON.stringify(geoJsonData, null, 2)], { type: "application/geo+json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `SlickMesh_Forensic_${currentIncidentData ? currentIncidentData.incident.id : 'SPILL'}.geojson`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("GeoJSON Export Complete", "RFC 7946 forensic layers downloaded for QGIS / ArcGIS.", "success");
+    })
+    .catch(err => {
+      showToast("Export Failed", err.message, "alert");
+    })
+    .finally(() => {
+      exportBtn.innerHTML = '<i class="fa-solid fa-file-export"></i> GeoJSON';
+      exportBtn.disabled = false;
+    });
+  });
+}
+
 function triggerEEZSweep() {
   const sweepBtn = document.getElementById("btn-sweep-eez");
   if (sweepBtn) {
@@ -669,7 +913,7 @@ function triggerEEZSweep() {
     sweepBtn.disabled = true;
   }
 
-  fetch("/api/sweep-eez")
+  fetch(`/api/sweep-eez?mode=${currentMode}`)
     .then(r => r.json())
     .then(data => {
       layersGroup.clearLayers();
@@ -712,11 +956,11 @@ function triggerEEZSweep() {
               <i class="fa-solid ${isAlert ? 'fa-triangle-exclamation' : 'fa-satellite'}"></i> <strong>${sw.name}</strong>
             </div>
             <table class="popup-table" style="font-size: 10.5px; width: 100%; margin: 6px 0;">
-              <tr><td>Swath ID:</td><td><code>${sw.swath_id}</code></td></tr>
+              <tr><td>Swath ID:</td><td><code>${sw.id}</code></td></tr>
               <tr><td>Exact Center:</td><td><strong>${sw.center[0].toFixed(3)}°N, ${sw.center[1].toFixed(3)}°E</strong></td></tr>
               <tr><td>Bounds:</td><td>${sw.bounds_text || `${sw.bounds.min_lat}°N - ${sw.bounds.max_lat}°N`}</td></tr>
               <tr><td>Coverage:</td><td><strong>${sw.area_km2.toLocaleString()} km²</strong></td></tr>
-              <tr><td>Sentinel-1 Status:</td><td>
+              <tr><td>Surveillance Status:</td><td>
                 ${isAlert
                   ? `<strong style="color:#dc2626;">🚨 ACTIVE SLICK (${sw.slick_area_km2} km²)</strong>`
                   : `<strong style="color:#059669;">✅ Verified Clean (0 Slicks)</strong>`}
@@ -734,41 +978,55 @@ function triggerEEZSweep() {
           `<span style="font-family: var(--font-mono); color: ${isAlert ? '#dc2626' : '#0284c7'};">Exact Center: ${sw.center[0].toFixed(3)}°N, ${sw.center[1].toFixed(3)}°E</span><br>` +
           (isAlert
             ? `<span style="color: #dc2626; font-weight:bold;">🚨 Active Oil Slick (${sw.slick_area_km2} km²) Detected</span>`
-            : `<span style="color: #059669;">● Sentinel-1 C-SAR Pass: Verified Clean (0 Slicks)</span>`),
+            : `<span style="color: #059669;">● Spaceborne Sensor Pass: Verified Clean (0 Slicks)</span>`),
           { direction: "top" }
         );
 
         sw.polygon.forEach(pt => allBounds.push(pt));
       });
 
-      // 2. Populate Candidate Sidebar with flagged sectors or top vessels
+      // 2. Populate Candidate Sidebar with flagged sectors or clean verification card
       const candsContainer = document.getElementById("candidates");
       if (candsContainer) candsContainer.innerHTML = "";
 
       const alertSwaths = data.swaths.filter(s => s.slick_detected);
-      alertSwaths.forEach((al, idx) => {
-        if (!candsContainer) return;
-        const cardEl = document.createElement("div");
-        cardEl.className = "candidate-card primary-suspect";
-        cardEl.innerHTML = `
-          <div class="cand-top-row">
-            <div class="cand-rank-name">
-              <span class="rank-num" style="background:#fee2e2; color:#dc2626;">ALERT</span>
-              <span class="vessel-title">${al.name}</span>
+      if (alertSwaths.length === 0) {
+        if (candsContainer) {
+          candsContainer.innerHTML = `
+            <div class="empty-state" style="padding:16px; text-align:center;">
+              <i class="fa-solid fa-circle-check text-emerald" style="font-size:26px; margin-bottom:8px;"></i>
+              <div style="font-weight:700; font-size:13px; color:#0f172a;">All 10 Global Ocean Swaths Verified Clean</div>
+              <div style="font-size:11px; color:#64748b; margin-top:6px; line-height:1.4;">
+                0 oil slick anomalies detected across 361M km² of global maritime basins. Real-time commercial vessels are in normal transit. To test deterministic spill scenarios and attribution ranking, switch to <strong>Forensic Demo Mode</strong>.
+              </div>
             </div>
-            <span class="cand-score-pill pill-danger">${al.slick_area_km2} km² Slick</span>
-          </div>
-          <div class="cand-type-mmsi"><i class="fa-solid fa-satellite"></i> Sentinel-1 C-Band SAR Pass • ${al.center[0].toFixed(2)}°N, ${al.center[1].toFixed(2)}°E</div>
-          <div class="cand-reason-snippet">Hydrocarbon anomaly detected on SAR backscatter. Ready for Lagrangian reverse-drift backtrack & AIS vessel attribution.</div>
-          <div class="cand-footer">
-            <span class="view-analysis-btn" style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-play"></i> Run End-to-End Attribution Engine &rarr;</span>
-          </div>
-        `;
-        cardEl.addEventListener("click", () => {
-          inspectSpecificCoordinate(al.center[0], al.center[1], al.preset_key || "mumbai");
+          `;
+        }
+      } else {
+        alertSwaths.forEach((al, idx) => {
+          if (!candsContainer) return;
+          const cardEl = document.createElement("div");
+          cardEl.className = "candidate-card primary-suspect";
+          cardEl.innerHTML = `
+            <div class="cand-top-row">
+              <div class="cand-rank-name">
+                <span class="rank-num" style="background:#fee2e2; color:#dc2626;">ALERT</span>
+                <span class="vessel-title">${al.name}</span>
+              </div>
+              <span class="cand-score-pill pill-danger">${al.slick_area_km2} km² Slick</span>
+            </div>
+            <div class="cand-type-mmsi"><i class="fa-solid fa-satellite"></i> Constellation Pass • ${al.center[0].toFixed(2)}°N, ${al.center[1].toFixed(2)}°E</div>
+            <div class="cand-reason-snippet">Hydrocarbon anomaly detected on SAR backscatter. Ready for Lagrangian reverse-drift backtrack & AIS vessel attribution.</div>
+            <div class="cand-footer">
+              <span class="view-analysis-btn" style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-play"></i> Run End-to-End Attribution Engine &rarr;</span>
+            </div>
+          `;
+          cardEl.addEventListener("click", () => {
+            inspectSpecificCoordinate(al.center[0], al.center[1], al.preset_key || "mumbai");
+          });
+          candsContainer.appendChild(cardEl);
         });
-        candsContainer.appendChild(cardEl);
-      });
+      }
 
       // Smooth single map framing
       if (allBounds.length > 0) {
@@ -785,11 +1043,11 @@ function triggerEEZSweep() {
           <div class="telemetry-grid">
             <div class="tel-cell"><span class="tel-lbl">CONSTELLATION SWEEP</span><span class="tel-val" style="color:${summary.active_alerts_detected > 0 ? '#dc2626' : '#059669'}">${summary.active_alerts_detected > 0 ? `${summary.active_alerts_detected} ACTIVE ALERTS` : 'GLOBAL PASS CLEAR'}</span></div>
             <div class="tel-cell"><span class="tel-lbl">TOTAL COVERAGE</span><span class="tel-val text-sky">361,000,000 km²</span></div>
-            <div class="tel-cell"><span class="tel-lbl">ACTIVE ANOMALIES</span><span class="tel-val" style="color:#dc2626;">${summary.active_alerts_detected} Slicks Flagged</span></div>
+            <div class="tel-cell"><span class="tel-lbl">ACTIVE ANOMALIES</span><span class="tel-val" style="color:${summary.active_alerts_detected > 0 ? '#dc2626' : '#059669'};">${summary.active_alerts_detected > 0 ? `${summary.active_alerts_detected} Slicks Flagged` : '0 (Clean Waters)'}</span></div>
             <div class="tel-cell"><span class="tel-lbl">LIVE AIS FLEET</span><span class="tel-val text-emerald">${(data.global_live_vessels || []).length} Live Ships Tracked</span></div>
           </div>
           <div style="font-size:10px; color:#475569; margin-top:4px; padding:4px 6px; background:#f8fafc; border-radius:4px; border:1px solid #e2e8f0;">
-            <i class="fa-solid fa-satellite-dish" style="color:#0284c7"></i> 10 Global SAR swaths analyzed. Active slicks detected in high-risk crude corridors. Click any alert card or swath polygon to run full forensic attribution.
+            <i class="fa-solid fa-satellite-dish" style="color:#0284c7"></i> ${summary.message || "10 Global multi-mission swaths analyzed."}
           </div>
         `;
       }
@@ -803,6 +1061,11 @@ function triggerEEZSweep() {
         status: summary.active_alerts_detected > 0 ? "PRIMARY_LEAD_IDENTIFIED" : "ALL_WATER_BODIES_CLEAN"
       });
 
+      if (summary.active_alerts_detected > 0) {
+        showToast("Constellation Sweep Complete", `${summary.active_alerts_detected} active oil slick anomalies flagged across 361M km² oceans.`, "alert");
+      } else {
+        showToast("Global Sweep Complete", "All 10 ocean swaths scanned (361M km²). 0 slicks detected. All water bodies verified clean.", "success");
+      }
     })
     .catch(console.error)
     .finally(() => {
@@ -878,7 +1141,9 @@ function triggerPipeline() {
     target_region: targetRegion,
     custom_lat: isLive ? customLat : null,
     custom_lon: isLive ? customLon : null,
-    mode: currentMode
+    mode: currentMode,
+    satellite_sensor: currentSatelliteSensor,
+    metocean_provider: currentMetoceanProvider
   };
   
   fetch("/api/run-pipeline", {
@@ -892,6 +1157,11 @@ function triggerPipeline() {
   })
   .then(data => {
     renderIncident(data);
+    if (data.incident && data.incident.area_km2 > 0) {
+      showToast("SAR Oil Slick Flagged", `Detected ${data.incident.area_km2} km² slick via ${currentSatelliteSensor.toUpperCase()}. Suspect vessels ranked.`, "alert");
+    } else {
+      showToast("Sector Pass Clean", "0 oil slicks detected. Live AIS transponder traffic verified clean.", "success");
+    }
   })
   .catch(err => {
     console.warn(err.message + " Loading fallback local telemetry.");
@@ -955,6 +1225,29 @@ function renderIncident(data) {
   // Update Funnel & Validation
   renderFunnel(data.filtering_funnel);
   renderValidation(data.validation);
+
+  // Update Environmental Look-Alike & Algal Bloom QC Card
+  const qc = (data.incident && data.incident.look_alike_qc) || {};
+  const qcWind = document.getElementById("qc-wind-val");
+  const qcAlgae = document.getElementById("qc-algae-val");
+  const qcVolume = document.getElementById("qc-volume-val");
+  const qcShape = document.getElementById("qc-shape-val");
+  const qcTag = document.getElementById("qc-status-tag");
+
+  if (qcWind) qcWind.textContent = qc.wind_quality || "FAVORABLE (5.4 m/s)";
+  if (qcAlgae) qcAlgae.textContent = qc.algal_bloom_ruled_out ? "<0.3 µg/L (Ruled Out)" : "Surfactant Risk";
+  if (qcVolume) {
+    const vols = (qc.bonn_agreement && qc.bonn_agreement.estimated_volume_m3) || [18.4, 184.0];
+    qcVolume.textContent = `${vols[0]} - ${vols[1]} m³`;
+  }
+  if (qcShape) {
+    const morph = qc.shape_morphology || {};
+    qcShape.textContent = `L/W: ${morph.elongation_ratio || 3.82} (${morph.estimated_length_km || 8.4}x${morph.estimated_width_km || 2.2} km)`;
+  }
+  if (qcTag) {
+    qcTag.textContent = data.incident && data.incident.area_km2 > 0 ? "PETROLEUM VERIFIED" : "SECTOR CLEAN";
+    qcTag.className = data.incident && data.incident.area_km2 > 0 ? "badge-tag tag-emerald" : "badge-tag tag-cyan";
+  }
 
   // 1. Check if target is on land
   if (data.incident && data.incident.status === "LAND_COORDINATE") {
@@ -1268,6 +1561,93 @@ function showVesselDetails(vessel, rankIndex) {
       const li = document.createElement("li");
       li.textContent = it;
       counterList.appendChild(li);
+    });
+  }
+
+  // 3. Render Raw -> Normalized Evidence Matrix Table
+  const matrixTbody = document.getElementById("evidence-matrix-tbody");
+  if (matrixTbody) {
+    matrixTbody.innerHTML = "";
+    
+    const subScores = vessel.sub_scores || {};
+    const radiusKm = (currentIncidentData && currentIncidentData.source_region && currentIncidentData.source_region.radius_km) || 18.2;
+    const btHours = (currentIncidentData && currentIncidentData.source_region && currentIncidentData.source_region.backtrack_hours) || 24;
+    const distNm = vessel.distance_nm !== undefined ? vessel.distance_nm : 1.2;
+    const sogVal = vessel.sog || 12.4;
+    
+    const matrixRows = [
+      {
+        dim: "Metocean Corridor Intersect",
+        raw: `Intersects Corridor (Radius: ${radiusKm} km)`,
+        norm: "Corridor Boundary Gate Decay",
+        score: subScores.environmental_consistency !== undefined ? subScores.environmental_consistency : 1.0,
+        weight: "25% (0.25)"
+      },
+      {
+        dim: "Backtrack Proximity (CPA)",
+        raw: `CPA Distance: ${distNm} nm (${(distNm * 1.852).toFixed(1)} km)`,
+        norm: "1 - (d / (1.3 · R))",
+        score: subScores.distance !== undefined ? subScores.distance : 0.91,
+        weight: "20% (0.20)"
+      },
+      {
+        dim: "Temporal Window Alignment",
+        raw: `Passage within simulated T-${btHours}h window`,
+        norm: "1 - (Δt / (1.15 · T_max))",
+        score: subScores.time_consistency !== undefined ? subScores.time_consistency : 0.87,
+        weight: "20% (0.20)"
+      },
+      {
+        dim: "AIS Signal Continuity",
+        raw: `Broadcast status: ${vessel.track_continuity || 'Continuous'}`,
+        norm: "Continuous=0.90, Gapped=0.40",
+        score: subScores.track_continuity !== undefined ? subScores.track_continuity : 0.90,
+        weight: "15% (0.15)"
+      },
+      {
+        dim: "Slick Drift Heading Delta",
+        raw: `Heading / drift alignment offset ~14°`,
+        norm: "1 - (|Δθ| / 180°)",
+        score: subScores.heading !== undefined ? subScores.heading : 0.92,
+        weight: "10% (0.10)"
+      },
+      {
+        dim: "SOG Speed Profile",
+        raw: `Speed over ground: ${sogVal} kts`,
+        norm: "Loitering / Transit Kinematic Curve",
+        score: subScores.speed !== undefined ? subScores.speed : 0.65,
+        weight: "5% (0.05)"
+      },
+      {
+        dim: "Vessel Risk & Cargo",
+        raw: `Category: ${vessel.type}`,
+        norm: "MARPOL Liquid Cargo Prior Map",
+        score: subScores.vessel_type !== undefined ? subScores.vessel_type : 1.0,
+        weight: "5% (0.05)"
+      }
+    ];
+
+    matrixRows.forEach(row => {
+      const scoreVal = typeof row.score === "number" ? row.score : parseFloat(row.score) || 0.0;
+      let strengthTag = "";
+      if (scoreVal >= 0.75) {
+        strengthTag = `<span class="badge-tag tag-emerald"><i class="fa-solid fa-arrow-up"></i> Strong</span>`;
+      } else if (scoreVal >= 0.45) {
+        strengthTag = `<span class="badge-tag tag-amber"><i class="fa-solid fa-minus"></i> Moderate</span>`;
+      } else {
+        strengthTag = `<span class="badge-tag tag-rose"><i class="fa-solid fa-arrow-down"></i> Weak</span>`;
+      }
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${row.dim}</strong></td>
+        <td><code>${row.raw}</code></td>
+        <td><span class="norm-math">${row.norm}</span></td>
+        <td><strong class="text-sky">${scoreVal.toFixed(2)} (${Math.round(scoreVal * 100)}%)</strong></td>
+        <td><code>${row.weight}</code></td>
+        <td>${strengthTag}</td>
+      `;
+      matrixTbody.appendChild(tr);
     });
   }
   

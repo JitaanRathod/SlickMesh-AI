@@ -1,51 +1,131 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-24T10:28:53Z",
+    "detected_at": "2026-09-28T12:23:50Z",
     "area_km2": 10.63,
     "confidence": 0.98,
     "polygon": [
       [
-        71.1248,
-        18.8865
+        71.3748,
+        19.4565
       ],
       [
-        71.109,
-        18.8775
+        71.3591,
+        19.4475
       ],
       [
-        71.1086,
-        18.8694
+        71.3586,
+        19.4394
       ],
       [
-        71.1157,
-        18.8577
+        71.3658,
+        19.4277
       ],
       [
-        71.1314,
-        18.8541
+        71.3815,
+        19.4241
       ],
       [
-        71.1424,
-        18.8608
+        71.3925,
+        19.4308
       ],
       [
-        71.1457,
-        18.8721
+        71.3959,
+        19.4421
       ],
       [
-        71.1386,
-        18.8824
+        71.3887,
+        19.4524
       ],
       [
-        71.1248,
-        18.8865
+        71.3748,
+        19.4565
       ]
     ],
+    "sensor": {
+      "id": "eos04",
+      "name": "ISRO EOS-04 / RISAT-1A (C-Band SAR)",
+      "short_name": "ISRO EOS-04 SAR",
+      "agency": "Indian Space Research Organisation (ISRO)",
+      "sensor_type": "Spaceborne C-band Active SAR (5.35 GHz)",
+      "polarization": "Circular / Linear Quad-Pol (RH/RV/HH/HV)",
+      "spatial_resolution": "3m (FRS) / 25m (MRS) / 50m (CRS)",
+      "swath_width_km": 240,
+      "pass_type": "Indian Sovereign Tactical Pass",
+      "penetration": "All-Weather Day/Night Sovereign Radar",
+      "primary_band": "C-Band (5.35 GHz)",
+      "badge_color": "#d97706"
+    },
+    "look_alike_qc": {
+      "wind_speed_ms": 5.4,
+      "wind_quality": "FAVORABLE (2.0 - 12.0 m/s)",
+      "biogenic_film_probability": 0.04,
+      "chlorophyll_index_ug_l": 0.22,
+      "algal_bloom_ruled_out": true,
+      "thermal_skin_delta_k": -0.4,
+      "bonn_agreement": {
+        "category": "Code 3-4 (Metallic to True Oil Appearance)",
+        "estimated_volume_m3": [
+          10.6,
+          106.3
+        ],
+        "estimated_barrels": [
+          66.7,
+          668.6
+        ]
+      },
+      "shape_morphology": {
+        "elongation_ratio": 3.82,
+        "estimated_length_km": 6.37,
+        "estimated_width_km": 1.67,
+        "perimeter_km": 18.6
+      }
+    },
+    "multi_sensor_fusion": {
+      "composite_name": "Multi-Sensor All-Weather Fusion (Sentinel-1 + EOS-04 + EOS-06 + Sentinel-2)",
+      "status": "ALL_CONSTELLATIONS_SYNCHRONIZED",
+      "sensor_breakdown": [
+        {
+          "satellite": "ESA Sentinel-1 C-SAR",
+          "band": "C-Band (5.405 GHz)",
+          "role": "Capillary wave damping / dark-patch morphology",
+          "damping_ratio_db": -5.2,
+          "status": "POSITIVE_DETECTION",
+          "confidence": 94
+        },
+        {
+          "satellite": "ISRO EOS-04 (RISAT-1A)",
+          "band": "C-Band Quad-Pol SAR",
+          "role": "Quad-polarization entropy/anisotropy cross-validation",
+          "polarimetric_match": "High (HH/HV ratio 4.2 dB)",
+          "status": "POSITIVE_CORROBORATION",
+          "confidence": 92
+        },
+        {
+          "satellite": "ISRO EOS-06 (Oceansat-3)",
+          "band": "OCM-3 Optical + SSTM Thermal",
+          "role": "Chlorophyll-a / algal bloom screening & thermal cool-skin check",
+          "algae_ruled_out": true,
+          "skin_temp_delta_k": -0.4,
+          "status": "LOOKALIKE_RULED_OUT",
+          "confidence": 96
+        },
+        {
+          "satellite": "ESA Sentinel-2 MSI",
+          "band": "Multi-Spectral VNIR/SWIR",
+          "role": "Sunglint optical reflectance sheen validation",
+          "sheen_corroboration": "Confirmed in sun-glint geometry",
+          "status": "SHEEN_CONFIRMED",
+          "confidence": 89
+        }
+      ],
+      "combined_confidence": 95.2,
+      "verdict": "Cross-validated genuine petroleum slick across radar, polarimetric, optical, and thermal bands."
+    },
     "confidence_decomposition": {
       "detection_confidence": 98.0,
-      "origin_confidence": 82.5,
-      "attribution_evidence_index": 91
+      "origin_confidence": 78.0,
+      "attribution_evidence_index": 56
     }
   },
   "environment": {
@@ -53,21 +133,21 @@
     "current_v_ms": 0.07,
     "wind_speed_ms": 5.4,
     "wind_direction_deg": 72.0,
-    "source_model": "Copernicus Marine / Open-Meteo Live API"
+    "source_model": "INCOIS Ocean State Forecast (OSF) / High-Res Regional Model"
   },
   "source_region": {
-    "latitude": 18.8587,
-    "longitude": 71.1111,
-    "radius_km": 14.9,
-    "backtrack_hours": 18,
-    "origin_confidence": 82.5
+    "latitude": 19.4248,
+    "longitude": 71.3559,
+    "radius_km": 16.5,
+    "backtrack_hours": 24,
+    "origin_confidence": 78.0
   },
   "filtering_funnel": {
     "fleet_in_basin": 427,
     "spatial_intersect_corridor": 38,
     "temporal_window_aligned": 11,
-    "scored_candidates": 2,
-    "status": "PRIMARY_LEAD_IDENTIFIED"
+    "scored_candidates": 3,
+    "status": "INSUFFICIENT_EVIDENCE"
   },
   "validation": {
     "iou_score": 0.76,
@@ -75,84 +155,141 @@
     "temporal_concordance": "HIGH (0.88)",
     "drift_agreement": "OPTIMAL \u2014 Hydrodynamic 3% windage physics validated against SAR slick morphology"
   },
+  "multi_sensor_fusion": {
+    "composite_name": "Multi-Sensor All-Weather Fusion (Sentinel-1 + EOS-04 + EOS-06 + Sentinel-2)",
+    "status": "ALL_CONSTELLATIONS_SYNCHRONIZED",
+    "sensor_breakdown": [
+      {
+        "satellite": "ESA Sentinel-1 C-SAR",
+        "band": "C-Band (5.405 GHz)",
+        "role": "Capillary wave damping / dark-patch morphology",
+        "damping_ratio_db": -5.2,
+        "status": "POSITIVE_DETECTION",
+        "confidence": 94
+      },
+      {
+        "satellite": "ISRO EOS-04 (RISAT-1A)",
+        "band": "C-Band Quad-Pol SAR",
+        "role": "Quad-polarization entropy/anisotropy cross-validation",
+        "polarimetric_match": "High (HH/HV ratio 4.2 dB)",
+        "status": "POSITIVE_CORROBORATION",
+        "confidence": 92
+      },
+      {
+        "satellite": "ISRO EOS-06 (Oceansat-3)",
+        "band": "OCM-3 Optical + SSTM Thermal",
+        "role": "Chlorophyll-a / algal bloom screening & thermal cool-skin check",
+        "algae_ruled_out": true,
+        "skin_temp_delta_k": -0.4,
+        "status": "LOOKALIKE_RULED_OUT",
+        "confidence": 96
+      },
+      {
+        "satellite": "ESA Sentinel-2 MSI",
+        "band": "Multi-Spectral VNIR/SWIR",
+        "role": "Sunglint optical reflectance sheen validation",
+        "sheen_corroboration": "Confirmed in sun-glint geometry",
+        "status": "SHEEN_CONFIRMED",
+        "confidence": 89
+      }
+    ],
+    "combined_confidence": 95.2,
+    "verdict": "Cross-validated genuine petroleum slick across radar, polarimetric, optical, and thermal bands."
+  },
   "timeline_frames": [
     {
       "step_index": 0,
-      "t_offset_hours": -18.0,
-      "label": "T-18h",
+      "t_offset_hours": -24.0,
+      "label": "T-24h",
       "plume_center": [
-        18.8587,
-        71.1111
+        19.4248,
+        71.3559
       ],
       "plume_radius_km": 2.5,
       "vessel_positions": {
-        "352001944": [
-          70.8,
-          18.5
+        "419001111": [
+          71.05,
+          19.1
         ],
-        "419008811": [
-          71.5,
-          18.4
+        "419002222": [
+          70.85,
+          19.0
+        ],
+        "419003333": [
+          71.65,
+          18.9
         ]
       }
     },
     {
       "step_index": 1,
-      "t_offset_hours": -13.5,
-      "label": "T-14h",
+      "t_offset_hours": -18.0,
+      "label": "T-18h",
       "plume_center": [
-        18.8616,
-        71.1151
+        19.4287,
+        71.3612
       ],
-      "plume_radius_km": 5.6,
+      "plume_radius_km": 6.0,
       "vessel_positions": {
-        "352001944": [
-          70.8,
-          18.5
+        "419001111": [
+          71.05,
+          19.1
         ],
-        "419008811": [
-          71.5,
-          18.4
+        "419002222": [
+          70.85,
+          19.0
+        ],
+        "419003333": [
+          71.65,
+          18.9
         ]
       }
     },
     {
       "step_index": 2,
-      "t_offset_hours": -9.0,
-      "label": "T-9h",
+      "t_offset_hours": -12.0,
+      "label": "T-12h",
       "plume_center": [
-        18.8645,
-        71.1191
+        19.4325,
+        71.3666
       ],
-      "plume_radius_km": 8.7,
+      "plume_radius_km": 9.5,
       "vessel_positions": {
-        "352001944": [
-          70.98,
-          18.7
+        "419001111": [
+          71.15,
+          19.35
         ],
-        "419008811": [
-          71.55,
-          18.7
+        "419002222": [
+          70.95,
+          19.25
+        ],
+        "419003333": [
+          71.7,
+          19.2
         ]
       }
     },
     {
       "step_index": 3,
-      "t_offset_hours": -4.5,
-      "label": "T-4h",
+      "t_offset_hours": -6.0,
+      "label": "T-6h",
       "plume_center": [
-        18.8674,
-        71.1231
+        19.4364,
+        71.3719
       ],
-      "plume_radius_km": 11.8,
+      "plume_radius_km": 13.0,
       "vessel_positions": {
-        "352001944": [
-          71.1,
-          18.85
+        "419001111": [
+          71.21,
+          19.54
         ],
-        "419008811": [
-          71.6,
-          19.0
+        "419002222": [
+          71.05,
+          19.5
+        ],
+        "419003333": [
+          71.75,
+          19.5
         ]
       }
     },
@@ -161,121 +298,177 @@
       "t_offset_hours": 0.0,
       "label": "T=0h (Observation Pass)",
       "plume_center": [
-        18.8703,
-        71.1271
+        19.4403,
+        71.3772
       ],
-      "plume_radius_km": 14.9,
+      "plume_radius_km": 16.5,
       "vessel_positions": {
-        "352001944": [
-          71.35,
-          19.15
+        "419001111": [
+          71.28,
+          19.75
         ],
-        "419008811": [
-          71.65,
-          19.3
+        "419002222": [
+          71.15,
+          19.75
+        ],
+        "419003333": [
+          71.8,
+          19.8
         ]
       }
     }
   ],
   "vessels": [
     {
-      "name": "Pacific Vanguard",
-      "mmsi": "352001944",
+      "name": "Al-Bahar Crude",
+      "mmsi": "419001111",
       "type": "Crude Oil Tanker",
-      "confidence": 91,
-      "reason": "Tanker track intersected estimated source corridor 2.5 hours prior to detection (CPA 0.8 nm).",
+      "confidence": 56,
+      "reason": "Passed outside the origin corridor at 10.8 nm minimum approach distance.",
       "position": [
-        71.35,
-        19.15
+        71.28,
+        19.75
       ],
       "track": [
         [
-          70.8,
-          18.5
+          71.05,
+          19.1
         ],
         [
-          70.98,
-          18.7
+          71.15,
+          19.35
         ],
         [
-          71.1,
-          18.85
+          71.21,
+          19.54
         ],
         [
-          71.35,
-          19.15
+          71.28,
+          19.75
         ]
       ],
-      "distance_nm": 0.82,
-      "sog": 15.8,
-      "cog": 4,
+      "distance_nm": 10.77,
+      "sog": 2.1,
+      "cog": 8,
       "supporting_evidence": [
-        "Trajectory passed within 0.8 nm of estimated origin corridor",
+        "Closest passage was 10.8 nm from origin",
         "Vessel classification (Crude Oil Tanker) matches hydrocarbon carriage risk profile",
-        "Temporal window alignment within 2.5 hours of estimated release"
+        "Temporal window alignment within 3.5 hours of estimated release"
       ],
       "counter_evidence": [
-        "AIS transponder continuous broadcast maintained (no deliberate blackout gap)"
+        "CPA offset (10.8 nm) lies outside primary hydrodynamic corridor",
+        "AIS transponder continuous broadcast maintained (no deliberate blackout gap)",
+        "Kinematic and corridor overlap scores are significantly lower than primary leads"
       ],
       "sub_scores": {
-        "environmental_consistency": 0.985,
-        "distance": 0.922,
-        "time_consistency": 0.879,
+        "environmental_consistency": 0.202,
+        "distance": 0.07,
+        "time_consistency": 0.873,
         "track_continuity": 0.9,
-        "heading": 0.978,
-        "speed": 0.5,
+        "heading": 0.956,
+        "speed": 0.9,
         "vessel_type": 1.0
       }
     },
     {
-      "name": "Golden Horizon",
-      "mmsi": "419008811",
-      "type": "Container Ship",
-      "confidence": 38,
-      "reason": "Passed outside the origin corridor at 26.7 nm minimum approach distance.",
+      "name": "Konkan Star",
+      "mmsi": "419002222",
+      "type": "Chemical Tanker",
+      "confidence": 45,
+      "reason": "Passed outside the origin corridor at 17.9 nm minimum approach distance.",
       "position": [
-        71.65,
-        19.3
+        71.15,
+        19.75
       ],
       "track": [
         [
-          71.5,
-          18.4
-        ],
-        [
-          71.55,
-          18.7
-        ],
-        [
-          71.6,
+          70.85,
           19.0
         ],
         [
-          71.65,
-          19.3
+          70.95,
+          19.25
+        ],
+        [
+          71.05,
+          19.5
+        ],
+        [
+          71.15,
+          19.75
         ]
       ],
-      "distance_nm": 26.71,
-      "sog": 18.2,
-      "cog": 42,
+      "distance_nm": 17.9,
+      "sog": 8.5,
+      "cog": 22,
       "supporting_evidence": [
-        "Closest passage was 26.7 nm from origin",
-        "Vessel classification (Container Ship) matches hydrocarbon carriage risk profile",
-        "Temporal window alignment within 8.0 hours of estimated release"
+        "Closest passage was 17.9 nm from origin",
+        "Vessel classification (Chemical Tanker) matches hydrocarbon carriage risk profile",
+        "Temporal window alignment within 7.0 hours of estimated release"
       ],
       "counter_evidence": [
-        "CPA offset (26.7 nm) lies outside primary hydrodynamic corridor",
-        "Transit speed (18.2 kts) is high for slow-speed operational bilge discharge",
+        "CPA offset (17.9 nm) lies outside primary hydrodynamic corridor",
         "AIS transponder continuous broadcast maintained (no deliberate blackout gap)",
         "Kinematic and corridor overlap scores are significantly lower than primary leads"
       ],
       "sub_scores": {
         "environmental_consistency": 0.0,
         "distance": 0.0,
-        "time_consistency": 0.614,
+        "time_consistency": 0.746,
         "track_continuity": 0.9,
-        "heading": 0.767,
-        "speed": 0.3,
+        "heading": 0.878,
+        "speed": 0.65,
+        "vessel_type": 1.0
+      }
+    },
+    {
+      "name": "Mumbai Pioneer",
+      "mmsi": "419003333",
+      "type": "Cargo",
+      "confidence": 36,
+      "reason": "Passed outside the origin corridor at 22.8 nm minimum approach distance.",
+      "position": [
+        71.8,
+        19.8
+      ],
+      "track": [
+        [
+          71.65,
+          18.9
+        ],
+        [
+          71.7,
+          19.2
+        ],
+        [
+          71.75,
+          19.5
+        ],
+        [
+          71.8,
+          19.8
+        ]
+      ],
+      "distance_nm": 22.76,
+      "sog": 14.2,
+      "cog": 55,
+      "supporting_evidence": [
+        "Closest passage was 22.8 nm from origin",
+        "Vessel classification (Cargo) matches hydrocarbon carriage risk profile",
+        "Temporal window alignment within 14.0 hours of estimated release"
+      ],
+      "counter_evidence": [
+        "CPA offset (22.8 nm) lies outside primary hydrodynamic corridor",
+        "AIS transponder continuous broadcast maintained (no deliberate blackout gap)",
+        "Kinematic and corridor overlap scores are significantly lower than primary leads"
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.0,
+        "distance": 0.0,
+        "time_consistency": 0.493,
+        "track_continuity": 0.9,
+        "heading": 0.694,
+        "speed": 0.5,
         "vessel_type": 0.7
       }
     }

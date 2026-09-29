@@ -2001,4 +2001,533 @@ body.slidex-body {
   border-radius: 1px;
 }
 
+/* --------------------------------------------------------------------------
+   6-Stage Pipeline Walkthrough Strip
+   -------------------------------------------------------------------------- */
+.pipeline-evidence-strip {
+  margin-top: 24px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 12px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 960px;
+}
+
+.pipeline-strip-title {
+  font-size: 11px;
+  color: #0f172a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pipeline-steps-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pipe-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.pipe-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pipe-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.pipe-body strong {
+  font-size: 11px;
+  color: #0f172a;
+}
+
+.pipe-body span {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+.pipe-arrow {
+  color: #94a3b8;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* --------------------------------------------------------------------------
+   Top Bar Action Buttons (Model Card & Contracts)
+   -------------------------------------------------------------------------- */
+.btn-model-card-trigger {
+  padding: 5px 10px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-model-card-trigger:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* --------------------------------------------------------------------------
+   Deterministic Case Scenarios Showcase Grid
+   -------------------------------------------------------------------------- */
+.scenario-buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scenario-chip-btn {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 7px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.scenario-chip-btn:hover {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+  transform: translateX(2px);
+}
+
+.scenario-chip-btn .sc-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scenario-chip-btn .sc-desc {
+  font-size: 9.5px;
+  color: #64748b;
+  margin-top: 2px;
+  padding-left: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   Evidence Normalization Matrix Table
+   -------------------------------------------------------------------------- */
+.matrix-table-wrap {
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.evidence-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.evidence-matrix-table th {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.evidence-matrix-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.strength-pill {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+.strength-strong {
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.strength-moderate {
+  background-color: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.strength-weak {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* --------------------------------------------------------------------------
+   Model Card & SAR Vision Inspection
+   -------------------------------------------------------------------------- */
+.model-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sar-inspection-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.sar-inspect-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inspect-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.sar-preview-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.sar-mask-placeholder,
+.sar-vector-placeholder {
+  width: 100%;
+  height: 140px;
+  background-color: #0f172a;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #e2e8f0;
+  font-size: 10.5px;
+  text-align: center;
+  padding: 8px;
+}
+
+.sar-mask-placeholder i,
+.sar-vector-placeholder i {
+  font-size: 24px;
+}
+
+/* --------------------------------------------------------------------------
+   Pipeline Contracts Accordion
+   -------------------------------------------------------------------------- */
+.contracts-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contract-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.contract-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.contract-badge-col {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-desc {
+  font-size: 10.5px;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.contract-code {
+  background-color: #0f172a;
+  color: #38bdf8;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  overflow-x: auto;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Satellite Sensor Micro-Box & Specifications
+   -------------------------------------------------------------------------- */
+.sensor-micro-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sensor-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.spec-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.spec-val {
+  color: #0f172a;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   Metocean Provider Toggle (INCOIS vs ECMWF)
+   -------------------------------------------------------------------------- */
+.metocean-provider-wrap {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.metocean-provider-wrap label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+
+.provider-pill-toggle {
+  display: flex;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.provider-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.provider-btn:hover {
+  color: #0f172a;
+}
+
+.provider-btn.active {
+  background-color: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Candidate Search & GeoJSON Export Bar
+   -------------------------------------------------------------------------- */
+.candidate-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cand-search-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cand-search-wrap .search-icon {
+  position: absolute;
+  left: 8px;
+  font-size: 10.5px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.cand-search-input {
+  width: 100%;
+  padding: 5px 8px 5px 26px;
+  font-size: 10.5px;
+  font-family: var(--font-sans);
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.cand-search-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.12);
+}
+
+.btn-geojson-export {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #0284c7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-geojson-export:hover {
+  background-color: #e0f2fe;
+  border-color: #38bdf8;
+}
+
+/* --------------------------------------------------------------------------
+   Tactical Toast Notification System
+   -------------------------------------------------------------------------- */
+.tactical-toast-container {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.tactical-toast {
+  pointer-events: auto;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 380px;
+  animation: slideToastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tactical-toast.toast-success {
+  border-left: 4px solid #10b981;
+}
+
+.tactical-toast.toast-alert {
+  border-left: 4px solid #ef4444;
+}
+
+.tactical-toast.toast-info {
+  border-left: 4px solid #0284c7;
+}
+
+.toast-icon-wrap {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.toast-desc {
+  font-size: 10.5px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+@keyframes slideToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
 

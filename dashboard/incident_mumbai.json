@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-24T10:27:49Z",
+    "detected_at": "2026-09-28T12:23:37Z",
     "area_km2": 66.35,
     "confidence": 0.97,
     "polygon": [
@@ -44,16 +44,16 @@
     ]
   },
   "environment": {
-    "current_u_ms": 0.1,
-    "current_v_ms": -0.15,
-    "wind_speed_ms": 8.1,
-    "wind_direction_deg": 302,
+    "current_u_ms": 0.04,
+    "current_v_ms": -0.18,
+    "wind_speed_ms": 11.4,
+    "wind_direction_deg": 283,
     "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 19.6319,
-    "longitude": 71.1183,
-    "radius_km": 19.7,
+    "latitude": 19.6149,
+    "longitude": 71.0631,
+    "radius_km": 23.7,
     "backtrack_hours": 24
   },
   "vessels": [
@@ -86,8 +86,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.893,
-        "distance": 0.453,
+        "environmental_consistency": 0.889,
+        "distance": 0.432,
         "time_consistency": 0.873,
         "track_continuity": 0.9,
         "heading": 0.956,
@@ -99,8 +99,8 @@
       "name": "Konkan Star",
       "mmsi": "419002222",
       "type": "Chemical Tanker",
-      "confidence": 77,
-      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 7.3 nm).",
+      "confidence": 80,
+      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 6.9 nm).",
       "position": [
         71.15,
         19.75
@@ -124,8 +124,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.897,
-        "distance": 0.471,
+        "environmental_consistency": 0.919,
+        "distance": 0.583,
         "time_consistency": 0.746,
         "track_continuity": 0.9,
         "heading": 0.878,
@@ -138,7 +138,7 @@
       "mmsi": "419003333",
       "type": "Cargo",
       "confidence": 36,
-      "reason": "Passed outside the origin corridor at 36.6 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 39.5 nm minimum approach distance.",
       "position": [
         71.8,
         19.8

@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-24T10:27:51Z",
+    "detected_at": "2026-09-28T12:23:39Z",
     "area_km2": 66.35,
     "confidence": 0.97,
     "polygon": [
@@ -44,16 +44,16 @@
     ]
   },
   "environment": {
-    "current_u_ms": -0.07,
-    "current_v_ms": -0.17,
-    "wind_speed_ms": 14.5,
-    "wind_direction_deg": 247,
+    "current_u_ms": -0.17,
+    "current_v_ms": -0.06,
+    "wind_speed_ms": 1.1,
+    "wind_direction_deg": 198,
     "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 16.1455,
-    "longitude": 82.3028,
-    "radius_km": 27.4,
+    "latitude": 16.1677,
+    "longitude": 82.6989,
+    "radius_km": 11.3,
     "backtrack_hours": 24
   },
   "vessels": [
@@ -62,7 +62,7 @@
       "mmsi": "419004444",
       "type": "Oil Tanker",
       "confidence": 55,
-      "reason": "Passed outside the origin corridor at 18.2 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 7.5 nm minimum approach distance.",
       "position": [
         82.6,
         16.25
@@ -86,8 +86,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.193,
-        "distance": 0.051,
+        "environmental_consistency": 0.192,
+        "distance": 0.048,
         "time_consistency": 0.855,
         "track_continuity": 0.9,
         "heading": 0.944,
@@ -100,7 +100,7 @@
       "mmsi": "419005555",
       "type": "Bulk Carrier",
       "confidence": 33,
-      "reason": "Passed 35.0 nm from origin corridor 9.5 hours before detection with discontinuous AIS broadcast.",
+      "reason": "Passed 15.0 nm from origin corridor 9.5 hours before detection with discontinuous AIS broadcast.",
       "position": [
         82.85,
         16.4

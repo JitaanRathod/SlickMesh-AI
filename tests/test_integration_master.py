@@ -187,13 +187,76 @@ def test_gis_layers_and_dense_fleet(api_client):
     assert fleet_data["count"] >= 30
     assert len(fleet_data["vessels"]) >= 30
 
-    # Verify sweep endpoint returns active SAR alerts and clean swaths
-    res_sweep = api_client.get("/api/sweep-eez")
-    assert res_sweep.status_code == 200
-    sweep_data = res_sweep.json()
-    assert "swaths" in sweep_data
-    assert len(sweep_data["swaths"]) >= 8
-    assert sweep_data["summary"]["active_alerts_detected"] >= 1
-    assert sweep_data["summary"]["total_live_vessels_tracked"] >= 30
+    # Verify sweep endpoint in LIVE mode (0 false alerts, all water bodies verified clean)
+    res_sweep_live = api_client.get("/api/sweep-eez?mode=live")
+    assert res_sweep_live.status_code == 200
+    sweep_live = res_sweep_live.json()
+    assert "swaths" in sweep_live
+    assert len(sweep_live["swaths"]) >= 8
+    assert sweep_live["summary"]["active_alerts_detected"] == 0
+    assert sweep_live["summary"]["status"] == "GLOBAL_OCEANS_VERIFIED_CLEAN"
+    assert sweep_live["summary"]["total_live_vessels_tracked"] >= 30
+
+    # Verify sweep endpoint in DEMO mode (3 calibrated benchmark alert swaths)
+    res_sweep_demo = api_client.get("/api/sweep-eez?mode=demo")
+    assert res_sweep_demo.status_code == 200
+    sweep_demo = res_sweep_demo.json()
+    assert sweep_demo["summary"]["active_alerts_detected"] == 3
+    assert sweep_demo["summary"]["status"] == "SWEEP_COMPLETE_ALERTS_FLAGGED"
+
+
+def test_satellite_constellation_and_geojson_export(api_client):
+    """Verify satellite constellation endpoint, multi-sensor fusion, and GeoJSON export format."""
+    # Test GET /api/satellite-constellation
+    res_sensors = api_client.get("/api/satellite-constellation")
+    assert res_sensors.status_code == 200
+    sensor_data = res_sensors.json()
+    assert "sensors" in sensor_data
+    assert len(sensor_data["sensors"]) >= 4
+    assert sensor_data["default"] == "fused_constellation"
+    sensor_ids = [s["id"] for s in sensor_data["sensors"]]
+    assert "sentinel1" in sensor_ids
+    assert "eos04" in sensor_ids
+    assert "eos06" in sensor_ids
+    assert "fused_constellation" in sensor_ids
+
+    # Test POST /api/run-pipeline with default fused_constellation
+    res_fusion = api_client.post("/api/run-pipeline", json={
+        "image_name": "s1_mumbai_high.png",
+        "wind_speed": 5.4,
+        "wind_direction": 72.0,
+        "current_u": 0.18,
+        "current_v": 0.07,
+        "backtrack_hours": 24,
+        "target_region": "mumbai",
+        "satellite_sensor": "fused_constellation"
+    })
+    assert res_fusion.status_code == 200
+    fused_json = res_fusion.json()
+    assert "multi_sensor_fusion" in fused_json
+    fusion_breakdown = fused_json["multi_sensor_fusion"]["sensor_breakdown"]
+    assert len(fusion_breakdown) == 4
+
+    # Test POST /api/export-geojson
+    payload = {
+        "image_name": "s1_active.png",
+        "wind_speed": 5.4,
+        "wind_direction": 72.0,
+        "current_u": 0.18,
+        "current_v": 0.07,
+        "backtrack_hours": 24,
+        "target_region": "mumbai",
+        "satellite_sensor": "eos04",
+        "metocean_provider": "incois"
+    }
+    res_geo = api_client.post("/api/export-geojson", json=payload)
+    assert res_geo.status_code == 200
+    geojson_data = res_geo.json()
+    assert geojson_data["type"] == "FeatureCollection"
+    assert "features" in geojson_data
+    assert len(geojson_data["features"]) >= 3
+    assert "metadata" in geojson_data
+    assert geojson_data["metadata"]["satellite_sensor"] == "ISRO EOS-04 / RISAT-1A (C-Band SAR)"
+
 
 

@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-28T12:23:50Z",
+    "detected_at": "2026-09-29T11:21:03Z",
     "area_km2": 10.63,
     "confidence": 0.98,
     "polygon": [

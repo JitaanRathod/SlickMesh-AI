@@ -1123,11 +1123,14 @@ def execute_integrated_pipeline(
         "vessels": vessels_e
     }
 
-    # Save to disk for static dashboard fallbacks
+    # Save to disk for static dashboard fallbacks (safely ignored in read-only serverless runtimes)
     for dest in (os.path.join(ROOT_DIR, "incident.json"), os.path.join(ROOT_DIR, "dashboard", "incident.json")):
-        os.makedirs(os.path.dirname(dest), exist_ok=True)
-        with open(dest, "w", encoding="utf-8") as f:
-            json.dump(contract_e, f, indent=2)
+        try:
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            with open(dest, "w", encoding="utf-8") as f:
+                json.dump(contract_e, f, indent=2)
+        except Exception:
+            pass
 
     return contract_e
 

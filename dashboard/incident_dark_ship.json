@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-28T12:23:41Z",
+    "detected_at": "2026-09-29T11:21:00Z",
     "area_km2": 66.35,
     "confidence": 0.97,
     "polygon": [
@@ -44,16 +44,16 @@
     ]
   },
   "environment": {
-    "current_u_ms": 0.18,
-    "current_v_ms": 0.07,
-    "wind_speed_ms": 5.4,
-    "wind_direction_deg": 72,
-    "source_model": "Copernicus / Open-Meteo Fallback"
+    "current_u_ms": 0.15,
+    "current_v_ms": -0.1,
+    "wind_speed_ms": 4.4,
+    "wind_direction_deg": 327,
+    "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 16.48,
-    "longitude": 71.9988,
-    "radius_km": 16.5,
+    "latitude": 16.659,
+    "longitude": 71.8402,
+    "radius_km": 15.3,
     "backtrack_hours": 24
   },
   "vessels": [
@@ -61,8 +61,8 @@
       "name": "Shadow Trader",
       "mmsi": "419099999",
       "type": "Chemical Tanker",
-      "confidence": 76,
-      "reason": "Track intersected estimated source corridor 4.0 hours prior to detection with recorded AIS transmission gaps.",
+      "confidence": 51,
+      "reason": "Passed 9.1 nm from origin corridor 4.0 hours before detection with discontinuous AIS broadcast.",
       "position": [
         72.05,
         16.8
@@ -86,8 +86,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.915,
-        "distance": 0.563,
+        "environmental_consistency": 0.239,
+        "distance": 0.153,
         "time_consistency": 0.855,
         "track_continuity": 0.4,
         "heading": 0.944,
@@ -100,7 +100,7 @@
       "mmsi": "419088888",
       "type": "Bulk Carrier",
       "confidence": 38,
-      "reason": "Passed outside the origin corridor at 28.1 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 38.1 nm minimum approach distance.",
       "position": [
         72.55,
         16.9

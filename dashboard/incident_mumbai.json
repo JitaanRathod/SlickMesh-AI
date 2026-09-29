@@ -1,7 +1,7 @@
 {
   "incident": {
     "id": "SPILL-001",
-    "detected_at": "2026-09-28T12:23:37Z",
+    "detected_at": "2026-09-29T11:20:57Z",
     "area_km2": 66.35,
     "confidence": 0.97,
     "polygon": [
@@ -44,24 +44,62 @@
     ]
   },
   "environment": {
-    "current_u_ms": 0.04,
-    "current_v_ms": -0.18,
-    "wind_speed_ms": 11.4,
-    "wind_direction_deg": 283,
+    "current_u_ms": 0.17,
+    "current_v_ms": -0.05,
+    "wind_speed_ms": 11.6,
+    "wind_direction_deg": 345,
     "source_model": "Open-Meteo Live API"
   },
   "source_region": {
-    "latitude": 19.6149,
-    "longitude": 71.0631,
-    "radius_km": 23.7,
+    "latitude": 19.7152,
+    "longitude": 71.1562,
+    "radius_km": 23.9,
     "backtrack_hours": 24
   },
   "vessels": [
     {
+      "name": "Konkan Star",
+      "mmsi": "419002222",
+      "type": "Chemical Tanker",
+      "confidence": 87,
+      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 2.1 nm).",
+      "position": [
+        71.15,
+        19.75
+      ],
+      "track": [
+        [
+          70.85,
+          19.0
+        ],
+        [
+          70.95,
+          19.25
+        ],
+        [
+          71.05,
+          19.5
+        ],
+        [
+          71.15,
+          19.75
+        ]
+      ],
+      "sub_scores": {
+        "environmental_consistency": 0.975,
+        "distance": 0.874,
+        "time_consistency": 0.746,
+        "track_continuity": 0.9,
+        "heading": 0.878,
+        "speed": 0.65,
+        "vessel_type": 1.0
+      }
+    },
+    {
       "name": "Al-Bahar Crude",
       "mmsi": "419001111",
       "type": "Crude Oil Tanker",
-      "confidence": 81,
+      "confidence": 84,
       "reason": "Tanker track intersected the backtracked source region 3.5 hours before detection at slow speed (2.1 kts).",
       "position": [
         71.28,
@@ -86,8 +124,8 @@
         ]
       ],
       "sub_scores": {
-        "environmental_consistency": 0.889,
-        "distance": 0.432,
+        "environmental_consistency": 0.915,
+        "distance": 0.565,
         "time_consistency": 0.873,
         "track_continuity": 0.9,
         "heading": 0.956,
@@ -96,49 +134,11 @@
       }
     },
     {
-      "name": "Konkan Star",
-      "mmsi": "419002222",
-      "type": "Chemical Tanker",
-      "confidence": 80,
-      "reason": "Tanker track intersected estimated source corridor 7.0 hours prior to detection (CPA 6.9 nm).",
-      "position": [
-        71.15,
-        19.75
-      ],
-      "track": [
-        [
-          70.85,
-          19.0
-        ],
-        [
-          70.95,
-          19.25
-        ],
-        [
-          71.05,
-          19.5
-        ],
-        [
-          71.15,
-          19.75
-        ]
-      ],
-      "sub_scores": {
-        "environmental_consistency": 0.919,
-        "distance": 0.583,
-        "time_consistency": 0.746,
-        "track_continuity": 0.9,
-        "heading": 0.878,
-        "speed": 0.65,
-        "vessel_type": 1.0
-      }
-    },
-    {
       "name": "Mumbai Pioneer",
       "mmsi": "419003333",
       "type": "Cargo",
       "confidence": 36,
-      "reason": "Passed outside the origin corridor at 39.5 nm minimum approach distance.",
+      "reason": "Passed outside the origin corridor at 36.0 nm minimum approach distance.",
       "position": [
         71.8,
         19.8

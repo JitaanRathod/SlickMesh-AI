@@ -4,14 +4,14 @@ config.py — Central configuration for Phase 2 (AIS / GIS / Backtracking).
 Edit AISSTREAM_API_KEY and LOOKBACK_HOURS if needed before running.
 Everything else has sensible defaults for the Arabian Sea / Bay of Bengal AoI.
 """
-
+import os
 # ---------------------------------------------------------------------------
 # AIS data sources
 # ---------------------------------------------------------------------------
 
 # AISstream.io WebSocket endpoint + API key
 # Get a free key at: https://aisstream.io/authenticate
-AISSTREAM_API_KEY: str = "577b4b7d3708c4b0926c39e929baf2ad44f69401"
+AISSTREAM_API_KEY: str = os.getenv("AISSTREAM_API_KEY", "")
 AISSTREAM_WS_URL: str = "wss://stream.aisstream.io/v0/stream"
 
 # Bounding box for the AIS listener filter (Arabian Sea + Bay of Bengal + Indian coastline)

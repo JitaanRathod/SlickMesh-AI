@@ -1,0 +1,164 @@
+================================================================================
+SLICKMESH AI — COMPLETE PROJECT CONTEXT, ARCHITECTURE & STATUS DOSSIER
+System Version: 2.0 (SIH26143 Autonomous Decision Support)
+Target Agency: Indian Coast Guard / Directorate General of Shipping / Port State Control
+Repository: JitaanRathod/SlickMesh-AI (Branch: main)
+================================================================================
+
+1. EXECUTIVE SUMMARY & MISSION
+--------------------------------------------------------------------------------
+SlickMesh AI is an autonomous, end-to-end spaceborne maritime intelligence and
+oil spill forensics platform. It addresses the severe global and regional crisis
+of illegal operational bilge dumping and accidental tanker spills across the 
+2.37 million km² Indian Exclusive Economic Zone (EEZ) and global maritime fairways.
+
+Under IMO MARPOL 73/78 Annex I and UNCLOS Article 217, coastal state authorities 
+require rigorous, scientifically validated evidence to board, inspect, and penalize 
+polluting vessels. SlickMesh AI automates the entire pipeline:
+  [Satellite Ingestion] -> [AI Dark-Spot Detection] -> [Lagrangian Hydrodynamic Backtracking] -> 
+  [Multi-Signal AIS Evidence Fusion] -> [Actionable MARPOL Legal Investigation Dossiers]
+
+--------------------------------------------------------------------------------
+2. FOUR-PHASE SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+
+PHASE 1: SPACEBORNE SATELLITE DETECTION & MULTI-SENSOR QC
+- Sensors Integrated:
+  1. ESA Sentinel-1 C-SAR (5.405 GHz, VV/VH polarizations): High-resolution radar
+     capturing capillary wave damping by oil films (dark surface patches).
+  2. ISRO EOS-04 / RISAT-1A (5.35 GHz C-band Quad-Pol SAR): Sovereign Indian radar
+     pass providing polarimetric entropy and anisotropy cross-corroboration.
+  3. ISRO EOS-06 / Oceansat-3 (OCM-3 Optical + SSTM Thermal IR): Screens out biogenic
+     look-alikes (algal blooms via chlorophyll index) and verifies cold-skin thermal delta.
+  4. ESA Sentinel-2 MSI (10m VNIR/SWIR): Sunglint optical sheen validation.
+  5. Multi-Mission Constellation Fusion (Default): Combines all 4 spaceborne sensors
+     simultaneously into a single synthesized composite.
+- Deep Learning Architecture: PyTorch Deep U-Net trained on SAR satellite scenes.
+- Quality Control & Bonn Agreement:
+  * Rejects low-wind (<2.0 m/s) and high-wind (>12.0 m/s) false damping artifacts.
+  * Estimates minimum and maximum oil volume (m³ and barrels) using Bonn Agreement Code 3-4.
+  * Measures elongation ratio (length/width ~ 3.82) and perimeter morphology.
+- Output Contract: Standardized Contract A JSON containing exact polygon vertices,
+  centroid lat/lon, detection confidence, and look-alike QC telemetry.
+
+PHASE 2: HYDRODYNAMIC REVERSE-DRIFT BACKTRACKING
+- Formulation: Lagrangian numerical reverse simulation over a 1 to 72 hour horizon.
+  Net Drift Velocity Vector = Surface Ocean Current (U, V) + 3% Surface Windage Vector.
+- Metocean Data Feeds:
+  * INCOIS Ocean State Forecasts (OSF) Regional High-Resolution Hydrodynamic Model.
+  * ECMWF / Copernicus Marine / Open-Meteo real-time live APIs.
+- Origin Calculation: Computes estimated spill origin coordinate at release time (T-horizon),
+  together with a dynamic uncertainty radius (km) based on wind speed and elapsed time.
+
+PHASE 3: MULTI-EVIDENCE PROBABILISTIC VESSEL ATTRIBUTION ENGINE
+- 4-Stage Fleet Filtering Funnel:
+  * Stage 1: Basin Fleet Ingestion (400+ vessels in regional maritime corridor).
+  * Stage 2: Spatial Corridor Intersection (filters vessels passing within origin radius).
+  * Stage 3: Temporal Window Alignment (matches vessel passage to estimated release time).
+  * Stage 4: 7-Signal Kinematic & Behavioral Attribution Scoring.
+- 7-Signal Attribution Scoring Matrix (Weighted 0 to 100%):
+  1. Metocean Corridor Intersection (Environmental consistency)
+  2. Closest Point of Approach (CPA) Distance from Origin
+  3. Temporal Window Alignment (Time delta vs release horizon)
+  4. AIS Transponder Continuity (Detects deliberate AIS blackout gaps / dark ships)
+  5. Heading vs. Slick Elongation Alignment
+  6. Speed Profile Consistency (Identifies slow operational discharge speeds 8-14 kts)
+  7. Vessel Risk Classification (Crude Tanker > Product/Chemical > Cargo > Fishing)
+- Dark Vessel Dead-Reckoning: Performs kinematic interpolation between AIS gap waypoints
+  to reconstruct actual passage through the slick origin even if transponder was silenced.
+
+PHASE 4: LIVE COMMAND DASHBOARD & LAW ENFORCEMENT OUTPUTS
+- Tactical Live Map (Leaflet.js + CartoDB Dark Matter / Satellite Hybrid):
+  * Displays slick polygons, origin uncertainty buffers, and vessel track polylines.
+  * Ingests 200 NM Indian EEZ boundary, IMO Traffic Separation Schemes (TSS lanes),
+    and ONGC/offshore oil infrastructure (Mumbai High, KG Basin, Panna-Mukta).
+- Dual Operation Modes:
+  1. Live Satellite Pass Mode: Live coordinate scanning and 361M km² global ocean sweep
+     verifying 10 global ocean swaths as clean (0 false alarms) with live AIS traffic.
+  2. Forensic Demo Mode: 5 deterministic benchmark case scenarios showcasing forensic
+     ranking, reverse drift, and candidate attribution dossiers.
+- Forensic Time-Slider: Interactive playback of simulated plume dispersion from T-24h to T=0.
+- Outputs & Exports:
+  * 1-Click RFC 7946 GeoJSON Export: Full layer bundle for QGIS, ArcGIS, and Coast Guard GIS.
+  * 17-Point MARPOL Investigation Brief: Official downloadable markdown audit report
+    documenting supporting evidence, counter-evidence, and confidence decomposition.
+
+--------------------------------------------------------------------------------
+3. FIVE DETERMINISTIC BENCHMARK SCENARIOS
+--------------------------------------------------------------------------------
+1. Mumbai High Offshore Artery (`mumbai`): Offshore crude tanker discharge near Mumbai High.
+   Primary Suspect: Al-Bahar Crude (MMSI 419000123) - 94% Attribution Score.
+2. Arabian Sea MARPOL Bilge Dump (`bilge_dump`): Illegal night-time operational engine bilge.
+   Primary Suspect: MT Stolt Explorer (MMSI 419000789) - 88% Attribution Score.
+3. Bay of Bengal KG Deepwater Basin (`bob`): Deepwater gas/condensate shipping lane transit.
+   Primary Suspect: Krishna Godavari Spirit (MMSI 419000999) - 86% Attribution Score.
+4. Gulf of Khambhat / Alang Anchorage (`alang`): Shipbreaking anchorage bunker residue.
+   Primary Suspect: Gujarat Pride (MMSI 419000456) - 91% Attribution Score.
+5. Arabian Sea AIS Blackout / Dark Ship (`dark_ship`): Vessel turned off AIS transponder
+   during discharge; caught via dead-reckoning trajectory reconstruction.
+   Primary Suspect: Dark Horizon (MMSI 419000666) - 95% Attribution Score.
+
+--------------------------------------------------------------------------------
+4. CURRENT CODEBASE REPOSITORY STRUCTURE
+--------------------------------------------------------------------------------
+SlickMesh-AI/
+├── server.py                        # Central FastAPI integration orchestrator (1600+ lines)
+├── index.html                       # Tactical Command Console UI (HTML5 + FontAwesome)
+├── app.js                           # Dashboard application state, Leaflet GIS, & API bindings
+├── style.css                        # Cyber-tactical dark-mode styling & responsive grid
+├── requirements.txt                 # Production Python dependencies (fastapi, uvicorn, etc.)
+├── Procfile                         # Web process startup command for Render / Heroku
+├── render.yaml                      # 1-Click Render blueprint infrastructure configuration
+├── vercel.json                      # Vercel serverless routing & static asset rewrite rules
+├── api/
+│   └── index.py                     # Serverless FastAPI gateway entrypoint for Vercel
+├── gis_database.py                  # High-density Indian EEZ vessel registry, TSS & EEZ GeoJSON
+├── run_pipeline.py                  # CLI pipeline runner for all regional scenarios
+├── tests/
+│   └── test_integration_master.py  # Master integration test suite (FastAPI + Phase 1-4)
+├── phase1-satellite/
+│   ├── detect.py                    # PyTorch U-Net inference & GeoJSON polygon extraction
+│   └── unet_model.py                # Neural network model architecture definitions
+├── phase2-ais-gis/
+│   └── backtrack.py                 # Lagrangian reverse-drift physics simulation module
+└── phase3-attribution/
+    ├── engine.py                    # Multi-signal probabilistic attribution engine
+    ├── models.py                    # Pydantic data contracts (Contract A, B, C, D, E)
+    ├── normalizers.py               # Sigmoid & min-max score transformation functions
+    ├── explainer.py                 # Natural-language supporting/counter evidence generator
+    └── tests/                       # Unit tests for attribution scoring and robustness
+
+--------------------------------------------------------------------------------
+5. VERIFIED TEST STATUS & CODE QUALITY
+--------------------------------------------------------------------------------
+- Test Suite: Comprehensive Master Test Suite + Phase 3 Unit Tests.
+- Execution Command: `python -m pytest tests/ phase3-attribution/tests/`
+- Result: 32 / 32 Tests Passed (100% Pass Rate).
+- Verified Assertions:
+  * End-to-end execution of all 5 regional scenarios.
+  * FastAPI endpoints (GET /api/satellite-constellation, GET /api/gis-layers,
+    GET /api/live-fleet, GET /api/sweep-eez, POST /api/run-pipeline, POST /api/export-geojson,
+    POST /api/generate-report).
+  * Multi-sensor fusion matrix verification (all 4 satellites validated).
+  * Global ocean sweep verification (0 false alarms in live mode; 3 alerts in demo mode).
+  * Standardized Contract E output schema compliance.
+
+--------------------------------------------------------------------------------
+6. DEPLOYMENT CONFIGURATION & INSTRUCTIONS
+--------------------------------------------------------------------------------
+A. LOCAL EXECUTION:
+   1. Install dependencies: `pip install -r requirements.txt`
+   2. Start server: `python server.py` (or `uvicorn server:app --reload --port 8000`)
+   3. Open browser: `http://localhost:8000`
+
+B. RENDER DEPLOYMENT (Web Service):
+   - Repository: `JitaanRathod/SlickMesh-AI`
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `uvicorn server:app --host 0.0.0.0 --port $PORT`
+   - Config file: `render.yaml` (auto-detected)
+
+C. VERCEL DEPLOYMENT (Edge Static + Serverless Python):
+   - Repository: `JitaanRathod/SlickMesh-AI`
+   - On import screen: Select `slickmesh-ai FastAPI /` and click "Import single project ->"
+   - Config file: `vercel.json` and `api/index.py` (auto-detected)
+================================================================================
